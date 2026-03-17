@@ -43,16 +43,177 @@
         </div>
     </div>
 
-    <section id="how-it-works" class="badges-section reveal">
-        <div style="max-width: 640px; padding-right:40px;">
+    <section id="how-it-works" class="talent-pool-section reveal">
+        <div class="tp-header">
             <span style="color:var(--brand); letter-spacing: 5px; font-size: 0.65rem; font-weight: 900;">THE TALENT POOL</span>
             <h2 style="margin-top: 10px;">Hire by Expertise.</h2>
-            <p style="opacity: 0.45; font-size: 0.95rem;">Anonymized talent selection based on technical proficiency and API-verified engagement metrics.</p>
+            <p style="opacity: 0.45; font-size: 0.95rem; max-width: 600px;">Anonymized talent selection based on technical proficiency and API-verified engagement metrics. No guesswork — every step is data-driven.</p>
         </div>
-        <div class="badge-carousel">
-            <div class="badge-card"><div class="badge-icon-num">1</div><h3>Post Your Brief</h3><p>Define campaign requirements, set budget, and select required technical badges.</p></div>
-            <div class="badge-card"><div class="badge-icon-num">2</div><h3>Algorithmic Match</h3><p>Algorithm presents fits matching your product's chemical and regional profile.</p></div>
-            <div class="badge-card"><div class="badge-icon-num">3</div><h3>Secure Escrow</h3><p>Funds held securely and released only upon factual accuracy approval.</p></div>
+
+        <!-- STEP 1: Post Your Brief -->
+        <div class="tp-step reveal">
+            <div class="tp-step-info">
+                <div class="badge-icon-num">1</div>
+                <h3>Post Your Brief</h3>
+                <p>Define your campaign requirements, set your budget, choose content formats, and select the technical expertise badges your ideal creator must hold. Our structured brief system ensures creators know exactly what you need.</p>
+                <ul class="tp-checklist">
+                    <li>Set product category &amp; region of origin</li>
+                    <li>Choose content format (Reel, TikTok, YouTube, Blog)</li>
+                    <li>Define budget &amp; delivery window</li>
+                    <li>Select required certification badges</li>
+                </ul>
+            </div>
+            <div class="tp-step-preview">
+                <div class="tp-mockup">
+                    <div class="tp-mockup-bar"><span class="tp-dot"></span><span class="tp-dot"></span><span class="tp-dot"></span><span class="tp-mockup-title">Create Campaign Brief</span></div>
+                    <div class="tp-form-mock">
+                        <div class="tp-field">
+                            <label>Campaign Name</label>
+                            <div class="tp-input">Spring Oolong Launch — UK Market</div>
+                        </div>
+                        <div class="tp-field-row">
+                            <div class="tp-field">
+                                <label>Product Category</label>
+                                <div class="tp-input tp-select">Oolong Tea <span>▾</span></div>
+                            </div>
+                            <div class="tp-field">
+                                <label>Region of Origin</label>
+                                <div class="tp-input tp-select">Fujian, China <span>▾</span></div>
+                            </div>
+                        </div>
+                        <div class="tp-field-row">
+                            <div class="tp-field">
+                                <label>Budget per Creator</label>
+                                <div class="tp-input">£350</div>
+                            </div>
+                            <div class="tp-field">
+                                <label>Delivery Window</label>
+                                <div class="tp-input tp-select">14 days <span>▾</span></div>
+                            </div>
+                        </div>
+                        <div class="tp-field">
+                            <label>Content Format</label>
+                            <div class="tp-badges-row">
+                                <span class="tp-badge active">Instagram Reel</span>
+                                <span class="tp-badge">TikTok</span>
+                                <span class="tp-badge active">YouTube Short</span>
+                                <span class="tp-badge">Blog Post</span>
+                            </div>
+                        </div>
+                        <div class="tp-field">
+                            <label>Required Badges</label>
+                            <div class="tp-badges-row">
+                                <span class="tp-cert-badge">🧪 Tea Chemistry</span>
+                                <span class="tp-cert-badge">🌍 Terroir</span>
+                                <span class="tp-cert-badge dim">🍃 Botanical</span>
+                                <span class="tp-cert-badge dim">⚙️ Processing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Algorithmic Match -->
+        <div class="tp-step reverse reveal">
+            <div class="tp-step-info">
+                <div class="badge-icon-num">2</div>
+                <h3>Algorithmic Match</h3>
+                <p>Our algorithm analyses your brief's chemical and regional profile, then surfaces anonymized creator matches ranked by relevance. Every metric shown is pulled directly from platform APIs — zero self-reported data.</p>
+                <ul class="tp-checklist">
+                    <li>Creators are anonymized until you select</li>
+                    <li>All metrics are API-verified in real-time</li>
+                    <li>Badge certifications shown upfront</li>
+                    <li>Match score ranked by brief relevance</li>
+                </ul>
+            </div>
+            <div class="tp-step-preview">
+                <div class="tp-mockup">
+                    <div class="tp-mockup-bar"><span class="tp-dot"></span><span class="tp-dot"></span><span class="tp-dot"></span><span class="tp-mockup-title">Creator Matches — Spring Oolong Launch</span></div>
+                    <div class="tp-match-list">
+                        <!-- Creator Match 1 -->
+                        <div class="tp-creator-card best">
+                            <div class="tp-creator-top">
+                                <div class="tp-avatar">?</div>
+                                <div class="tp-creator-meta">
+                                    <div class="tp-creator-name">Creator #4A7F <span class="tp-match-pct">94% match</span></div>
+                                    <div class="tp-creator-badges"><span>🧪 Tea Chemistry</span><span>🌍 Terroir</span></div>
+                                </div>
+                            </div>
+                            <div class="tp-api-grid">
+                                <div class="tp-api-stat"><span class="tp-api-val">127K</span><span class="tp-api-label">Followers</span></div>
+                                <div class="tp-api-stat"><span class="tp-api-val">5.8%</span><span class="tp-api-label">Eng. Rate</span></div>
+                                <div class="tp-api-stat"><span class="tp-api-val">92%</span><span class="tp-api-label">Exam Score</span></div>
+                                <div class="tp-api-stat"><span class="tp-api-val">23</span><span class="tp-api-label">Campaigns</span></div>
+                            </div>
+                            <div class="tp-api-source">
+                                <span class="tp-verified-tag">✓ API Verified</span>
+                                <span class="tp-platform-tags"><span>IG</span><span>TT</span></span>
+                            </div>
+                        </div>
+                        <!-- Creator Match 2 -->
+                        <div class="tp-creator-card">
+                            <div class="tp-creator-top">
+                                <div class="tp-avatar">?</div>
+                                <div class="tp-creator-meta">
+                                    <div class="tp-creator-name">Creator #9B2E <span class="tp-match-pct">87% match</span></div>
+                                    <div class="tp-creator-badges"><span>🧪 Tea Chemistry</span><span>🌍 Terroir</span><span>🍃 Botanical</span></div>
+                                </div>
+                            </div>
+                            <div class="tp-api-grid">
+                                <div class="tp-api-stat"><span class="tp-api-val">84K</span><span class="tp-api-label">Followers</span></div>
+                                <div class="tp-api-stat"><span class="tp-api-val">7.2%</span><span class="tp-api-label">Eng. Rate</span></div>
+                                <div class="tp-api-stat"><span class="tp-api-val">88%</span><span class="tp-api-label">Exam Score</span></div>
+                                <div class="tp-api-stat"><span class="tp-api-val">11</span><span class="tp-api-label">Campaigns</span></div>
+                            </div>
+                            <div class="tp-api-source">
+                                <span class="tp-verified-tag">✓ API Verified</span>
+                                <span class="tp-platform-tags"><span>IG</span><span>YT</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Secure Escrow -->
+        <div class="tp-step reveal">
+            <div class="tp-step-info">
+                <div class="badge-icon-num">3</div>
+                <h3>Secure Escrow</h3>
+                <p>Once you select a creator, funds are held in escrow and only released when content passes factual accuracy review. Full transparency at every stage — you always know exactly where your money is.</p>
+                <ul class="tp-checklist">
+                    <li>Funds locked on brief acceptance</li>
+                    <li>Creator delivers within agreed window</li>
+                    <li>Factual accuracy review before release</li>
+                    <li>Dispute resolution built-in</li>
+                </ul>
+            </div>
+            <div class="tp-step-preview">
+                <div class="tp-mockup">
+                    <div class="tp-mockup-bar"><span class="tp-dot"></span><span class="tp-dot"></span><span class="tp-dot"></span><span class="tp-mockup-title">Escrow — Spring Oolong Launch</span></div>
+                    <div class="tp-escrow-mock">
+                        <div class="tp-escrow-pipeline">
+                            <div class="tp-pipe-stage done"><div class="tp-pipe-dot"></div><span>Brief Accepted</span></div>
+                            <div class="tp-pipe-line done"></div>
+                            <div class="tp-pipe-stage done"><div class="tp-pipe-dot"></div><span>Funds Locked</span></div>
+                            <div class="tp-pipe-line done"></div>
+                            <div class="tp-pipe-stage active"><div class="tp-pipe-dot"></div><span>Content Delivered</span></div>
+                            <div class="tp-pipe-line"></div>
+                            <div class="tp-pipe-stage"><div class="tp-pipe-dot"></div><span>Approved &amp; Paid</span></div>
+                        </div>
+                        <div class="tp-escrow-detail">
+                            <div class="tp-escrow-row"><span>Creator</span><strong>#4A7F</strong></div>
+                            <div class="tp-escrow-row"><span>Budget</span><strong>£350.00</strong></div>
+                            <div class="tp-escrow-row"><span>Platform Fee (12%)</span><strong>£42.00</strong></div>
+                            <div class="tp-escrow-row total"><span>Total Held in Escrow</span><strong>£392.00</strong></div>
+                        </div>
+                        <div class="tp-escrow-status">
+                            <span class="tp-status-badge pending">⏳ Awaiting Accuracy Review</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -103,7 +264,6 @@
                     <li>14-day asset delivery window</li>
                     <li>Full escrow protection</li>
                     <li>API-verified audience metrics</li>
-                    <li>1 round of revisions</li>
                 </ul>
                 <button class="btn-pill btn-outline" style="width:100%; font-size:0.65rem;" onclick="openLogin()">START A BRIEF</button>
                 <div class="price-note">Ideal for testing the network with a single campaign.</div>
@@ -124,7 +284,6 @@
                     <li>Dedicated account manager</li>
                     <li>Full escrow protection</li>
                     <li>Live API analytics dashboard</li>
-                    <li>2 rounds of revisions per brief</li>
                     <li>Creator performance reporting</li>
                 </ul>
                 <button class="btn-pill btn-brand-orange" style="width:100%; font-size:0.65rem;" onclick="openLogin()">GET STARTED</button>
@@ -145,7 +304,6 @@
                     <li>White-glove onboarding</li>
                     <li>Full escrow protection</li>
                     <li>Custom analytics &amp; reporting</li>
-                    <li>Unlimited revisions</li>
                     <li>Dedicated Slack channel</li>
                     <li>Quarterly strategy review</li>
                 </ul>

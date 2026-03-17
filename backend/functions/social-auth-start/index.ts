@@ -38,7 +38,7 @@ serve(async (req: Request) => {
 
     // 3. Look up creator_id from auth user
     const db = getServiceClient();
-    const { data: creator, error: creatorErr } = await db
+    let { data: creator, error: creatorErr } = await db
       .from('creators')
       .select('id')
       .eq('auth_user_id', user.id)

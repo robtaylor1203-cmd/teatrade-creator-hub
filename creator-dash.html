@@ -226,44 +226,41 @@
         <!-- ── Section: Escrow Wallet ── -->
         <div id="section-wallet" style="display:none;">
             <div class="section-label" style="margin-bottom: 16px;">Escrow Wallet</div>
+
+            <!-- Stripe Connect onboarding banner (hidden when connected) -->
+            <div id="stripe-onboard-banner" style="display:none; background:linear-gradient(135deg, #1a1a2e, #16213e); border:1px solid rgba(99,102,241,0.3); border-radius:12px; padding:28px; margin-bottom:24px; text-align:center;">
+                <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:10px;">PAYOUT SETUP REQUIRED</div>
+                <p style="opacity:0.5; font-size:0.9rem; line-height:1.6; margin-bottom:20px;">Connect your bank account via Stripe to receive campaign payments. This takes less than 2 minutes.</p>
+                <button class="btn-pill" style="padding:14px 48px; font-size:0.65rem;" onclick="startStripeOnboarding()">SET UP PAYOUTS</button>
+            </div>
+
             <div class="stats-grid">
                 <div class="stat-card">
                     <h4>Available Balance</h4>
-                    <p class="val" style="color:var(--accent);">£350</p>
+                    <p class="val" id="wallet-available" style="color:var(--accent);">£0</p>
                     <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">From completed campaigns</div>
                 </div>
                 <div class="stat-card">
                     <h4>In Escrow</h4>
-                    <p class="val" style="color:var(--brand);">£1,100</p>
-                    <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">2 active campaigns</div>
+                    <p class="val" id="wallet-escrow" style="color:var(--brand);">£0</p>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">Active campaigns</div>
                 </div>
                 <div class="stat-card">
                     <h4>Lifetime Earnings</h4>
-                    <p class="val">£2,840</p>
-                    <div style="font-size:0.8rem; color:var(--accent); margin-top:10px;">7 campaigns completed</div>
+                    <p class="val" id="wallet-lifetime">£0</p>
+                    <div style="font-size:0.8rem; color:var(--accent); margin-top:10px;" id="wallet-campaign-count">0 campaigns completed</div>
                 </div>
             </div>
 
             <div style="margin-top: 32px;">
                 <div class="section-label" style="margin-bottom: 16px;">Transaction History</div>
-                <div class="brief-card">
-                    <div class="brief-header">
-                        <h3>Heritage Collection — TrueLeaf</h3>
-                        <span class="brief-status st-paid">+£350</span>
-                    </div>
-                    <div class="brief-meta">Released 12 days ago &nbsp;|&nbsp; 12% platform fee applied &nbsp;|&nbsp; Net: £308</div>
-                </div>
-                <div class="brief-card" style="opacity:0.5;">
-                    <div class="brief-header">
-                        <h3>Jasmine Discovery — OrientBrew</h3>
-                        <span class="brief-status st-paid">+£520</span>
-                    </div>
-                    <div class="brief-meta">Released 28 days ago &nbsp;|&nbsp; 12% platform fee applied &nbsp;|&nbsp; Net: £457.60</div>
+                <div id="wallet-transactions">
+                    <div style="text-align:center; padding:32px; opacity:0.3;">No transactions yet</div>
                 </div>
             </div>
 
-            <div style="margin-top:32px; text-align:center;">
-                <button class="btn-pill" style="padding:14px 48px; font-size:0.65rem;" onclick="notify('Payout', 'Bank transfer initiated. Funds arrive in 2-3 business days.', 'success')">WITHDRAW TO BANK</button>
+            <div id="wallet-withdraw-section" style="margin-top:32px; text-align:center; display:none;">
+                <button class="btn-pill" style="padding:14px 48px; font-size:0.65rem;" onclick="withdrawToBank()">WITHDRAW TO BANK</button>
                 <p style="opacity:0.2; font-size:0.75rem; margin-top:16px;">Withdrawals processed via Stripe Connect. Minimum £50.</p>
             </div>
         </div>
@@ -397,18 +394,22 @@
             // DEV MODE: Add ?dev=true to URL to bypass auth for Live Server testing
             const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
 
-            // ── Handle OAuth callback params ──
+            // ── Handle OAuth & Stripe callback params ──
             const params = new URLSearchParams(window.location.search);
             const oauthSuccess = params.get('oauth_success');
             const oauthError = params.get('oauth_error');
             const oauthHandle = params.get('handle');
+            const stripeSuccess = params.get('stripe_success');
+            const stripeRefresh = params.get('stripe_refresh');
 
-            // Clean URL after reading params (remove oauth_* but keep dev=true if present)
-            if (oauthSuccess || oauthError) {
+            // Clean URL after reading params
+            if (oauthSuccess || oauthError || stripeSuccess || stripeRefresh) {
                 const cleanUrl = new URL(window.location.href);
                 cleanUrl.searchParams.delete('oauth_success');
                 cleanUrl.searchParams.delete('oauth_error');
                 cleanUrl.searchParams.delete('handle');
+                cleanUrl.searchParams.delete('stripe_success');
+                cleanUrl.searchParams.delete('stripe_refresh');
                 window.history.replaceState({}, '', cleanUrl.toString());
             }
 
@@ -436,7 +437,7 @@
             document.getElementById('avatar-initials').innerText = activeUserEmail.substring(0,2).toUpperCase();
             activeUserId = creator.id;
             document.getElementById('match-score-display').innerText = creator.quiz_score || "--";
-            loadSocialStats(); loadEarnedBadges();
+            loadSocialStats(); loadEarnedBadges(); loadWalletData();
 
             // ── Show OAuth result notification ──
             if (oauthSuccess) {
@@ -446,6 +447,13 @@
                 notify('API Connected', `${name} connected successfully${handleText}. Your verified metrics are now live.`, 'success');
             } else if (oauthError) {
                 notify('Connection Failed', decodeURIComponent(oauthError), 'error');
+            }
+
+            // ── Show Stripe onboarding result ──
+            if (stripeSuccess) {
+                notify('Stripe Connected', 'Your payout account is set up. You can now receive campaign payments directly to your bank.', 'success');
+            } else if (stripeRefresh) {
+                notify('Onboarding Incomplete', 'Stripe onboarding was not completed. Please try again from the Escrow Wallet tab.', 'info');
             }
         }
 
@@ -763,6 +771,98 @@
         }
 
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        /* ── Stripe Connect / Wallet Functions ── */
+        async function startStripeOnboarding() {
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (devMode) { notify('Dev Mode', 'Stripe onboarding is disabled in dev mode.', 'info'); return; }
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/creator-onboard`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                });
+                const result = await res.json();
+                if (result.error) throw new Error(result.error);
+                window.location.href = result.url;
+            } catch (err) {
+                notify('Onboarding Error', err.message, 'error');
+            }
+        }
+
+        async function loadWalletData() {
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (devMode || !activeUserId) return;
+
+            // Check if creator has a Stripe connected account
+            const { data: account } = await _supabase.from('connected_accounts').select('*').eq('creator_id', activeUserId).single();
+            const banner = document.getElementById('stripe-onboard-banner');
+            const withdrawSection = document.getElementById('wallet-withdraw-section');
+
+            if (!account || account.onboarding_status !== 'complete') {
+                banner.style.display = 'block';
+                withdrawSection.style.display = 'none';
+            } else {
+                banner.style.display = 'none';
+                withdrawSection.style.display = 'block';
+            }
+
+            // Load escrow transactions for this creator
+            const { data: txns } = await _supabase.from('escrow_transactions').select('*, campaigns(brief_title, brand_name)').eq('creator_id', activeUserId).order('created_at', { ascending: false });
+
+            let available = 0, inEscrow = 0, lifetime = 0, completedCount = 0;
+            const txContainer = document.getElementById('wallet-transactions');
+
+            if (txns && txns.length > 0) {
+                txContainer.innerHTML = '';
+                txns.forEach(tx => {
+                    if (tx.event_type === 'release') { available += tx.amount; lifetime += tx.amount; completedCount++; }
+                    if (tx.event_type === 'escrow_locked') { inEscrow += tx.amount; }
+                    if (tx.event_type === 'refund') { inEscrow -= tx.amount; }
+                    if (tx.event_type === 'withdrawal') { available -= tx.amount; }
+
+                    const title = tx.campaigns?.brief_title || 'Campaign';
+                    const brand = tx.campaigns?.brand_name || '';
+                    const labels = { escrow_locked: 'Escrow Locked', release: 'Payment Released', fee: 'Platform Fee', refund: 'Refunded', withdrawal: 'Withdrawal' };
+                    const isCredit = ['release'].includes(tx.event_type);
+                    const amount = tx.amount / 100; // stored in pence
+
+                    if (['release', 'withdrawal'].includes(tx.event_type)) {
+                        const card = document.createElement('div');
+                        card.className = 'brief-card';
+                        card.style.opacity = tx.event_type === 'withdrawal' ? '0.5' : '1';
+                        card.innerHTML = `<div class="brief-header"><h3>${title}${brand ? ' — ' + brand : ''}</h3><span class="brief-status ${isCredit ? 'st-paid' : 'st-creating'}">${isCredit ? '+' : '-'}£${amount.toFixed(2)}</span></div><div class="brief-meta">${labels[tx.event_type] || tx.event_type} · ${new Date(tx.created_at).toLocaleDateString()}</div>`;
+                        txContainer.appendChild(card);
+                    }
+                });
+            }
+
+            // Update stats (amounts in pence → pounds)
+            document.getElementById('wallet-available').textContent = `£${(available / 100).toLocaleString()}`;
+            document.getElementById('wallet-escrow').textContent = `£${(inEscrow / 100).toLocaleString()}`;
+            document.getElementById('wallet-lifetime').textContent = `£${(lifetime / 100).toLocaleString()}`;
+            document.getElementById('wallet-campaign-count').textContent = `${completedCount} campaign${completedCount !== 1 ? 's' : ''} completed`;
+        }
+
+        async function withdrawToBank() {
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (devMode) { notify('Dev Mode', 'Withdrawals are disabled in dev mode.', 'info'); return; }
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/creator-withdraw`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                });
+                const result = await res.json();
+                if (result.error) throw new Error(result.error);
+                notify('Withdrawal Initiated', `£${(result.amount / 100).toFixed(2)} transfer to your bank account has been initiated. Funds arrive in 2-3 business days.`, 'success');
+                loadWalletData(); // refresh
+            } catch (err) {
+                notify('Withdrawal Failed', err.message, 'error');
+            }
+        }
 
         /* ── Dev Mode Social Loading ── */
         function loadDevSocialStats() {

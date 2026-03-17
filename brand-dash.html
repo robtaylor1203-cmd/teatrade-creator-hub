@@ -618,11 +618,24 @@
         async function initDashboard() {
             // DEV MODE: Add ?dev=true to URL to bypass auth for Live Server testing
             const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+
+            // Handle escrow payment callbacks
+            const params = new URLSearchParams(window.location.search);
+            const escrowSuccess = params.get('escrow_success');
+            const escrowCancelled = params.get('escrow_cancelled');
+            if (escrowSuccess || escrowCancelled) {
+                const cleanUrl = new URL(window.location.href);
+                cleanUrl.searchParams.delete('escrow_success');
+                cleanUrl.searchParams.delete('escrow_cancelled');
+                window.history.replaceState({}, '', cleanUrl.toString());
+            }
+
             if (devMode) {
                 document.body.classList.add('auth-cleared');
                 activeBrandEmail = 'brand@teatrade.io';
                 document.getElementById('brand-email-display').innerText = activeBrandEmail;
                 document.getElementById('brand-avatar').innerText = 'BR';
+                if (escrowSuccess) notify('Escrow Locked', 'Payment confirmed. Your campaign budget is now held securely in escrow.', 'success');
                 return;
             }
             const { data: { session } } = await _supabase.auth.getSession();
@@ -632,6 +645,9 @@
             document.getElementById('brand-email-display').innerText = activeBrandEmail;
             document.getElementById('brand-avatar').innerText = activeBrandEmail.substring(0,2).toUpperCase();
             loadCampaigns();
+
+            if (escrowSuccess) notify('Escrow Locked', 'Payment confirmed. Your campaign budget is now held securely in escrow.', 'success');
+            if (escrowCancelled) notify('Payment Cancelled', 'Escrow was not locked. You can retry from your campaign list.', 'info');
         }
 
         function openBriefModal() { document.getElementById('brief-modal').classList.add('active'); }
@@ -669,36 +685,110 @@
                 status: 'active'
             };
 
-            const { error } = await _supabase.from('campaigns').insert([briefData]);
+            const { data: inserted, error } = await _supabase.from('campaigns').insert([briefData]).select().single();
             
-            if (error) { notify('Error', 'Escrow connection failed: ' + error.message, 'error'); }
-            else { 
-                notify('Brief Posted', `£${esc.gross.toLocaleString()} locked in escrow. £${esc.creatorPayout.toFixed(2)} will go to the creator on approval. Our algorithm is now matching against ${badges.join(', ')} badge holders on ${platforms.join(', ')}.`, 'success'); 
+            if (error) { notify('Error', 'Brief creation failed: ' + error.message, 'error'); return; }
+
+            // DEV MODE: skip Stripe, just show success
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (devMode) {
+                notify('Brief Posted', `£${esc.gross.toLocaleString()} locked in escrow. £${esc.creatorPayout.toFixed(2)} will go to the creator on approval. Our algorithm is now matching against ${badges.join(', ')} badge holders on ${platforms.join(', ')}.`, 'success');
                 closeBriefModal();
-                // Reset form
-                document.getElementById('brief-title').value = '';
-                document.getElementById('brief-description').value = '';
-                document.getElementById('brief-budget').value = '';
-                document.getElementById('budget-preview').style.display = 'none';
-                document.querySelectorAll('#brief-modal select').forEach(s => s.selectedIndex = 0);
-                document.querySelectorAll('#brief-modal input[type=checkbox]').forEach(c => c.checked = false);
-                loadCampaigns(); 
+                resetBriefForm();
+                loadCampaigns();
+                return;
             }
+
+            // PRODUCTION: Redirect to Stripe Checkout to lock escrow
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/create-escrow`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'apikey': SUPABASE_KEY,
+                    },
+                    body: JSON.stringify({ campaign_id: inserted.id }),
+                });
+                const result = await res.json();
+                if (result.error) throw new Error(result.error);
+                closeBriefModal();
+                resetBriefForm();
+                // Redirect to Stripe Checkout
+                window.location.href = result.checkout_url;
+            } catch (err) {
+                notify('Payment Error', 'Brief saved but escrow payment failed: ' + err.message + '. You can retry from your campaigns list.', 'error');
+                closeBriefModal();
+                resetBriefForm();
+                loadCampaigns();
+            }
+        }
+
+        function resetBriefForm() {
+            document.getElementById('brief-title').value = '';
+            document.getElementById('brief-description').value = '';
+            document.getElementById('brief-budget').value = '';
+            document.getElementById('budget-preview').style.display = 'none';
+            document.querySelectorAll('#brief-modal select').forEach(s => s.selectedIndex = 0);
+            document.querySelectorAll('#brief-modal input[type=checkbox]').forEach(c => c.checked = false);
+        }
+
+        function getStatusBadge(status) {
+            const map = {
+                'active': { label: 'MATCHING', cls: 'st-active' },
+                'pending_payment': { label: 'AWAITING PAYMENT', cls: 'st-creating' },
+                'escrow_locked': { label: 'ESCROW LOCKED', cls: 'st-shipping' },
+                'review': { label: 'REVIEW', cls: 'st-review' },
+                'paid': { label: 'PAID', cls: 'st-paid' },
+                'refunded': { label: 'REFUNDED', cls: 'st-creating' },
+                'payment_failed': { label: 'PAYMENT FAILED', cls: 'st-creating' },
+                'dispute': { label: 'DISPUTE', cls: 'st-creating' },
+            };
+            return map[status] || { label: status.toUpperCase(), cls: 'st-active' };
         }
 
         async function loadCampaigns() {
             const { data } = await _supabase.from('campaigns').select('*').eq('brand_name', activeBrandEmail).order('created_at', { ascending: false });
             const container = document.getElementById('campaigns-container');
             if (data && data.length > 0) {
-                container.innerHTML = ''; let total = 0;
+                container.innerHTML = ''; let total = 0; let activeCount = 0;
                 data.forEach(c => {
-                    total += c.total_budget;
+                    if (!['paid', 'refunded', 'payment_failed'].includes(c.status)) {
+                        total += c.total_budget;
+                        activeCount++;
+                    }
+                    const badge = getStatusBadge(c.status);
                     const div = document.createElement('div'); div.className = 'campaign-card';
-                    div.innerHTML = `<div><h3 style="margin:0;">${c.brief_title}</h3><p style="font-size:0.95rem; opacity:0.5; margin-top:10px;">Escrow: £${c.total_budget.toLocaleString()} | Status: ${c.status.toUpperCase()}</p></div><div style="text-align:right;"><span class="tag-req">FINDING MATCHES...</span></div>`;
+                    let actions = '';
+                    if (c.status === 'pending_payment') {
+                        actions = `<button class="btn-pill" style="font-size:0.6rem; padding:8px 18px;" onclick="retryEscrowPayment('${c.id}')">PAY NOW</button>`;
+                    }
+                    div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0;">${c.brief_title}</h3><p style="font-size:0.85rem; opacity:0.5; margin-top:8px;">Budget: £${c.total_budget.toLocaleString()}${c.creator_payout ? ` · Creator: £${c.creator_payout}` : ''}${c.platform_fee ? ` · Fee: £${c.platform_fee}` : ''}</p></div><div style="display:flex; align-items:center; gap:12px;"><span class="brief-status ${badge.cls}">${badge.label}</span>${actions}</div></div>`;
                     container.appendChild(div);
                 });
-                document.getElementById('stat-active').innerText = data.length;
+                document.getElementById('stat-active').innerText = activeCount;
                 document.getElementById('stat-escrow').innerText = `£${total.toLocaleString()}`;
+            }
+        }
+
+        async function retryEscrowPayment(campaignId) {
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (devMode) { notify('Dev Mode', 'Stripe Checkout is disabled in dev mode.', 'info'); return; }
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/create-escrow`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                    body: JSON.stringify({ campaign_id: campaignId }),
+                });
+                const result = await res.json();
+                if (result.error) throw new Error(result.error);
+                window.location.href = result.checkout_url;
+            } catch (err) {
+                notify('Payment Error', err.message, 'error');
             }
         }
 
@@ -748,16 +838,40 @@
         }
 
         /* ── Campaign Actions ── */
-        function approveContent(cardId) {
+        async function approveContent(cardId, campaignId) {
             const card = document.getElementById(cardId);
-            const budget = 420; // demo value
+            const budget = 420; // demo fallback
             const esc = calculateEscrow(budget);
+
+            // DEV MODE: UI-only simulation
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+
+            if (!devMode && campaignId) {
+                // PRODUCTION: Call release-escrow Edge Function
+                try {
+                    const session = await _supabase.auth.getSession();
+                    const token = session.data.session?.access_token;
+                    const res = await fetch(`${SUPABASE_URL}/functions/v1/release-escrow`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                        body: JSON.stringify({ campaign_id: campaignId }),
+                    });
+                    const result = await res.json();
+                    if (result.error) { notify('Release Failed', result.error, 'error'); return; }
+                    esc.creatorPayout = result.creator_payout;
+                    esc.fee = result.platform_fee;
+                    esc.gross = result.creator_payout + result.platform_fee;
+                } catch (err) {
+                    notify('Release Failed', 'Could not release escrow: ' + err.message, 'error');
+                    return;
+                }
+            }
 
             // Advance pipeline to "Paid"
             const reviewStage = document.getElementById('brand-stage-review');
             const paidStage = document.getElementById('brand-stage-paid');
-            reviewStage.classList.remove('active'); reviewStage.classList.add('done');
-            paidStage.classList.add('done');
+            if (reviewStage) { reviewStage.classList.remove('active'); reviewStage.classList.add('done'); }
+            if (paidStage) { paidStage.classList.add('done'); }
 
             // Update status
             card.querySelector('.brief-status').textContent = 'PAID';
@@ -770,11 +884,11 @@
                 <div style="text-align:center; padding:24px;">
                     <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:12px;">ESCROW RELEASED — AUTOMATED</div>
                     <div style="font-size:2.2rem; font-weight:900; color:var(--accent); margin-bottom:8px;">£${esc.creatorPayout.toFixed(2)}</div>
-                    <div style="font-size:0.82rem; opacity:0.4; margin-bottom:4px;">Released instantly to Creator #402</div>
+                    <div style="font-size:0.82rem; opacity:0.4; margin-bottom:4px;">Released instantly to creator</div>
                     <div style="font-size:0.72rem; opacity:0.25;">Platform fee: £${esc.fee.toFixed(2)} (${PLATFORM_FEE * 100}%) &middot; Gross: £${esc.gross.toLocaleString()}</div>
                 </div>`;
             if (cd) cd.style.display = 'none';
-            notify('Escrow Released', `£${esc.creatorPayout.toFixed(2)} has been automatically released to Creator #402. TeaTrade fee of £${esc.fee.toFixed(2)} deducted. Campaign complete.`, 'success');
+            notify('Escrow Released', `£${esc.creatorPayout.toFixed(2)} has been released to the creator. TeaTrade fee of £${esc.fee.toFixed(2)} deducted. Campaign complete.`, 'success');
         }
 
         /* ── Reject (policy violation only — no revisions) ── */
@@ -791,6 +905,17 @@
             if (!evidence || evidence.length < 20) { notify('Evidence Required', 'Please provide specific evidence (min 20 characters) to support your rejection.', 'error'); return; }
             closeRejectModal();
             const card = document.getElementById(activeRejectCard);
+
+            // Update campaign status in DB
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (!devMode) {
+                // Extract campaign ID if stored as data attribute
+                const cid = card.dataset.campaignId;
+                if (cid) {
+                    await _supabase.from('campaigns').update({ status: 'dispute' }).eq('id', cid);
+                }
+            }
+
             card.querySelector('.brief-status').textContent = 'DISPUTE';
             card.querySelector('.brief-status').className = 'brief-status st-creating';
             const rp = card.querySelector('.review-panel');

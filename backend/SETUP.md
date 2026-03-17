@@ -108,11 +108,19 @@ mkdir -p supabase/functions/disconnect-social
 # Copy shared utilities
 cp backend/functions/_shared/* supabase/functions/_shared/
 
-# Copy function files
+# Copy function files — Social Auth
 cp backend/functions/social-auth-start/index.ts   supabase/functions/social-auth-start/index.ts
 cp backend/functions/social-auth-callback/index.ts supabase/functions/social-auth-callback/index.ts
 cp backend/functions/refresh-metrics/index.ts      supabase/functions/refresh-metrics/index.ts
 cp backend/functions/disconnect-social/index.ts    supabase/functions/disconnect-social/index.ts
+
+# Copy function files — Stripe / Escrow
+cp backend/functions/creator-onboard/index.ts      supabase/functions/creator-onboard/index.ts
+cp backend/functions/create-escrow/index.ts        supabase/functions/create-escrow/index.ts
+cp backend/functions/release-escrow/index.ts       supabase/functions/release-escrow/index.ts
+cp backend/functions/refund-escrow/index.ts        supabase/functions/refund-escrow/index.ts
+cp backend/functions/stripe-webhook/index.ts       supabase/functions/stripe-webhook/index.ts
+cp backend/functions/creator-withdraw/index.ts     supabase/functions/creator-withdraw/index.ts
 ```
 
 ---
@@ -126,6 +134,8 @@ supabase secrets set \
   TIKTOK_CLIENT_KEY="your-tiktok-client-key" \
   TIKTOK_CLIENT_SECRET="your-tiktok-client-secret" \
   TOKEN_ENCRYPTION_KEY="your-random-32-char-passphrase" \
+  STRIPE_SECRET_KEY="sk_live_xxx_or_sk_test_xxx" \
+  STRIPE_WEBHOOK_SECRET="whsec_xxx" \
   FRONTEND_URL="https://teatrade.co"
 ```
 
@@ -145,6 +155,12 @@ supabase functions deploy social-auth-start    --no-verify-jwt
 supabase functions deploy social-auth-callback  --no-verify-jwt
 supabase functions deploy refresh-metrics       --no-verify-jwt
 supabase functions deploy disconnect-social     --no-verify-jwt
+supabase functions deploy creator-onboard       --no-verify-jwt
+supabase functions deploy create-escrow         --no-verify-jwt
+supabase functions deploy release-escrow        --no-verify-jwt
+supabase functions deploy refund-escrow         --no-verify-jwt
+supabase functions deploy stripe-webhook        --no-verify-jwt
+supabase functions deploy creator-withdraw      --no-verify-jwt
 ```
 
 > `--no-verify-jwt` is needed for `social-auth-callback` since it receives direct redirects from Instagram/TikTok (no JWT header). The other functions verify JWTs themselves in code.
@@ -155,6 +171,12 @@ https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/social-auth-start
 https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/social-auth-callback
 https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/refresh-metrics
 https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/disconnect-social
+https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/creator-onboard
+https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/create-escrow
+https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/release-escrow
+https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/refund-escrow
+https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/stripe-webhook
+https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/creator-withdraw
 ```
 
 ---
@@ -209,6 +231,44 @@ SELECT cron.schedule(
 
 ---
 
+## Step 8: Run Stripe/Escrow Migration
+
+1. Go to **Supabase Dashboard** → **SQL Editor** → **New Query**
+2. Paste the contents of `backend/migrations/002_stripe_escrow_schema.sql`
+3. Click **Run**
+
+This migration adds:
+- `connected_accounts` — creator Stripe Connect account IDs & onboarding status
+- `escrow_transactions` — event ledger (lock, release, fee, refund, withdrawal)
+- `brand_customers` — brand Stripe customer mapping
+- New columns on `campaigns`: `escrow_amount`, `platform_fee`, `creator_payout`, `stripe_payment_intent`, `stripe_transfer_id`, `paid_at`, `refunded_at`, `auto_release_at`, `brand_stripe_customer`, `creator_id`
+- RLS policies for all new tables
+
+---
+
+## Step 9: Configure Stripe Webhook
+
+1. Go to [Stripe Dashboard](https://dashboard.stripe.com/) → **Developers** → **Webhooks**
+2. Click **Add endpoint**
+3. Set the endpoint URL:
+   ```
+   https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/stripe-webhook
+   ```
+4. Select these events to listen for:
+   - `checkout.session.completed`
+   - `checkout.session.expired`
+   - `payment_intent.payment_failed`
+   - `transfer.created`
+   - `payout.paid`
+   - `charge.refunded`
+   - `account.updated`
+5. Copy the **Signing secret** (`whsec_...`) and set it:
+   ```bash
+   supabase secrets set STRIPE_WEBHOOK_SECRET="whsec_your_signing_secret"
+   ```
+
+---
+
 ## Step 8: Verify Deployment
 
 ### Test OAuth Start (should return an auth URL)
@@ -242,6 +302,8 @@ curl -X POST https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/refresh-metri
 | `TIKTOK_CLIENT_KEY`      | social-auth-start         | TikTok Developer App Client Key                    |
 | `TIKTOK_CLIENT_SECRET`   | social-auth-callback      | TikTok Developer App Client Secret                 |
 | `TOKEN_ENCRYPTION_KEY`   | crypto.ts                 | AES-256-GCM passphrase for token encryption        |
+| `STRIPE_SECRET_KEY`      | stripe.ts                 | Stripe secret key (`sk_live_` or `sk_test_`)       |
+| `STRIPE_WEBHOOK_SECRET`  | stripe-webhook            | Stripe webhook signing secret (`whsec_`)           |
 | `FRONTEND_URL`           | Callback redirects        | Your frontend domain (e.g., `https://teatrade.co`) |
 
 > `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are automatically injected by Supabase Edge Functions runtime — you don't need to set them manually.
@@ -258,6 +320,9 @@ curl -X POST https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/refresh-metri
 | `metric_snapshots` | Time-series metric history for sparkline charts          | Read own             |
 | `oauth_states`     | CSRF tokens for OAuth flow — **server-only**             | **BLOCKED**         |
 | `campaigns`        | Campaign lifecycle with escrow tracking                  | By role              |
+| `connected_accounts` | Creator Stripe Connect account IDs                     | Read own             |
+| `escrow_transactions` | Escrow event ledger (lock/release/refund/fee)         | Campaign participants |
+| `brand_customers`  | Brand Stripe customer mapping — **server-only**          | **BLOCKED**         |
 
 ---
 
@@ -276,6 +341,16 @@ curl -X POST https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/refresh-metri
 11. User is redirected back to `creator-dash.html?oauth_success=instagram&handle=username`
 12. Dashboard loads, reads `creator_socials` from DB, populates the social stat cards
 13. **Every 24 hours**, `refresh-metrics` runs via cron, pulling fresh metrics for all linked accounts
+
+### Stripe Connect Payment Flow
+
+1. **Creator completes Stripe onboarding** → `creator-onboard` creates Express account, redirects to Stripe onboarding
+2. **Brand posts a brief** → Campaign inserted to DB → `create-escrow` creates Stripe Checkout Session
+3. **Brand pays at Checkout** → Stripe sends `checkout.session.completed` webhook → `stripe-webhook` locks escrow
+4. **Brand approves content** → `release-escrow` creates Transfer to creator's connected account → Campaign marked "paid"
+5. **Dispute filed** → Campaign status set to "dispute" → Admin reviews → `refund-escrow` issues Stripe Refund if upheld
+6. **Creator withdraws** → `creator-withdraw` checks connected balance → Creates payout to their bank (min £50)
+7. **Platform fee** → 12% deducted automatically on release (server-side calculation, never client-side)
 
 ---
 
@@ -298,6 +373,11 @@ curl -X POST https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/refresh-metri
 | Tokens not refreshing                   | Check cron schedule is active. Verify `TOKEN_ENCRYPTION_KEY` hasn't changed. |
 | `social_tokens` reads return empty      | Expected. RLS blocks client access. Only Edge Functions can read tokens.     |
 | Instagram says "Invalid redirect URI"   | Ensure the callback URL in Meta dashboard exactly matches the Edge Function URL. |
+| Stripe "Missing STRIPE_SECRET_KEY"     | Run `supabase secrets set STRIPE_SECRET_KEY="sk_..."` and redeploy.              |
+| Webhook signature invalid              | Ensure `STRIPE_WEBHOOK_SECRET` matches the signing secret from Stripe dashboard. |
+| "Minimum withdrawal is £50"            | Creator's Stripe connected balance is below £50. More campaign payouts needed.   |
+| Creator can't receive payouts          | They need to complete Stripe Express onboarding and verify bank details.          |
+| Escrow not locking after payment       | Check webhook is configured at the correct URL and events are selected.          |
 | TikTok "invalid client_key"             | Verify `TIKTOK_CLIENT_KEY` secret is set: `supabase secrets list`            |
 
 ---
