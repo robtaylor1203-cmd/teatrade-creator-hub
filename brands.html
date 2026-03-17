@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTrade Brand Portal | Hire Vetted Experts</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- All styles now centralized in style.css V4 -->
+    <style>
+        /* Brand-specific local overrides only */
+        :root { --brand-border: rgba(255, 94, 0, 0.15); }
+    </style>
+</head>
+<body class="brand-page">
+
+    <div class="ambient-glow" style="top: 5%; left: 5%; background: radial-gradient(circle, rgba(255,94,0,0.03) 0%, transparent 70%);"></div>
+
+    <nav>
+        <a href="index.html" class="logo">TeaTrade<span style="color:var(--brand)">.</span></a>
+        <div style="display:flex; gap:12px; align-items:center;">
+            <a href="#how-it-works" style="color:#fff; text-decoration:none; font-size:0.65rem; letter-spacing:1.5px; font-weight:700; opacity:0.5; text-transform:uppercase;">How It Works</a>
+            <a href="#pricing" style="color:#fff; text-decoration:none; font-size:0.65rem; letter-spacing:1.5px; font-weight:700; opacity:0.5; text-transform:uppercase;">Pricing</a>
+            <a href="index.html" style="color:#fff; text-decoration:none; font-size:0.65rem; letter-spacing:1.5px; font-weight:700; opacity:0.5; text-transform:uppercase;">For Creators</a>
+            <button class="btn-pill btn-outline" onclick="openLogin()">Sign In</button>
+            <button class="btn-pill btn-brand-orange" style="padding:10px 22px; font-size:0.65rem;" onclick="openLogin()">Portal Access</button>
+        </div>
+    </nav>
+
+    <header class="reveal">
+        <span class="hero-sub">The Brand Portal</span>
+        <h1>Stop Wasting<br><span style="color:var(--brand)">Marketing Budget.</span></h1>
+        <p class="hero-p">Hire vetted, technically certified influencers in the prestige tea and wellness space. High ROI. Zero agency retainers. Guaranteed expertise.</p>
+        <button class="btn-pill btn-brand-orange" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">View Pricing</button>
+    </header>
+
+    <div class="ticker-wrap reveal">
+        <div class="ticker">
+            <span>ZERO AGENCY RETAINERS</span><span>•</span><span>VERIFIED DATA ONLY</span><span>•</span><span>ESCROW PROTECTION</span><span>•</span><span>TERROIR EXPERTS</span><span>•</span><span>100% FACTUAL ACCURACY</span><span>•</span>
+            <span>ZERO AGENCY RETAINERS</span><span>•</span><span>VERIFIED DATA ONLY</span><span>•</span><span>ESCROW PROTECTION</span><span>•</span><span>TERROIR EXPERTS</span><span>•</span><span>100% FACTUAL ACCURACY</span><span>•</span>
+        </div>
+    </div>
+
+    <section id="how-it-works" class="badges-section reveal">
+        <div style="max-width: 640px; padding-right:40px;">
+            <span style="color:var(--brand); letter-spacing: 5px; font-size: 0.65rem; font-weight: 900;">THE TALENT POOL</span>
+            <h2 style="margin-top: 10px;">Hire by Expertise.</h2>
+            <p style="opacity: 0.45; font-size: 0.95rem;">Anonymized talent selection based on technical proficiency and API-verified engagement metrics.</p>
+        </div>
+        <div class="badge-carousel">
+            <div class="badge-card"><div class="badge-icon-num">1</div><h3>Post Your Brief</h3><p>Define campaign requirements, set budget, and select required technical badges.</p></div>
+            <div class="badge-card"><div class="badge-icon-num">2</div><h3>Algorithmic Match</h3><p>Algorithm presents fits matching your product's chemical and regional profile.</p></div>
+            <div class="badge-card"><div class="badge-icon-num">3</div><h3>Secure Escrow</h3><p>Funds held securely and released only upon factual accuracy approval.</p></div>
+        </div>
+    </section>
+
+    <!-- TRUST PROOF -->
+    <section class="trust-section reveal">
+        <span style="color:var(--brand); letter-spacing:5px; font-size:0.6rem; font-weight:900;">THE NETWORK IN NUMBERS</span>
+        <h2 style="margin-top:12px;">Built for Results.</h2>
+        <div class="trust-grid">
+            <div class="trust-stat">
+                <div class="trust-val">4.8×</div>
+                <div class="trust-label">Average ROAS<br>vs. Traditional Agency</div>
+            </div>
+            <div class="trust-stat">
+                <div class="trust-val">100%</div>
+                <div class="trust-label">Vetted &amp; Exam-Certified<br>Creator Network</div>
+            </div>
+            <div class="trust-stat">
+                <div class="trust-val">14d</div>
+                <div class="trust-label">Average Asset<br>Delivery Time</div>
+            </div>
+            <div class="trust-stat">
+                <div class="trust-val">£0</div>
+                <div class="trust-label">Agency Retainers<br>or Hidden Fees</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="pricing-section reveal">
+        <div class="section-header">
+            <span style="color:var(--brand); letter-spacing: 5px; font-size: 0.6rem; font-weight: 900;">TRANSPARENT PRICING</span>
+            <h2 style="margin-top: 12px;">No Retainers. No Surprises.</h2>
+            <p style="opacity:0.4; font-size:0.9rem; margin-top:12px;">Pay for what you use. Every tier includes escrow protection, vetted creators, and API-verified audience data.</p>
+        </div>
+        <div class="pricing-grid">
+
+            <!-- Tier 1: Single Brief -->
+            <div class="price-card">
+                <div class="tier-label">Starter</div>
+                <div class="tier-name">Single Brief</div>
+                <div class="price-amount">£495 <span>/ brief</span></div>
+                <div class="price-period">One-time. No commitment.</div>
+                <hr class="price-divider">
+                <ul>
+                    <li>1 campaign brief</li>
+                    <li>Algorithmic creator matching</li>
+                    <li>Up to 3 creator shortlist</li>
+                    <li>14-day asset delivery window</li>
+                    <li>Full escrow protection</li>
+                    <li>API-verified audience metrics</li>
+                    <li>1 round of revisions</li>
+                </ul>
+                <button class="btn-pill btn-outline" style="width:100%; font-size:0.65rem;" onclick="openLogin()">START A BRIEF</button>
+                <div class="price-note">Ideal for testing the network with a single campaign.</div>
+            </div>
+
+            <!-- Tier 2: Growth -->
+            <div class="price-card featured">
+                <div class="price-badge">MOST POPULAR</div>
+                <div class="tier-label">Growth</div>
+                <div class="tier-name">Monthly Retainer</div>
+                <div class="price-amount">£1,200 <span>/ month</span></div>
+                <div class="price-period">Billed monthly. Cancel anytime.</div>
+                <hr class="price-divider">
+                <ul>
+                    <li>Up to 4 campaign briefs / month</li>
+                    <li>Priority algorithmic matching</li>
+                    <li>Up to 5 creators per brief</li>
+                    <li>Dedicated account manager</li>
+                    <li>Full escrow protection</li>
+                    <li>Live API analytics dashboard</li>
+                    <li>2 rounds of revisions per brief</li>
+                    <li>Creator performance reporting</li>
+                </ul>
+                <button class="btn-pill btn-brand-orange" style="width:100%; font-size:0.65rem;" onclick="openLogin()">GET STARTED</button>
+                <div class="price-note">For brands with ongoing influencer content needs.</div>
+            </div>
+
+            <!-- Tier 3: Enterprise -->
+            <div class="price-card">
+                <div class="tier-label">Enterprise</div>
+                <div class="tier-name">Partnership</div>
+                <div class="price-amount">£2,800 <span>/ month</span></div>
+                <div class="price-period">Quarterly commitment. Priority everything.</div>
+                <hr class="price-divider">
+                <ul>
+                    <li>Unlimited campaign briefs</li>
+                    <li>First-pick creator access</li>
+                    <li>Exclusive creator lock-outs</li>
+                    <li>White-glove onboarding</li>
+                    <li>Full escrow protection</li>
+                    <li>Custom analytics &amp; reporting</li>
+                    <li>Unlimited revisions</li>
+                    <li>Dedicated Slack channel</li>
+                    <li>Quarterly strategy review</li>
+                </ul>
+                <button class="btn-pill btn-outline" style="width:100%; font-size:0.65rem;" onclick="openLogin()">CONTACT US</button>
+                <div class="price-note">For serious brands running always-on programmes.</div>
+            </div>
+
+        </div>
+        <p style="opacity:0.25; font-size:0.75rem; margin-top:48px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.8;">All prices exclude VAT. Creator payouts are separate and held in escrow until deliverables are approved. A 12% platform service fee is applied to creator payouts. No hidden costs.</p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section reveal">
+        <div style="text-align:center; margin-bottom:48px;">
+            <span style="color:var(--brand); letter-spacing:5px; font-size:0.6rem; font-weight:900;">FAQ</span>
+            <h2 style="margin-top:12px;">Common Questions.</h2>
+        </div>
+        <details class="faq-item">
+            <summary>How are creators vetted?</summary>
+            <div class="faq-answer">Every creator passes a technical entry exam covering tea chemistry, terroir, and botanical knowledge. They must score 70%+ to enter the network. Social metrics are API-verified directly from Instagram and TikTok — no self-reported numbers.</div>
+        </details>
+        <details class="faq-item">
+            <summary>What does escrow protection mean?</summary>
+            <div class="faq-answer">Your campaign budget is held securely in escrow and only released to the creator once you’ve approved the deliverables. If content doesn’t meet the brief, funds stay protected. Full transparency, zero risk.</div>
+        </details>
+        <details class="faq-item">
+            <summary>Can I cancel my subscription?</summary>
+            <div class="faq-answer">Growth plans can be cancelled anytime — no lock-in. Enterprise partnerships run on a quarterly basis. Any briefs already in progress at cancellation will be completed and protected by escrow as normal.</div>
+        </details>
+        <details class="faq-item">
+            <summary>How is this different from a traditional agency?</summary>
+            <div class="faq-answer">Traditional agencies charge 15–30% markups and monthly retainers regardless of output. TeaTrade is performance-first: you only pay for briefs posted, and every creator’s expertise is exam-certified. No account managers upselling you, no inflated metrics — just verified, niche talent matched by algorithm.</div>
+        </details>
+        <details class="faq-item">
+            <summary>What content formats can creators deliver?</summary>
+            <div class="faq-answer">Short-form video (Reels, TikTok), long-form YouTube reviews, story series, static photography, and written blog content. Each brief specifies the exact deliverables, formats, and dimensions required.</div>
+        </details>
+        <details class="faq-item">
+            <summary>How fast will I receive content?</summary>
+            <div class="faq-answer">Standard turnaround is 14 days from brief acceptance. Enterprise clients with exclusive creator locks can negotiate expedited timelines. Most creators deliver initial drafts within 7–10 days.</div>
+        </details>
+    </section>
+
+    <footer class="reveal">
+        <div class="footer-col">
+            <div class="logo">TeaTrade<span style="color:var(--brand)">.</span></div>
+            <p style="margin-top:16px;">The global benchmark for technical tea authority.</p>
+        </div>
+        <div class="footer-col"><h4>For Brands</h4><ul><li>Post a Brief</li><li>Escrow Protection</li></ul></div>
+        <div class="footer-col"><h4>Ecosystem</h4><ul><li>The Library</li><li>The Exchange</li></ul></div>
+        <div class="footer-col"><h4>Legal</h4><ul><li>Privacy Policy</li><li>Terms</li></ul></div>
+    </footer>
+
+    <div id="system-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center;">
+            <div class="modal-close" onclick="closeSystemModal()">×</div>
+            <span style="color:var(--brand); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">SYSTEM MESSAGE</span>
+            <h2 id="system-title" style="margin: 10px 0;">Notice</h2>
+            <p id="system-message" style="opacity:0.5; line-height:1.6; margin-bottom: 24px;">Details.</p>
+            <button class="btn-pill btn-brand-orange" style="width:100%;" onclick="closeSystemModal()">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center; max-width: 420px;">
+            <div class="modal-close" onclick="closeLogin()">×</div>
+            <div id="otp-step-1">
+                <span style="color:var(--brand); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">BRAND ACCESS</span>
+                <h2 style="margin: 10px 0;">Enter Portal.</h2>
+                <p style="opacity:0.4; margin-bottom: 24px; font-size:0.85rem;">We'll send a 6-digit code to your work email.</p>
+                <input type="email" id="login-email" placeholder="work@company.com" style="text-align:center;">
+                <p class="modal-inline-error" id="email-error"></p>
+                <button class="btn-pill btn-brand-orange" id="auth-btn" style="width:100%;" onclick="sendOtp()">SEND CODE</button>
+            </div>
+            <div id="otp-step-2" style="display:none;">
+                <span style="color:var(--brand); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">VERIFICATION</span>
+                <h2 style="margin: 10px 0;">Enter Code.</h2>
+                <p style="opacity:0.4; margin-bottom: 24px; font-size:0.85rem;">Check your inbox for a 6-digit verification code.</p>
+                <div class="otp-digits" id="otp-digits">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </div>
+                <p class="modal-inline-error" id="otp-error"></p>
+                <button class="btn-pill btn-brand-orange" id="verify-btn" style="width:100%;" onclick="verifyOtp()">VERIFY & ENTER</button>
+                <p style="margin-top: 16px; font-size: 0.75rem; opacity: 0.4;"><span onclick="resetOtpFlow()" style="color:var(--brand); cursor:pointer; font-weight:700;">Use a different email</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function notify(title, message, type = 'info') {
+            document.getElementById('system-title').innerText = title;
+            document.getElementById('system-message').innerText = message;
+            document.getElementById('system-modal').classList.add('active');
+        }
+        function closeSystemModal() { document.getElementById('system-modal').classList.remove('active'); }
+
+        function openLogin() { document.getElementById('login-modal').classList.add('active'); }
+        function closeLogin() { document.getElementById('login-modal').classList.remove('active'); }
+
+        let pendingEmail = '';
+
+        function showInlineError(id, msg) {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = msg; setTimeout(() => el.textContent = '', 4000); }
+        }
+
+        function initOtpBoxes() {
+            const boxes = document.querySelectorAll('#otp-digits input');
+            boxes.forEach((box, i) => {
+                box.addEventListener('input', (e) => {
+                    box.value = box.value.replace(/[^0-9]/g, '');
+                    if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+                    if (i === boxes.length - 1 && box.value) verifyOtp();
+                });
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+                });
+                box.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const paste = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, 6);
+                    paste.split('').forEach((ch, j) => { if (boxes[j]) boxes[j].value = ch; });
+                    if (paste.length === 6) verifyOtp();
+                    else if (boxes[paste.length]) boxes[paste.length].focus();
+                });
+            });
+        }
+
+        function getOtpCode() {
+            return Array.from(document.querySelectorAll('#otp-digits input')).map(b => b.value).join('');
+        }
+
+        async function sendOtp() {
+            const email = document.getElementById('login-email').value;
+            if(!email.includes('@')) { showInlineError('email-error', 'Please enter a valid work email.'); return; }
+            const btn = document.getElementById('auth-btn');
+            btn.innerText = 'SENDING...'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+            const { error } = await _supabase.auth.signInWithOtp({ email });
+            btn.innerText = 'SEND CODE'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+            if (error) { showInlineError('email-error', error.message); return; }
+            pendingEmail = email;
+            try { await _supabase.from('brands').upsert([{ email: email }], { onConflict: 'email' }); } catch (e) {}
+            document.getElementById('otp-step-1').style.display = 'none';
+            document.getElementById('otp-step-2').style.display = 'block';
+            document.querySelectorAll('#otp-digits input')[0].focus();
+        }
+
+        async function verifyOtp() {
+            const code = getOtpCode();
+            if(code.length !== 6) { showInlineError('otp-error', 'Enter all 6 digits.'); return; }
+            const btn = document.getElementById('verify-btn');
+            btn.innerText = 'VERIFYING...'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+            const { data, error } = await _supabase.auth.verifyOtp({ email: pendingEmail, token: code, type: 'email' });
+            btn.innerText = 'VERIFY & ENTER'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+            if (error) { showInlineError('otp-error', error.message); return; }
+            closeLogin();
+            window.location.href = 'brand-dash.html';
+        }
+
+        function resetOtpFlow() {
+            document.getElementById('otp-step-2').style.display = 'none';
+            document.getElementById('otp-step-1').style.display = 'block';
+            document.querySelectorAll('#otp-digits input').forEach(b => b.value = '');
+            document.getElementById('otp-error').textContent = '';
+        }
+
+        initOtpBoxes();
+
+        function reveal() { document.querySelectorAll(".reveal").forEach(el => { if(el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add("active"); }); }
+        window.addEventListener("scroll", reveal); reveal();
+    </script>
+</body>
+</html>

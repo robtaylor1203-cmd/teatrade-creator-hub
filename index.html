@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeaTrade Creator Hub | Global Authority</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- All styles now centralized in style.css V4 -->
+</head>
+<body>
+
+    <div class="ambient-glow" style="top: 5%; left: 5%;"></div>
+
+    <nav>
+        <div style="flex: 1;"><a href="#" class="logo">TeaTrade<span style="color:var(--accent)">.</span></a></div>
+        <div class="nav-links" style="flex: 2; justify-content: center;">
+            <a href="#badges">Pro Badges</a>
+            <a href="#protocol">The Engine</a>
+            <a href="#ecosystem">Ecosystem</a>
+        </div>
+        <div style="flex: 1; display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="btn-pill btn-outline" onclick="openLogin()">Sign In</button>
+            <button class="btn-pill btn-brand-orange" style="padding: 10px 22px; font-size: 0.65rem;" onclick="window.location.href='brands.html'">For Brands</button>
+        </div>
+    </nav>
+
+    <header class="reveal">
+        <div class="scarcity-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Founding 100 Initiative: 87/100 Claimed
+        </div>
+        <h1>TeaTrade<br><span style="color:var(--accent)">Creator Hub.</span></h1>
+        <p class="hero-p">A precision market network linking expert influencers with prestige brands. Verify your technical mastery and unlock the automated escrow network.</p>
+        <button class="btn-pill" onclick="openTerminal()">Create Account / Apply</button>
+    </header>
+
+    <div class="ticker-wrap reveal">
+        <div class="ticker">
+            <span>TEA TECHNICIANS</span><span>•</span><span>BOTANICAL EXPERTS</span><span>•</span><span>MATCHA SPECIALISTS</span><span>•</span><span>OOLONG MASTERS</span><span>•</span><span>HERBALISTS</span><span>•</span><span>PU'ERH COLLECTORS</span><span>•</span>
+            <span>TEA TECHNICIANS</span><span>•</span><span>BOTANICAL EXPERTS</span><span>•</span><span>MATCHA SPECIALISTS</span><span>•</span><span>OOLONG MASTERS</span><span>•</span><span>HERBALISTS</span><span>•</span><span>PU'ERH COLLECTORS</span><span>•</span>
+        </div>
+    </div>
+
+    <section id="badges" class="badges-section reveal">
+        <div style="max-width: 640px; padding-right: 40px;">
+            <span style="color:var(--accent); letter-spacing: 5px; font-size: 0.65rem; font-weight: 900;">THE TAXONOMY OF MASTERY</span>
+            <h2 style="margin: 10px 0;">Pro Badges.</h2>
+            <p style="opacity: 0.45; font-size: 0.95rem;">Verify your knowledge to unlock high-tier brand pairings.</p>
+        </div>
+        <div class="badge-carousel">
+            <div class="badge-card">
+                <div class="badge-icon-display">
+                    <svg viewBox="0 0 24 24"><path d="M10 2v7.31l-2-1.12-2 1.12V2"/><path d="M4.214 14.357a2 2 0 0 0-.357 1.143v4a2 2 0 0 0 2 2h12.286a2 2 0 0 0 2-2v-4a2 2 0 0 0-.357-1.143L14 6H10L4.214 14.357z"/></svg>
+                </div>
+                <h3>Chemistry</h3>
+                <p>Mastery of fermentation spectrums &amp; oxidation curves.</p>
+            </div>
+            <div class="badge-card">
+                <div class="badge-icon-display">
+                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>Terroir</h3>
+                <p>Verified elevation, climate &amp; soil knowledge.</p>
+            </div>
+            <div class="badge-card">
+                <div class="badge-icon-display">
+                    <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" fill="none"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <h3>Botanical</h3>
+                <p>Expertise in functional tisanes &amp; herbalism.</p>
+            </div>
+            <div class="badge-card">
+                <div class="badge-icon-display">
+                    <svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+                </div>
+                <h3>Gongfu</h3>
+                <p>Specialist in ritual brewing techniques.</p>
+            </div>
+            <div class="badge-card">
+                <div class="badge-icon-display">
+                    <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-2"/></svg>
+                </div>
+                <h3>Sourcing</h3>
+                <p>Supply chain expertise &amp; ethical trade.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="protocol" class="reveal" style="padding: 100px 48px; border-top: 1px solid var(--border); background: #000;">
+        <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+            <span style="color:var(--accent); letter-spacing: 5px; font-size: 0.6rem; font-weight: 900;">END-TO-END PROTOCOL</span>
+            <h2 style="margin-top: 12px;">How It Works.</h2>
+            <p style="opacity:0.4; font-size:0.9rem; margin-top:12px;">From vetting to payout — every step is tracked, protected, and transparent. Here's exactly what happens when a brand hires you.</p>
+        </div>
+        <div class="protocol-timeline">
+            <div class="pt-step">
+                <div class="pt-dot">1</div>
+                <span class="pt-who creator">Creator</span>
+                <h4>Pass the Entry Exam</h4>
+                <p>Complete a 10-point technical quiz covering tea chemistry, terroir, and botanical knowledge. Score 70%+ to enter the network. Your score becomes your Match Rating visible to brands.</p>
+            </div>
+            <div class="pt-step">
+                <div class="pt-dot">2</div>
+                <span class="pt-who creator">Creator</span>
+                <h4>Build Your Profile</h4>
+                <p>Link your Instagram and TikTok via API for verified audience metrics. Complete Pro Academy modules to earn specialist badges (Chemistry, Terroir, Botanical, Gongfu, Sourcing). Upload up to 5 showcase reels. Your identity stays anonymized — brands see badges, metrics, and content quality, never your name.</p>
+            </div>
+            <div class="pt-step">
+                <div class="pt-dot">3</div>
+                <span class="pt-who brand">Brand</span>
+                <h4>Post a Campaign Brief</h4>
+                <p>Define deliverables, select required badges, set content format (Reels, TikTok, YouTube, photography), and lock your budget into escrow. Funds are held by the platform — not the creator — until you approve final content.</p>
+            </div>
+            <div class="pt-step">
+                <div class="pt-dot">4</div>
+                <span class="pt-who platform">Platform</span>
+                <h4>Algorithmic Matching</h4>
+                <p>TeaTrade's matching engine scores creators against your brief requirements — badge overlap, audience demographics, engagement rate trajectory, and content style. You see a ranked shortlist with full KPI dashboards and video previews.</p>
+            </div>
+            <div class="pt-step">
+                <div class="pt-dot">5</div>
+                <span class="pt-who brand">Brand</span>
+                <h4>Invite &amp; Ship Product</h4>
+                <p>Select your preferred creators and send invites. Once accepted, the creator shares a secure delivery address (visible only for this campaign). Ship your product with a tracking number. The creator confirms receipt — the 7-day content creation clock starts automatically.</p>
+            </div>
+            <div class="pt-step">
+                <div class="pt-dot">6</div>
+                <span class="pt-who creator">Creator</span>
+                <h4>7-Day Content Window</h4>
+                <p>A live countdown begins from the moment product is confirmed received. The creator produces content according to the brief specs. They upload final assets directly through the platform before the deadline. Late submissions trigger an automatic protocol review.</p>
+            </div>
+            <div class="pt-step">
+                <div class="pt-dot">7</div>
+                <span class="pt-who brand">Brand</span>
+                <h4>24-Hour Review Window</h4>
+                <p>Once content is submitted, the brand has exactly 24 hours to review. Accept to release payment instantly. Reject only if the content contains factual inaccuracies or offensive material — creative direction and the creator's authentic voice are never grounds for rejection. If 24 hours pass with no action, payment auto-releases to protect the creator. No revision loops. No endless edits.</p>
+            </div>
+            <div class="pt-step">
+                <div class="pt-dot">8</div>
+                <span class="pt-who platform">Platform</span>
+                <h4>Escrow Release &amp; Payout</h4>
+                <p>On approval, funds release immediately from escrow to the creator. A 12% platform fee is deducted transparently. If rejected, the TeaTrade dispute protocol activates — an independent review of brief compliance with resolution within 48 hours. No one loses money unfairly.</p>
+            </div>
+        </div>
+    </section>
+
+    <div id="join" class="reveal" style="padding: 80px 24px; text-align: center; border-top: 1px solid var(--border);">
+        <h2 style="margin-bottom: 14px;">The Gate.</h2>
+        <p style="opacity:0.35; letter-spacing: 4px; font-weight: 800; font-size: 0.7rem; margin-bottom: 40px;">PROVE YOUR WORTH TO UNLOCK THE NETWORK.</p>
+        <button class="btn-pill" onclick="openTerminal()">INITIALIZE ENGINE</button>
+    </div>
+
+    <footer id="ecosystem" class="reveal">
+        <div class="footer-col">
+            <div class="logo">TeaTrade<span style="color:var(--accent)">.</span></div>
+            <p style="margin-top: 16px;">Technical tea authority benchmark.</p>
+        </div>
+        <div class="footer-col"><h4>Ecosystem</h4><ul><li>Library</li><li>Exchange</li></ul></div>
+        <div class="footer-col"><h4>Network</h4><ul><li>Pro Badges</li><li>Escrow</li></ul></div>
+        <div class="footer-col"><h4>Legal</h4><ul><li>Privacy</li><li>Terms</li></ul></div>
+    </footer>
+
+    <div id="system-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center;">
+            <div class="modal-close" onclick="closeSystemModal()">×</div>
+            <h2 id="system-title">Notice</h2>
+            <p id="system-message" style="opacity:0.5; line-height:1.6; margin: 16px 0 24px;">Message goes here.</p>
+            <button class="btn-pill" style="width:100%;" onclick="closeSystemModal()">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center; max-width: 420px;">
+            <div class="modal-close" onclick="closeLogin()">×</div>
+            <div id="otp-step-1">
+                <h2 style="margin-bottom: 8px;">Sign In.</h2>
+                <p style="opacity:0.4; font-size:0.85rem; margin-bottom: 24px;">We'll send a 6-digit code to your email.</p>
+                <input type="email" id="login-email" placeholder="name@domain.com" style="text-align:center;">
+                <p class="modal-inline-error" id="email-error"></p>
+                <button class="btn-pill" id="auth-btn" style="width:100%;" onclick="sendOtp()">SEND CODE</button>
+                <p style="margin-top: 16px; font-size: 0.75rem; opacity: 0.4;">Don't have an account? <span onclick="switchToSignup()" style="color:var(--accent); cursor:pointer; font-weight:700;">Apply here</span></p>
+            </div>
+            <div id="otp-step-2" style="display:none;">
+                <h2 style="margin-bottom: 8px;">Enter Code.</h2>
+                <p style="opacity:0.4; font-size:0.85rem; margin-bottom: 24px;">Check your inbox for a 6-digit verification code.</p>
+                <div class="otp-digits" id="otp-digits">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                </div>
+                <p class="modal-inline-error" id="otp-error"></p>
+                <button class="btn-pill" id="verify-btn" style="width:100%;" onclick="verifyOtp()">VERIFY & ENTER</button>
+                <p style="margin-top: 16px; font-size: 0.75rem; opacity: 0.4;"><span onclick="resetOtpFlow()" style="color:var(--accent); cursor:pointer; font-weight:700;">Use a different email</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="vetting-terminal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 580px;">
+            <div class="modal-close" onclick="closeTerminal()">×</div>
+            <div id="terminal-step-1">
+                <h2 style="margin-bottom: 20px;">The Entry Exam.</h2>
+                <input type="email" id="creator-email" placeholder="your@email.com">
+                <button class="btn-pill" style="width:100%;" onclick="startExam()">COMMENCE EXAM</button>
+            </div>
+            <div id="terminal-step-2" style="display: none;">
+                <div class="progress-container"><div id="exam-progress" class="progress-bar"></div></div>
+                <h2 id="question-text" style="margin-bottom: 28px;">Loading...</h2>
+                <div id="answers-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function notify(title, message, type = 'info') {
+            document.getElementById('system-title').innerText = title;
+            document.getElementById('system-message').innerText = message;
+            document.getElementById('system-modal').classList.add('active');
+        }
+        function closeSystemModal() { document.getElementById('system-modal').classList.remove('active'); }
+        function openLogin() { document.getElementById('login-modal').classList.add('active'); }
+        function closeLogin() { document.getElementById('login-modal').classList.remove('active'); }
+        function switchToSignup() { closeLogin(); openTerminal(); }
+        function openTerminal() { document.getElementById('vetting-terminal').classList.add('active'); }
+        function closeTerminal() { document.getElementById('vetting-terminal').classList.remove('active'); }
+
+        let pendingEmail = '';
+
+        function showInlineError(id, msg) {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = msg; setTimeout(() => el.textContent = '', 4000); }
+        }
+
+        // OTP digit box auto-advance
+        function initOtpBoxes() {
+            const boxes = document.querySelectorAll('#otp-digits input');
+            boxes.forEach((box, i) => {
+                box.addEventListener('input', (e) => {
+                    box.value = box.value.replace(/[^0-9]/g, '');
+                    if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+                    if (i === boxes.length - 1 && box.value) verifyOtp();
+                });
+                box.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+                });
+                box.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const paste = (e.clipboardData.getData('text') || '').replace(/[^0-9]/g, '').slice(0, 6);
+                    paste.split('').forEach((ch, j) => { if (boxes[j]) boxes[j].value = ch; });
+                    if (paste.length === 6) verifyOtp();
+                    else if (boxes[paste.length]) boxes[paste.length].focus();
+                });
+            });
+        }
+
+        function getOtpCode() {
+            return Array.from(document.querySelectorAll('#otp-digits input')).map(b => b.value).join('');
+        }
+
+        async function sendOtp() {
+            const email = document.getElementById('login-email').value;
+            if(!email.includes('@')) { showInlineError('email-error', 'Please enter a valid email address.'); return; }
+            const btn = document.getElementById('auth-btn');
+            btn.innerText = 'SENDING...'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+            const { error } = await _supabase.auth.signInWithOtp({ email });
+            btn.innerText = 'SEND CODE'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+            if (error) { showInlineError('email-error', error.message); return; }
+            pendingEmail = email;
+            document.getElementById('otp-step-1').style.display = 'none';
+            document.getElementById('otp-step-2').style.display = 'block';
+            document.querySelectorAll('#otp-digits input')[0].focus();
+        }
+
+        async function verifyOtp() {
+            const code = getOtpCode();
+            if(code.length !== 6) { showInlineError('otp-error', 'Enter all 6 digits.'); return; }
+            const btn = document.getElementById('verify-btn');
+            btn.innerText = 'VERIFYING...'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+            const { data, error } = await _supabase.auth.verifyOtp({ email: pendingEmail, token: code, type: 'email' });
+            btn.innerText = 'VERIFY & ENTER'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
+            if (error) { showInlineError('otp-error', error.message); return; }
+            closeLogin();
+            window.location.href = 'creator-dash.html';
+        }
+
+        function resetOtpFlow() {
+            document.getElementById('otp-step-2').style.display = 'none';
+            document.getElementById('otp-step-1').style.display = 'block';
+            document.querySelectorAll('#otp-digits input').forEach(b => b.value = '');
+            document.getElementById('otp-error').textContent = '';
+        }
+
+        initOtpBoxes();
+
+        const quizData = [
+            { q: "Which tea is 100% oxidized?", a: ["Green", "Black", "White"], c: 1 },
+            { q: "Ideal temp for Gyokuro?", a: ["100°C", "80°C", "55°C"], c: 2 },
+            { q: "Purpose of 'Kill Green'?", a: ["Flavor", "Stop oxidation", "Dry leaves"], c: 1 }
+        ];
+        let currentQ = 0, score = 0, userEmail = "";
+
+        async function startExam() {
+            userEmail = document.getElementById('creator-email').value;
+            if(!userEmail.includes('@')) { notify("Error", "Email required."); return; }
+            document.getElementById('terminal-step-1').style.display = 'none';
+            document.getElementById('terminal-step-2').style.display = 'block';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = quizData[currentQ];
+            document.getElementById('exam-progress').style.width = `${(currentQ / quizData.length) * 100}%`;
+            document.getElementById('question-text').innerText = q.q;
+            const grid = document.getElementById('answers-grid'); grid.innerHTML = '';
+            q.a.forEach((opt, idx) => {
+                const btn = document.createElement('button'); btn.className = 'btn-pill'; btn.style.width="100%"; btn.style.marginBottom="10px"; btn.innerText = opt;
+                btn.onclick = () => { if(idx === q.c) score++; currentQ++; if(currentQ < quizData.length) loadQuestion(); else finishExam(); };
+                grid.appendChild(btn);
+            });
+        }
+
+        async function finishExam() {
+            const passed = score >= 2;
+            await _supabase.from('creators').upsert([{ email: userEmail, quiz_score: score, is_verified: passed }]);
+            if (passed) notify("Success", "Account created. Sign in to enter.");
+            else notify("Failed", "Vetting failed.");
+            closeTerminal();
+        }
+
+        function reveal() { document.querySelectorAll(".reveal").forEach(el => { if(el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add("active"); }); }
+        window.addEventListener("scroll", reveal); reveal();
+    </script>
+</body>
+</html>

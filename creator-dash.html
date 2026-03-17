@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Terminal | TeaTrade</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- All styles now centralized in style.css V4 -->
+    <style>
+        /* Dashboard body layout */
+        body { display: flex; height: 100vh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
+        body.auth-cleared { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow" style="top: -10%; left: 20%;"></div>
+
+    <aside class="sidebar">
+        <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--accent)">.</span></a>
+        <div class="nav-menu">
+            <a href="#" class="nav-item active" onclick="switchSection('terminal', this)">Terminal</a>
+            <a href="#" class="nav-item" onclick="switchSection('academy', this)">Pro Academy</a>
+            <a href="#" class="nav-item" onclick="switchSection('briefs', this)">Campaign Briefs</a>
+            <a href="#" class="nav-item" onclick="switchSection('wallet', this)">Escrow Wallet</a>
+        </div>
+        <div class="profile-mini">
+            <div class="avatar" id="avatar-initials">--</div>
+            <div style="overflow: hidden;">
+                <div id="user-email-display" style="font-size: 0.75rem; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Loading...</div>
+                <a href="#" onclick="logOut()" style="font-size: 0.65rem; color: var(--text-dim); text-decoration: underline;">Log Out</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="dash-header">
+            <p class="section-label">SYSTEM ACTIVE</p>
+            <h1>Creator Terminal.</h1>
+        </div>
+
+        <!-- ── Section: Terminal ── -->
+        <div id="section-terminal">
+            <div class="section-label" style="margin-bottom: 16px; display:flex; align-items:center; gap:12px;">Verified Audience Metrics <span id="api-status-label" style="opacity:0.3; margin-left: 8px;">&#x1f512; API LOCKED</span><button onclick="refreshMetrics()" style="margin-left:auto; background:transparent; border:1px solid rgba(0,255,133,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,133,0.08)'" onmouseout="this.style.background='transparent'">↻ REFRESH</button></div>
+            <div class="stats-grid">
+                <div class="stat-card" id="ig-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0;">Instagram</h4>
+                        <span id="ig-api-badge" style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">NOT LINKED</span>
+                    </div>
+                    <p class="val" id="ig-followers">--</p>
+                    <div id="ig-handle" style="font-size:0.75rem; color:var(--text-dim); margin-top:4px; display:none;"></div>
+                    <div id="ig-engagement" style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">Awaiting API Connection</div>
+                    <div id="ig-extra-metrics" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">AVG. VIEWS</div><div id="ig-avg-views" style="font-size:0.9rem; font-weight:800;">--</div></div>
+                            <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">SAVES/SHARE</div><div id="ig-saves" style="font-size:0.9rem; font-weight:800;">--</div></div>
+                        </div>
+                    </div>
+                    <button class="btn-pill" id="btn-ig" onclick="openOAuthFlow('instagram')" style="margin-top:16px; padding:10px 22px; font-size:0.65rem; width:100%;">CONNECT INSTAGRAM</button>
+                </div>
+                <div class="stat-card" id="tk-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0;">TikTok</h4>
+                        <span id="tk-api-badge" style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">NOT LINKED</span>
+                    </div>
+                    <p class="val" id="tk-followers">--</p>
+                    <div id="tk-handle" style="font-size:0.75rem; color:var(--text-dim); margin-top:4px; display:none;"></div>
+                    <div id="tk-engagement" style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">Awaiting API Connection</div>
+                    <div id="tk-extra-metrics" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">AVG. VIEWS</div><div id="tk-avg-views" style="font-size:0.9rem; font-weight:800;">--</div></div>
+                            <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">COMPLETION</div><div id="tk-completion" style="font-size:0.9rem; font-weight:800;">--</div></div>
+                        </div>
+                    </div>
+                    <button class="btn-pill" id="btn-tk" onclick="openOAuthFlow('tiktok')" style="margin-top:16px; padding:10px 22px; font-size:0.65rem; width:100%;">CONNECT TIKTOK</button>
+                </div>
+                <div class="stat-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h4 style="margin:0;">Network Match Score</h4>
+                        <span style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--accent); background:rgba(0,255,133,0.06); border:1px solid rgba(0,255,133,0.15);">EXAM</span>
+                    </div>
+                    <p class="val" id="match-score-display">--</p>
+                    <div style="font-size:0.8rem; color:var(--accent); margin-top:10px;">Entry Exam Performance</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section: Pro Academy ── -->
+        <div id="section-academy">
+            <div class="section-label" style="margin-bottom: 16px;">The Taxonomy Academy</div>
+            <div class="academy-grid">
+                <div class="academy-card earned">
+                    <div class="badge-icon">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <h3>Foundational Tea</h3>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Core concepts verified during entry exam.</p>
+                    <button class="btn-pill" style="opacity:0.4; pointer-events:none; width:100%; padding:10px 0; font-size:0.65rem;">ACQUIRED</button>
+                </div>
+                <div class="academy-card" id="card-chemistry">
+                    <div class="badge-icon">
+                        <svg viewBox="0 0 24 24"><path d="M10 2v7.31l-2-1.12-2 1.12V2"/><path d="M4.214 14.357a2 2 0 0 0-.357 1.143v4a2 2 0 0 0 2 2h12.286a2 2 0 0 0 2-2v-4a2 2 0 0 0-.357-1.143L14 6H10L4.214 14.357z"/></svg>
+                    </div>
+                    <h3>Chemistry & Oxidation</h3>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Sha Qing mastery and polyphenol extraction.</p>
+                    <button class="btn-pill" id="btn-chemistry" onclick="launchModule('Chemistry & Oxidation')" style="width:100%; padding:10px 0; font-size:0.65rem;">COMMENCE MODULE</button>
+                </div>
+                <div class="academy-card" id="card-terroir">
+                    <div class="badge-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3>Terroir Certified</h3>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Geographical indicators and soil compositions.</p>
+                    <button class="btn-pill" id="btn-terroir" onclick="launchModule('Terroir Certified')" style="width:100%; padding:10px 0; font-size:0.65rem;">COMMENCE MODULE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section: Campaign Briefs ── -->
+        <div id="section-briefs" style="display:none;">
+            <div class="section-label" style="margin-bottom: 16px;">Active Campaign Briefs</div>
+
+            <!-- Demo Brief: In-Progress Campaign -->
+            <div class="brief-card" id="demo-brief-1">
+                <div class="brief-header">
+                    <h3>Oolong Spring Launch — SipCo</h3>
+                    <span class="brief-status st-creating" id="demo-brief-status">CREATING</span>
+                </div>
+                <div class="brief-meta">
+                    Deliverables: 2× TikTok Reels, 1× Instagram Story &nbsp;|&nbsp; Budget: £420 Escrow Locked &nbsp;|&nbsp; Required: Terroir, Chemistry
+                </div>
+
+                <!-- Pipeline Tracker -->
+                <div class="pipeline-tracker">
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Accepted</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Address Shared</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Shipped</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Received</div></div>
+                    <div class="pipeline-stage active" id="stage-creating"><div class="pip-dot"></div><div class="pip-label">Creating</div></div>
+                    <div class="pipeline-stage" id="stage-submitted"><div class="pip-dot"></div><div class="pip-label">Submitted</div></div>
+                    <div class="pipeline-stage" id="stage-review"><div class="pip-dot"></div><div class="pip-label">Review</div></div>
+                    <div class="pipeline-stage" id="stage-paid"><div class="pip-dot"></div><div class="pip-label">Paid</div></div>
+                </div>
+
+                <!-- 7-Day Countdown Timer -->
+                <div class="countdown-bar" id="countdown-creation">
+                    <div class="cd-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="cd-text">
+                        <div class="cd-label">Content Creation Deadline</div>
+                        <div class="cd-time" id="cd-time-display">4d 16h 32m</div>
+                    </div>
+                    <div class="cd-progress">
+                        <div class="cd-fill" id="cd-fill-bar" style="width:34%;"></div>
+                    </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="upload-area" onclick="simulateUpload()">
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <div class="uz-label">Upload Final Content</div>
+                    <div class="uz-hint">Drag & drop video files or click to browse (MP4, MOV — max 500MB per file)</div>
+                </div>
+                <button class="btn-pill" id="btn-submit-content" style="width:100%; padding:14px 0; font-size:0.65rem; opacity:0.3; pointer-events:none;" onclick="submitContent()">SUBMIT FOR BRAND REVIEW</button>
+            </div>
+
+            <!-- Demo Brief: Awaiting Address -->
+            <div class="brief-card" id="demo-brief-2">
+                <div class="brief-header">
+                    <h3>Matcha Premium Campaign — LeafHaus</h3>
+                    <span class="brief-status st-active">INVITED</span>
+                </div>
+                <div class="brief-meta">
+                    Deliverables: 1× YouTube Short, 2× Instagram Reels &nbsp;|&nbsp; Budget: £680 Escrow Locked &nbsp;|&nbsp; Required: Chemistry, Gongfu
+                </div>
+
+                <div class="pipeline-tracker">
+                    <div class="pipeline-stage active"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Accepted</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Address Shared</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Shipped</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Received</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Creating</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Submitted</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Review</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Paid</div></div>
+                </div>
+
+                <div style="display:flex; gap: 12px; margin-top: 8px;">
+                    <button class="btn-pill" style="flex:1; padding:14px 0; font-size:0.65rem;" onclick="acceptBrief('demo-brief-2')">ACCEPT BRIEF</button>
+                    <button class="btn-pill" style="flex:1; padding:14px 0; font-size:0.65rem; background:transparent; border:1px solid rgba(255,68,68,0.3); color:#ff4444;" onclick="declineBrief('demo-brief-2')">DECLINE</button>
+                </div>
+            </div>
+
+            <!-- Demo Brief: Completed -->
+            <div class="brief-card" style="opacity:0.5;">
+                <div class="brief-header">
+                    <h3>Heritage Collection — TrueLeaf</h3>
+                    <span class="brief-status st-paid">PAID</span>
+                </div>
+                <div class="brief-meta">
+                    Deliverables: 3× TikTok Reels &nbsp;|&nbsp; Payment: £350 Released &nbsp;|&nbsp; Completed 12 days ago
+                </div>
+                <div class="pipeline-tracker">
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Accepted</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Address Shared</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Shipped</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Received</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Creating</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Submitted</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Review</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Paid</div></div>
+                </div>
+            </div>
+
+            <p style="opacity:0.2; text-align:center; font-size:0.8rem; margin-top: 32px;">Only campaigns where your badges match the brief requirements appear here.</p>
+        </div>
+
+        <!-- ── Section: Escrow Wallet ── -->
+        <div id="section-wallet" style="display:none;">
+            <div class="section-label" style="margin-bottom: 16px;">Escrow Wallet</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Available Balance</h4>
+                    <p class="val" style="color:var(--accent);">£350</p>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">From completed campaigns</div>
+                </div>
+                <div class="stat-card">
+                    <h4>In Escrow</h4>
+                    <p class="val" style="color:var(--brand);">£1,100</p>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">2 active campaigns</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Lifetime Earnings</h4>
+                    <p class="val">£2,840</p>
+                    <div style="font-size:0.8rem; color:var(--accent); margin-top:10px;">7 campaigns completed</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <div class="section-label" style="margin-bottom: 16px;">Transaction History</div>
+                <div class="brief-card">
+                    <div class="brief-header">
+                        <h3>Heritage Collection — TrueLeaf</h3>
+                        <span class="brief-status st-paid">+£350</span>
+                    </div>
+                    <div class="brief-meta">Released 12 days ago &nbsp;|&nbsp; 12% platform fee applied &nbsp;|&nbsp; Net: £308</div>
+                </div>
+                <div class="brief-card" style="opacity:0.5;">
+                    <div class="brief-header">
+                        <h3>Jasmine Discovery — OrientBrew</h3>
+                        <span class="brief-status st-paid">+£520</span>
+                    </div>
+                    <div class="brief-meta">Released 28 days ago &nbsp;|&nbsp; 12% platform fee applied &nbsp;|&nbsp; Net: £457.60</div>
+                </div>
+            </div>
+
+            <div style="margin-top:32px; text-align:center;">
+                <button class="btn-pill" style="padding:14px 48px; font-size:0.65rem;" onclick="notify('Payout', 'Bank transfer initiated. Funds arrive in 2-3 business days.', 'success')">WITHDRAW TO BANK</button>
+                <p style="opacity:0.2; font-size:0.75rem; margin-top:16px;">Withdrawals processed via Stripe Connect. Minimum £50.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="system-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center;">
+            <div class="modal-close" onclick="closeSystemModal()">×</div>
+            <span id="system-tag" class="section-label">SYSTEM</span>
+            <h2 id="system-title" style="margin: 12px 0;">Notice</h2>
+            <p id="system-message" style="opacity:0.5; line-height:1.6; margin-bottom: 24px;">Message details.</p>
+            <button class="btn-pill" style="width:100%;" onclick="closeSystemModal()">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <div id="oauth-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center; max-width: 480px;">
+            <div class="modal-close" onclick="closeOAuthModal()">×</div>
+
+            <!-- Step 1: Enter handle -->
+            <div id="oauth-step-handle">
+                <div id="oauth-platform-icon" style="width:56px; height:56px; border-radius:50%; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;"></div>
+                <span style="color:var(--accent); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">SECURE API CONNECTION</span>
+                <h2 id="oauth-title" style="margin: 12px 0;">Connect Account</h2>
+                <p style="opacity:0.35; font-size:0.82rem; margin-bottom:24px; line-height:1.6;">We use read-only API access to verify your audience metrics. We <strong style="color:#fff; opacity:1;">never</strong> post, follow, or modify your account in any way.</p>
+                <input type="text" id="oauth-handle" placeholder="@yourusername" style="text-align:center; font-size:1.1rem; padding:18px;">
+                <div id="oauth-handle-error" style="color:#ff3333; font-size:0.78rem; margin:-10px 0 14px 0; display:none;"></div>
+                <button class="btn-pill" style="width:100%; padding:16px 0;" onclick="startOAuthConnection()">CONNECT &amp; VERIFY</button>
+                <div style="margin-top:20px; padding:16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm);">
+                    <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; opacity:0.3; margin-bottom:8px;">SECURITY</div>
+                    <div style="font-size:0.75rem; opacity:0.35; line-height:1.6;">Read-only OAuth 2.0 &middot; AES-256 encrypted tokens &middot; No password stored &middot; Revoke any time from your social account settings</div>
+                </div>
+            </div>
+
+            <!-- Step 2: Connecting animation -->
+            <div id="oauth-step-connecting" style="display:none; padding:40px 0;">
+                <div style="width:64px; height:64px; border:3px solid rgba(0,255,133,0.15); border-top-color:var(--accent); border-radius:50%; margin:0 auto 24px; animation:spin 1s linear infinite;"></div>
+                <h3 id="oauth-connecting-status" style="margin-bottom:8px;">Connecting to API...</h3>
+                <p id="oauth-connecting-detail" style="opacity:0.35; font-size:0.82rem;">Establishing secure connection</p>
+            </div>
+
+            <!-- Step 3: Success with metrics -->
+            <div id="oauth-step-success" style="display:none;">
+                <div style="width:56px; height:56px; border-radius:50%; background:rgba(0,255,133,0.1); border:2px solid var(--accent); margin:0 auto 16px; display:flex; align-items:center; justify-content:center;">
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; stroke:var(--accent); fill:none; stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span style="color:var(--accent); letter-spacing:3px; font-size:0.65rem; font-weight:800;">VERIFIED</span>
+                <h2 style="margin:12px 0 8px 0;">Account Linked.</h2>
+                <p id="oauth-success-handle" style="opacity:0.5; font-size:0.9rem; margin-bottom:20px;"></p>
+                <div id="oauth-metrics-preview" style="background:rgba(0,255,133,0.03); border:1px solid rgba(0,255,133,0.1); border-radius:var(--radius-md); padding:20px; margin-bottom:24px; text-align:left;"></div>
+                <button class="btn-pill" style="width:100%;" onclick="closeOAuthModal()">DONE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="module-terminal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 580px;">
+            <div class="modal-close" onclick="closeModule()">×</div>
+            <div id="module-step-quiz">
+                <div class="progress-container"><div id="module-progress" class="progress-bar"></div></div>
+                <h2 id="module-question" style="margin-bottom: 28px;">Loading Question...</h2>
+                <div id="module-answers"></div>
+            </div>
+            <div id="module-step-result" style="display:none; text-align:center;"></div>
+        </div>
+    </div>
+
+    <!-- Address Modal -->
+    <div id="address-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 520px;">
+            <div class="modal-close" onclick="closeAddressModal()">×</div>
+            <span style="color:var(--accent); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">SECURE ADDRESS SHARE</span>
+            <h2 style="margin:10px 0 8px 0;">Delivery Address.</h2>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:24px;">Your address is encrypted and visible only to this brand for this campaign. It is deleted after delivery confirmation.</p>
+            <div class="address-card">
+                <div class="addr-label">Shipping Details</div>
+                <div class="addr-row full">
+                    <input type="text" id="addr-name" placeholder="Full Name">
+                </div>
+                <div class="addr-row full">
+                    <input type="text" id="addr-line1" placeholder="Address Line 1">
+                </div>
+                <div class="addr-row full">
+                    <input type="text" id="addr-line2" placeholder="Address Line 2 (optional)">
+                </div>
+                <div class="addr-row">
+                    <input type="text" id="addr-city" placeholder="City">
+                    <input type="text" id="addr-postcode" placeholder="Postcode">
+                </div>
+                <div class="addr-row full">
+                    <input type="text" id="addr-country" placeholder="Country" value="United Kingdom">
+                </div>
+            </div>
+            <button class="btn-pill" style="width:100%;" onclick="submitAddress()">SHARE SECURELY &amp; ACCEPT</button>
+        </div>
+    </div>
+
+    <!-- Tracking Confirmation Modal -->
+    <div id="tracking-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 460px; text-align:center;">
+            <div class="modal-close" onclick="closeTrackingModal()">×</div>
+            <span style="color:#60a5fa; letter-spacing:3px; font-size:0.65rem; font-weight:800;">PACKAGE SHIPPING</span>
+            <h2 style="margin:10px 0 8px 0;">Product Shipped.</h2>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:20px;">SipCo has shipped your product. Tracking details below.</p>
+            <div style="background:rgba(96,165,250,0.06); border:1px solid rgba(96,165,250,0.15); border-radius:var(--radius-md); padding:20px; margin-bottom:24px;">
+                <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#60a5fa; margin-bottom:10px;">TRACKING NUMBER</div>
+                <div style="font-size:1.3rem; font-weight:900; letter-spacing:3px;">RM274918392GB</div>
+                <div style="font-size:0.75rem; opacity:0.4; margin-top:8px;">Royal Mail Tracked 24</div>
+            </div>
+            <button class="btn-pill" style="width:100%;" onclick="confirmReceipt()">I'VE RECEIVED THE PRODUCT</button>
+            <p style="opacity:0.2; font-size:0.7rem; margin-top:12px;">Only confirm once you physically have the product in hand.</p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let activeUserEmail = "", activeUserId = null, currentOAuthPlatform = "";
+
+        function notify(title, message, type='info') {
+            document.getElementById('system-title').innerText = title;
+            document.getElementById('system-message').innerText = message;
+            document.getElementById('system-tag').style.color = type==='error' ? '#ff3333' : 'var(--accent)';
+            document.getElementById('system-modal').classList.add('active');
+        }
+        function closeSystemModal() { document.getElementById('system-modal').classList.remove('active'); }
+
+        async function initDashboard() {
+            // DEV MODE: Add ?dev=true to URL to bypass auth for Live Server testing
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+
+            // ── Handle OAuth callback params ──
+            const params = new URLSearchParams(window.location.search);
+            const oauthSuccess = params.get('oauth_success');
+            const oauthError = params.get('oauth_error');
+            const oauthHandle = params.get('handle');
+
+            // Clean URL after reading params (remove oauth_* but keep dev=true if present)
+            if (oauthSuccess || oauthError) {
+                const cleanUrl = new URL(window.location.href);
+                cleanUrl.searchParams.delete('oauth_success');
+                cleanUrl.searchParams.delete('oauth_error');
+                cleanUrl.searchParams.delete('handle');
+                window.history.replaceState({}, '', cleanUrl.toString());
+            }
+
+            if (devMode) {
+                document.body.classList.add('auth-cleared');
+                activeUserEmail = 'dev@teatrade.io';
+                activeUserId = 'dev-local-prototype';
+                document.getElementById('user-email-display').innerText = activeUserEmail;
+                document.getElementById('avatar-initials').innerText = 'DV';
+                document.getElementById('match-score-display').innerText = '3';
+                // Load any previously linked socials from localStorage (dev mode)
+                loadDevSocialStats();
+                return;
+            }
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) { window.location.href = 'index.html'; return; }
+            activeUserEmail = session.user.email;
+            const { data: creator } = await _supabase.from('creators').select('*').eq('email', activeUserEmail).single();
+            if (!creator || !creator.is_verified) {
+                document.body.innerHTML = `<div style="height:100vh; width:100vw; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; padding: 40px;"><h1 style="color:#ff3333; font-family:'Playfair Display'; font-size:4rem;">Access Denied.</h1><p style="opacity:0.6; font-size:1.2rem; margin:20px 0 40px 0;">You must pass the vetting exam to unlock the terminal.</p><button class="btn-pill" onclick="location.href='index.html'">RETURN TO GATE</button></div>`;
+                document.body.classList.add('auth-cleared'); return;
+            }
+            document.body.classList.add('auth-cleared');
+            document.getElementById('user-email-display').innerText = activeUserEmail;
+            document.getElementById('avatar-initials').innerText = activeUserEmail.substring(0,2).toUpperCase();
+            activeUserId = creator.id;
+            document.getElementById('match-score-display').innerText = creator.quiz_score || "--";
+            loadSocialStats(); loadEarnedBadges();
+
+            // ── Show OAuth result notification ──
+            if (oauthSuccess) {
+                const cfg = platformConfig[oauthSuccess];
+                const name = cfg ? cfg.name : oauthSuccess;
+                const handleText = oauthHandle ? ` as @${oauthHandle}` : '';
+                notify('API Connected', `${name} connected successfully${handleText}. Your verified metrics are now live.`, 'success');
+            } else if (oauthError) {
+                notify('Connection Failed', decodeURIComponent(oauthError), 'error');
+            }
+        }
+
+        async function loadSocialStats() {
+            const { data } = await _supabase.from('creator_socials').select('*').eq('creator_id', activeUserId);
+            data?.forEach(s => {
+                const metrics = {
+                    followers: s.follower_count,
+                    engagement: s.engagement_rate,
+                    avgViews: s.avg_views || Math.floor(s.follower_count * 0.25),
+                    secondary: s.secondary_metric || (Math.random() * 5 + 4).toFixed(1),
+                    handle: s.handle || '@connected',
+                    lastSynced: s.last_synced_at
+                };
+                updateSocialCard(s.platform, metrics);
+            });
+        }
+
+        /* ── OAuth Flow ── */
+        const platformConfig = {
+            instagram: {
+                name: 'Instagram',
+                color: '#E1306C',
+                icon: '📸',
+                apiSteps: ['Authenticating with Instagram Graph API...', 'Reading profile metrics...', 'Fetching audience demographics...', 'Verifying engagement data...', 'Encrypting access token...']
+            },
+            tiktok: {
+                name: 'TikTok',
+                color: '#00f2ea',
+                icon: '🎵',
+                apiSteps: ['Authenticating with TikTok Research API...', 'Reading creator metrics...', 'Fetching video performance data...', 'Verifying completion rates...', 'Encrypting access token...']
+            }
+        };
+
+        function openOAuthFlow(platform) {
+            currentOAuthPlatform = platform;
+            const cfg = platformConfig[platform];
+            // Reset to step 1
+            document.getElementById('oauth-step-handle').style.display = 'block';
+            document.getElementById('oauth-step-connecting').style.display = 'none';
+            document.getElementById('oauth-step-success').style.display = 'none';
+            document.getElementById('oauth-handle').value = '';
+            document.getElementById('oauth-handle-error').style.display = 'none';
+            document.getElementById('oauth-title').innerText = `Connect ${cfg.name}`;
+            document.getElementById('oauth-platform-icon').innerText = cfg.icon;
+            document.getElementById('oauth-platform-icon').style.background = `${cfg.color}22`;
+            document.getElementById('oauth-platform-icon').style.border = `2px solid ${cfg.color}44`;
+            document.getElementById('oauth-modal').classList.add('active');
+        }
+
+        function closeOAuthModal() {
+            document.getElementById('oauth-modal').classList.remove('active');
+        }
+
+        async function startOAuthConnection() {
+            const handle = document.getElementById('oauth-handle').value.trim();
+            const errEl = document.getElementById('oauth-handle-error');
+
+            // ── DEV MODE: Use simulation flow ──
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (!devMode) {
+                // ── PRODUCTION: Real OAuth redirect ──
+                errEl.style.display = 'none';
+                document.getElementById('oauth-step-handle').style.display = 'none';
+                document.getElementById('oauth-step-connecting').style.display = 'block';
+                document.getElementById('oauth-connecting-status').textContent = 'Redirecting to ' + platformConfig[currentOAuthPlatform].name + '...';
+                document.getElementById('oauth-connecting-detail').textContent = 'Setting up secure connection';
+
+                try {
+                    const session = await _supabase.auth.getSession();
+                    const token = session.data.session?.access_token;
+                    const res = await fetch(`${SUPABASE_URL}/functions/v1/social-auth-start`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                            'apikey': SUPABASE_KEY,
+                        },
+                        body: JSON.stringify({ platform: currentOAuthPlatform }),
+                    });
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.error);
+                    // Redirect to platform OAuth page
+                    window.location.href = data.url;
+                } catch (err) {
+                    document.getElementById('oauth-step-connecting').style.display = 'none';
+                    document.getElementById('oauth-step-handle').style.display = 'block';
+                    errEl.textContent = err.message || 'Failed to start connection. Please try again.';
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
+            // ── DEV MODE: Simulated flow (below) ──
+
+            // Validate handle
+            if (!handle) {
+                errEl.textContent = 'Please enter your username';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (!handle.startsWith('@')) {
+                errEl.textContent = 'Username must start with @';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (handle.length < 3) {
+                errEl.textContent = 'Username too short';
+                errEl.style.display = 'block';
+                return;
+            }
+            errEl.style.display = 'none';
+
+            const cfg = platformConfig[currentOAuthPlatform];
+
+            // Move to connecting step
+            document.getElementById('oauth-step-handle').style.display = 'none';
+            document.getElementById('oauth-step-connecting').style.display = 'block';
+
+            // Simulate multi-step API connection
+            for (let i = 0; i < cfg.apiSteps.length; i++) {
+                document.getElementById('oauth-connecting-status').textContent = cfg.apiSteps[i];
+                document.getElementById('oauth-connecting-detail').textContent = `Step ${i + 1} of ${cfg.apiSteps.length}`;
+                await sleep(600 + Math.random() * 400);
+            }
+
+            // Generate realistic metrics
+            const metrics = generateRealisticMetrics(currentOAuthPlatform);
+            metrics.handle = handle;
+            metrics.platform = currentOAuthPlatform;
+            metrics.linked_at = new Date().toISOString();
+
+            // Save to localStorage (dev mode)
+            const stored = JSON.parse(localStorage.getItem('tt_socials') || '{}');
+            stored[currentOAuthPlatform] = metrics;
+            localStorage.setItem('tt_socials', JSON.stringify(stored));
+
+            // Show success with metric preview
+            document.getElementById('oauth-step-connecting').style.display = 'none';
+            document.getElementById('oauth-step-success').style.display = 'block';
+            document.getElementById('oauth-success-handle').textContent = `${handle} on ${cfg.name}`;
+
+            const previewHTML = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div><div style="font-size:0.55rem; font-weight:800; letter-spacing:1px; opacity:0.3;">FOLLOWERS</div><div style="font-size:1.3rem; font-weight:900; color:var(--accent);">${metrics.followers.toLocaleString()}</div></div>
+                    <div><div style="font-size:0.55rem; font-weight:800; letter-spacing:1px; opacity:0.3;">ENGAGEMENT</div><div style="font-size:1.3rem; font-weight:900; color:var(--accent);">${metrics.engagement}%</div></div>
+                    <div><div style="font-size:0.55rem; font-weight:800; letter-spacing:1px; opacity:0.3;">AVG. VIEWS</div><div style="font-size:1.3rem; font-weight:900;">${metrics.avgViews.toLocaleString()}</div></div>
+                    <div><div style="font-size:0.55rem; font-weight:800; letter-spacing:1px; opacity:0.3;">${currentOAuthPlatform === 'tiktok' ? 'COMPLETION' : 'SAVES/SHARE'}</div><div style="font-size:1.3rem; font-weight:900;">${metrics.secondary}%</div></div>
+                </div>
+                <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(0,255,133,0.1); font-size:0.7rem; opacity:0.3;">Data pulled via ${cfg.name} API &middot; Read-only access &middot; Auto-refreshes every 24h</div>
+            `;
+            document.getElementById('oauth-metrics-preview').innerHTML = previewHTML;
+
+            // Update the dashboard cards
+            updateSocialCard(currentOAuthPlatform, metrics);
+        }
+
+        function generateRealisticMetrics(platform) {
+            // Generate believable numbers based on platform norms
+            const tier = Math.random();
+            let followers, engagement, avgViews, secondary;
+            if (tier > 0.7) {
+                // Larger creator
+                followers = Math.floor(Math.random() * 300000) + 80000;
+                engagement = (Math.random() * 3 + 2).toFixed(1);
+                avgViews = Math.floor(followers * (0.15 + Math.random() * 0.25));
+                secondary = (Math.random() * 5 + 3).toFixed(1);
+            } else if (tier > 0.3) {
+                // Mid-tier
+                followers = Math.floor(Math.random() * 70000) + 15000;
+                engagement = (Math.random() * 4 + 3).toFixed(1);
+                avgViews = Math.floor(followers * (0.2 + Math.random() * 0.35));
+                secondary = (Math.random() * 6 + 4).toFixed(1);
+            } else {
+                // Micro creator
+                followers = Math.floor(Math.random() * 12000) + 3000;
+                engagement = (Math.random() * 5 + 4).toFixed(1);
+                avgViews = Math.floor(followers * (0.3 + Math.random() * 0.5));
+                secondary = (Math.random() * 8 + 5).toFixed(1);
+            }
+            if (platform === 'tiktok') {
+                avgViews = Math.floor(avgViews * 2.5); // TikTok typically higher views
+                secondary = (Math.random() * 15 + 55).toFixed(0); // completion rate %
+            }
+            return { followers, engagement, avgViews, secondary };
+        }
+
+        function updateSocialCard(platform, metrics) {
+            const pre = platform === 'instagram' ? 'ig' : 'tk';
+            // Update follower count
+            document.getElementById(`${pre}-followers`).innerText = metrics.followers.toLocaleString();
+            // Update engagement
+            document.getElementById(`${pre}-engagement`).innerText = `↑ ${metrics.engagement}% Engagement Rate`;
+            document.getElementById(`${pre}-engagement`).style.color = 'var(--accent)';
+            // Show handle
+            const handleEl = document.getElementById(`${pre}-handle`);
+            handleEl.innerText = metrics.handle;
+            handleEl.style.display = 'block';
+            handleEl.style.color = 'var(--accent)';
+            // Update extra metrics
+            document.getElementById(`${pre}-extra-metrics`).style.display = 'block';
+            document.getElementById(`${pre}-avg-views`).innerText = metrics.avgViews.toLocaleString();
+            if (platform === 'instagram') {
+                document.getElementById('ig-saves').innerText = metrics.secondary + '%';
+            } else {
+                document.getElementById('tk-completion').innerText = metrics.secondary + '%';
+            }
+            // Update API badge
+            const badge = document.getElementById(`${pre}-api-badge`);
+            badge.textContent = 'API LIVE';
+            badge.style.color = 'var(--accent)';
+            badge.style.background = 'rgba(0,255,133,0.06)';
+            badge.style.borderColor = 'rgba(0,255,133,0.15)';
+            // Hide connect button, show unlink
+            const btn = document.getElementById(`btn-${pre}`);
+            btn.textContent = 'UNLINK ACCOUNT';
+            btn.onclick = () => unlinkAccount(platform);
+            btn.style.background = 'transparent';
+            btn.style.border = '1px solid rgba(255,68,68,0.2)';
+            btn.style.color = '#ff4444';
+            // Update header status
+            updateApiStatusLabel();
+        }
+
+        async function unlinkAccount(platform) {
+            const pre = platform === 'instagram' ? 'ig' : 'tk';
+
+            // Call Edge Function in production, localStorage in dev
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (!devMode) {
+                try {
+                    const session = await _supabase.auth.getSession();
+                    const token = session.data.session?.access_token;
+                    await fetch(`${SUPABASE_URL}/functions/v1/disconnect-social`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                            'apikey': SUPABASE_KEY,
+                        },
+                        body: JSON.stringify({ platform }),
+                    });
+                } catch (err) {
+                    console.warn('Disconnect API call failed:', err);
+                }
+            } else {
+                const stored = JSON.parse(localStorage.getItem('tt_socials') || '{}');
+                delete stored[platform];
+                localStorage.setItem('tt_socials', JSON.stringify(stored));
+            }
+
+            document.getElementById(`${pre}-followers`).innerText = '--';
+            document.getElementById(`${pre}-engagement`).innerText = 'Awaiting API Connection';
+            document.getElementById(`${pre}-engagement`).style.color = 'var(--text-dim)';
+            document.getElementById(`${pre}-handle`).style.display = 'none';
+            document.getElementById(`${pre}-extra-metrics`).style.display = 'none';
+            const badge = document.getElementById(`${pre}-api-badge`);
+            badge.textContent = 'NOT LINKED';
+            badge.style.color = 'var(--text-dim)';
+            badge.style.background = 'rgba(255,255,255,0.04)';
+            badge.style.borderColor = 'rgba(255,255,255,0.08)';
+            const btn = document.getElementById(`btn-${pre}`);
+            btn.textContent = `CONNECT ${platform.toUpperCase()}`;
+            btn.onclick = () => openOAuthFlow(platform);
+            btn.style.background = '';
+            btn.style.border = '';
+            btn.style.color = '';
+            updateApiStatusLabel();
+        }
+
+        function updateApiStatusLabel() {
+            const igLinked = document.getElementById('ig-api-badge').textContent === 'API LIVE';
+            const tkLinked = document.getElementById('tk-api-badge').textContent === 'API LIVE';
+            const label = document.getElementById('api-status-label');
+            if (igLinked && tkLinked) {
+                label.innerHTML = '<span style="color:var(--accent);">✓ ALL APIS CONNECTED</span>';
+                label.style.opacity = '1';
+            } else if (igLinked || tkLinked) {
+                label.innerHTML = '<span style="color:var(--brand);">⚠ 1 OF 2 CONNECTED</span>';
+                label.style.opacity = '1';
+            } else {
+                label.innerHTML = '&#x1f512; API LOCKED';
+                label.style.opacity = '0.3';
+            }
+        }
+
+        async function refreshMetrics() {
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (devMode) { notify('Dev Mode', 'Metric refresh is simulated in dev mode.', 'info'); return; }
+
+            notify('Refreshing', 'Pulling latest metrics from connected APIs...', 'info');
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/refresh-metrics`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'apikey': SUPABASE_KEY,
+                    },
+                    body: JSON.stringify({}),
+                });
+                const data = await res.json();
+                if (data.refreshed > 0) {
+                    await loadSocialStats();
+                    closeSystemModal();
+                    notify('Metrics Updated', `${data.refreshed} account(s) refreshed with live API data.`, 'success');
+                } else {
+                    notify('No Updates', data.message || 'No linked accounts to refresh.', 'info');
+                }
+            } catch (err) {
+                notify('Refresh Failed', 'Could not reach the metrics API. Please try again later.', 'error');
+            }
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        /* ── Dev Mode Social Loading ── */
+        function loadDevSocialStats() {
+            const stored = JSON.parse(localStorage.getItem('tt_socials') || '{}');
+            Object.keys(stored).forEach(platform => {
+                updateSocialCard(platform, stored[platform]);
+            });
+        }
+
+        async function loadEarnedBadges() {
+            const { data } = await _supabase.from('creator_badges').select('badges(badge_name)').eq('creator_id', activeUserId);
+            data?.forEach(r => {
+                const b = r.badges.badge_name;
+                if(b.includes('Chemistry')) { document.getElementById('card-chemistry').classList.add('earned'); document.getElementById('btn-chemistry').innerText = 'ACQUIRED'; }
+                if(b.includes('Terroir')) { document.getElementById('card-terroir').classList.add('earned'); document.getElementById('btn-terroir').innerText = 'ACQUIRED'; }
+            });
+        }
+
+        const quizBanks = {
+            'Chemistry & Oxidation': [{ q: "Which compound causes tea astringency?", a: ["L-theanine", "Catechins", "GABA"], c: 1 }],
+            'Terroir Certified': [{ q: "Which soil type is prized for Oolong?", a: ["Volcanic", "Clay", "Sandy"], c: 0 }]
+        };
+        let activeModule = "", currentMQ = 0, moduleScore = 0;
+        function launchModule(m) { activeModule = m; currentMQ = 0; moduleScore = 0; document.getElementById('module-step-quiz').style.display='block'; document.getElementById('module-step-result').style.display='none'; document.getElementById('module-terminal').classList.add('active'); loadMQ(); }
+        function loadMQ() {
+            const q = quizBanks[activeModule][currentMQ];
+            document.getElementById('module-question').innerText = q.q;
+            const g = document.getElementById('module-answers'); g.innerHTML = '';
+            q.a.forEach((opt, i) => {
+                const b = document.createElement('button'); b.className = 'btn-pill'; b.style.width='100%'; b.style.marginBottom='15px'; b.innerText = opt;
+                b.onclick = () => { if(i===q.c) moduleScore++; currentMQ++; if(currentMQ < quizBanks[activeModule].length) loadMQ(); else finishModule(); };
+                g.appendChild(b);
+            });
+        }
+        async function finishModule() {
+            document.getElementById('module-step-quiz').style.display='none';
+            const res = document.getElementById('module-step-result'); res.style.display='block';
+            if(moduleScore >= 1) {
+                res.innerHTML = `<h2 style="font-family:'Playfair Display'; font-size:3rem; color:var(--accent);">Module Passed.</h2><button class="btn-pill" onclick="location.reload()">UPDATE TERMINAL</button>`;
+                const { data } = await _supabase.from('badges').select('id').eq('badge_name', activeModule).single();
+                await _supabase.from('creator_badges').insert({ creator_id: activeUserId, badge_id: data.id });
+            } else { res.innerHTML = `<h2 style="color:#ff3333;">Failed.</h2><button class="btn-pill" onclick="closeModule()">RETRY</button>`; }
+        }
+        function closeModule() { document.getElementById('module-terminal').classList.remove('active'); }
+        async function logOut() { await _supabase.auth.signOut(); location.href = 'index.html'; }
+
+        /* ── Section Navigation ── */
+        function switchSection(section, el) {
+            event.preventDefault();
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            ['terminal','academy','briefs','wallet'].forEach(s => {
+                const div = document.getElementById('section-' + s);
+                if (div) div.style.display = s === section ? 'block' : 'none';
+            });
+        }
+
+        /* ── Campaign Brief Actions ── */
+        function acceptBrief(cardId) {
+            document.getElementById('address-modal').classList.add('active');
+        }
+        function declineBrief(cardId) {
+            const card = document.getElementById(cardId);
+            if (card) { card.style.opacity = '0.2'; card.innerHTML = '<p style="text-align:center; padding:20px; opacity:0.5;">Brief declined.</p>'; }
+        }
+        function closeAddressModal() { document.getElementById('address-modal').classList.remove('active'); }
+        function submitAddress() {
+            const name = document.getElementById('addr-name').value;
+            const line1 = document.getElementById('addr-line1').value;
+            const city = document.getElementById('addr-city').value;
+            const postcode = document.getElementById('addr-postcode').value;
+            if (!name || !line1 || !city || !postcode) { notify('Missing Fields', 'Please fill in all required address fields.', 'error'); return; }
+            closeAddressModal();
+            // Advance the brief to "Address Shared" stage
+            const card = document.getElementById('demo-brief-2');
+            card.querySelector('.brief-status').textContent = 'ADDRESS SHARED';
+            card.querySelector('.brief-status').className = 'brief-status st-shipping';
+            const stages = card.querySelectorAll('.pipeline-stage');
+            stages[0].classList.add('done'); stages[0].classList.remove('active');
+            stages[1].classList.add('done');
+            stages[2].classList.add('active');
+            // Remove accept/decline buttons, show waiting state
+            const btns = card.querySelector('div[style*="display:flex"]');
+            if (btns) btns.innerHTML = '<div style="text-align:center; width:100%; padding:16px; opacity:0.4; font-size:0.82rem;">Address shared securely. Waiting for brand to ship product...</div>';
+            notify('Address Shared', 'Your encrypted delivery address has been shared with LeafHaus. You\'ll be notified when product ships.', 'success');
+        }
+        function closeTrackingModal() { document.getElementById('tracking-modal').classList.remove('active'); }
+        function confirmReceipt() {
+            closeTrackingModal();
+            notify('Receipt Confirmed', 'Product received! Your 7-day content creation window has started. The clock is ticking.', 'success');
+        }
+
+        /* ── Upload Simulation ── */
+        let filesUploaded = 0;
+        function simulateUpload() {
+            filesUploaded++;
+            const area = document.getElementById('upload-area');
+            area.innerHTML = `
+                <svg viewBox="0 0 24 24" style="stroke:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
+                <div class="uz-label" style="color:var(--accent);">${filesUploaded} file${filesUploaded > 1 ? 's' : ''} uploaded</div>
+                <div class="uz-hint">Click to add more files</div>
+            `;
+            const btn = document.getElementById('btn-submit-content');
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+        }
+        function submitContent() {
+            if (filesUploaded < 1) return;
+            // Advance pipeline to "Submitted"
+            document.getElementById('stage-creating').classList.remove('active');
+            document.getElementById('stage-creating').classList.add('done');
+            document.getElementById('stage-submitted').classList.add('active');
+            document.getElementById('demo-brief-status').textContent = 'SUBMITTED';
+            document.getElementById('demo-brief-status').className = 'brief-status st-review';
+            // Hide upload zone and countdown, show waiting message
+            document.getElementById('countdown-creation').innerHTML = '<div style=\"text-align:center; padding:16px;\"><div style=\"font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:8px;\">CONTENT SUBMITTED</div><div style=\"font-size:0.9rem; opacity:0.5; line-height:1.6;\">Awaiting brand review (24-hour window). Brands can only reject for factual inaccuracies or policy violations — your creative voice is protected. If no action is taken, payment auto-releases to you.</div></div>';
+            document.getElementById('upload-area').style.display = 'none';
+            document.getElementById('btn-submit-content').style.display = 'none';
+            notify('Content Submitted', 'Your content has been submitted for review. The brand has 24 hours to approve or request revisions. If no action is taken, payment auto-releases.', 'success');
+        }
+
+        initDashboard();
+    </script>
+</body>
+</html>

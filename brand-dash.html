@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Terminal | TeaTrade</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- All styles now centralized in style.css V4 -->
+    <style>
+        /* Dashboard body layout */
+        body { display: flex; height: 100vh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
+        body.auth-cleared { opacity: 1; }
+    </style>
+</head>
+<body class="brand-page">
+
+    <div class="ambient-glow" style="top: -10%; left: 20%; background: radial-gradient(circle, rgba(255,94,0,0.03) 0%, transparent 70%);"></div>
+
+    <aside class="sidebar">
+        <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--brand)">.</span></a>
+        <div class="nav-menu">
+            <a href="#" class="nav-item active" onclick="switchBrandSection('command', this)">Command Center</a>
+            <a href="#" class="nav-item" onclick="openBriefModal()">Post a Brief</a>
+            <a href="#" class="nav-item" onclick="switchBrandSection('campaigns', this)">Active Campaigns</a>
+            <a href="#" class="nav-item" onclick="switchBrandSection('escrow', this)">Escrow Wallet</a>
+        </div>
+        <div class="profile-mini">
+            <div class="avatar" id="brand-avatar">--</div>
+            <div style="overflow: hidden;">
+                <div id="brand-email-display" style="font-size: 0.75rem; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Loading...</div>
+                <a href="#" onclick="logOut()" style="font-size: 0.65rem; color: var(--text-dim); text-decoration: underline;">Log Out</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="dash-header">
+            <p class="section-label">BRAND TERMINAL</p>
+            <h1>Command Center.</h1>
+        </div>
+
+        <!-- ── Section: Command Center (overview) ── -->
+        <div id="section-command">
+            <div class="stats-grid">
+                <div class="stat-card"><h4>Active Briefs</h4><p class="val" id="stat-active">0</p></div>
+                <div class="stat-card"><h4>Total Escrow Locked</h4><p class="val" id="stat-escrow">£0</p></div>
+                <div class="stat-card"><h4>Network Reach</h4><p class="val">840K</p></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="font-size:1.6rem; margin:0;">Live Campaigns</h2>
+                <button class="btn-pill" style="padding:10px 24px; font-size:0.65rem;" onclick="openBriefModal()">+ NEW BRIEF</button>
+            </div>
+            
+            <div id="campaigns-container">
+                <p style="opacity:0.35; text-align:center; padding: 40px; border: 1px dashed rgba(255,94,0,0.15); border-radius: 20px; font-size: 0.9rem;">No active campaigns. Post a brief to begin matching with vetted creators.</p>
+            </div>
+
+            <div style="margin-top:48px; margin-bottom: 20px;">
+                <h2 style="font-size:1.6rem;">Anonymized Talent Pool</h2>
+                <p style="opacity:0.35; font-size:0.82rem; margin-top:6px;">Profiles enriched with API-verified social metrics. Video reels uploaded by creators.</p>
+            </div>
+        <div class="talent-grid" id="talent-pool">
+
+            <!-- Creator #402 -->
+            <div class="talent-card">
+                <div class="talent-header">
+                    <h3>Creator #402</h3>
+                    <span class="match">98% MATCH</span>
+                </div>
+                <div class="talent-video-carousel" data-carousel>
+                    <div class="vid-track">
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Oolong Tasting</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Gongfu Session</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Farm Visit Reel</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Matcha Prep</span></div></div>
+                    </div>
+                    <button class="vid-arrow prev" onclick="slideCarousel(this,-1)">&#8249;</button>
+                    <button class="vid-arrow next" onclick="slideCarousel(this,1)">&#8250;</button>
+                    <span class="vid-counter">1 / 4</span>
+                </div>
+                <div class="talent-body">
+                    <div class="talent-api-source">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Instagram API &middot; <span class="api-live">LIVE</span>
+                    </div>
+                    <div class="talent-badges">
+                        <span class="tag-req">Terroir</span>
+                        <span class="tag-req">Chemistry</span>
+                    </div>
+                    <div class="talent-kpis">
+                        <div class="kpi-block">
+                            <div class="kpi-label">Followers</div>
+                            <div class="kpi-val">142K</div>
+                            <div class="kpi-delta up">&#9650; 12% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,24 14,20 28,22 42,16 56,14 70,10 85,8 100,4"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Eng. Rate</div>
+                            <div class="kpi-val">4.2%</div>
+                            <div class="kpi-delta up">&#9650; 0.6% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,18 14,20 28,16 42,14 56,12 70,14 85,10 100,8"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Avg. Views</div>
+                            <div class="kpi-val">38K</div>
+                            <div class="kpi-delta up">&#9650; 22% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,26 14,24 28,20 42,18 56,14 70,10 85,6 100,4"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Saves / Share</div>
+                            <div class="kpi-val">8.6%</div>
+                            <div class="kpi-delta up">&#9650; 1.1% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#FF5E00" points="0,22 14,18 28,20 42,14 56,16 70,10 85,8 100,6"/></svg>
+                        </div>
+                    </div>
+                    <button class="btn-pill" style="width:100%; font-size:0.65rem; padding:10px 0;" onclick="notify('Brief Required', 'Post an active brief to invite creators.', 'info')">INVITE TO BRIEF</button>
+                </div>
+            </div>
+
+            <!-- Creator #187 -->
+            <div class="talent-card">
+                <div class="talent-header">
+                    <h3>Creator #187</h3>
+                    <span class="match">94% MATCH</span>
+                </div>
+                <div class="talent-video-carousel" data-carousel>
+                    <div class="vid-track">
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Brew Chemistry</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Oxidation Explainer</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Tea Review</span></div></div>
+                    </div>
+                    <button class="vid-arrow prev" onclick="slideCarousel(this,-1)">&#8249;</button>
+                    <button class="vid-arrow next" onclick="slideCarousel(this,1)">&#8250;</button>
+                    <span class="vid-counter">1 / 3</span>
+                </div>
+                <div class="talent-body">
+                    <div class="talent-api-source">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        TikTok API &middot; <span class="api-live">LIVE</span>
+                    </div>
+                    <div class="talent-badges">
+                        <span class="tag-req">Chemistry</span>
+                        <span class="tag-req">Gongfu</span>
+                    </div>
+                    <div class="talent-kpis">
+                        <div class="kpi-block">
+                            <div class="kpi-label">Followers</div>
+                            <div class="kpi-val">89K</div>
+                            <div class="kpi-delta up">&#9650; 31% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,26 14,24 28,22 42,18 56,12 70,8 85,6 100,2"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Eng. Rate</div>
+                            <div class="kpi-val">5.1%</div>
+                            <div class="kpi-delta up">&#9650; 0.9% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,20 14,18 28,20 42,16 56,12 70,10 85,8 100,6"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Avg. Views</div>
+                            <div class="kpi-val">112K</div>
+                            <div class="kpi-delta up">&#9650; 48% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,26 14,22 28,18 42,14 56,10 70,8 85,4 100,2"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Completion</div>
+                            <div class="kpi-val">72%</div>
+                            <div class="kpi-delta down">&#9660; 3% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#ff4444" points="0,8 14,10 28,12 42,14 56,16 70,18 85,16 100,18"/></svg>
+                        </div>
+                    </div>
+                    <button class="btn-pill" style="width:100%; font-size:0.65rem; padding:10px 0;" onclick="notify('Brief Required', 'Post an active brief to invite creators.', 'info')">INVITE TO BRIEF</button>
+                </div>
+            </div>
+
+            <!-- Creator #731 -->
+            <div class="talent-card">
+                <div class="talent-header">
+                    <h3>Creator #731</h3>
+                    <span class="match">91% MATCH</span>
+                </div>
+                <div class="talent-video-carousel" data-carousel>
+                    <div class="vid-track">
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Darjeeling Unbox</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Herbal Guide</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Terroir Deep-dive</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Tisane Series</span></div></div>
+                        <div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Brand Collab</span></div></div>
+                    </div>
+                    <button class="vid-arrow prev" onclick="slideCarousel(this,-1)">&#8249;</button>
+                    <button class="vid-arrow next" onclick="slideCarousel(this,1)">&#8250;</button>
+                    <span class="vid-counter">1 / 5</span>
+                </div>
+                <div class="talent-body">
+                    <div class="talent-api-source">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Instagram API &middot; <span class="api-live">LIVE</span>
+                    </div>
+                    <div class="talent-badges">
+                        <span class="tag-req">Terroir</span>
+                        <span class="tag-req">Botanical</span>
+                        <span class="tag-req">Sourcing</span>
+                    </div>
+                    <div class="talent-kpis">
+                        <div class="kpi-block">
+                            <div class="kpi-label">Followers</div>
+                            <div class="kpi-val">214K</div>
+                            <div class="kpi-delta up">&#9650; 8% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,20 14,18 28,16 42,14 56,16 70,12 85,10 100,8"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Eng. Rate</div>
+                            <div class="kpi-val">3.8%</div>
+                            <div class="kpi-delta down">&#9660; 0.2% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#ff4444" points="0,10 14,12 28,10 42,14 56,16 70,14 85,16 100,18"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Avg. Views</div>
+                            <div class="kpi-val">52K</div>
+                            <div class="kpi-delta up">&#9650; 15% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#00FF85" points="0,24 14,22 28,20 42,16 56,14 70,12 85,8 100,6"/></svg>
+                        </div>
+                        <div class="kpi-block">
+                            <div class="kpi-label">Saves / Share</div>
+                            <div class="kpi-val">6.1%</div>
+                            <div class="kpi-delta up">&#9650; 0.5% (90d)</div>
+                            <svg class="kpi-spark" viewBox="0 0 100 28"><polyline stroke="#FF5E00" points="0,22 14,20 28,18 42,16 56,18 70,14 85,12 100,10"/></svg>
+                        </div>
+                    </div>
+                    <button class="btn-pill" style="width:100%; font-size:0.65rem; padding:10px 0;" onclick="notify('Brief Required', 'Post an active brief to invite creators.', 'info')">INVITE TO BRIEF</button>
+                </div>
+            </div>
+
+        </div>
+        </div><!-- /section-command -->
+
+        <!-- ── Section: Active Campaigns (full pipeline view) ── -->
+        <div id="section-campaigns" style="display:none;">
+            <div class="section-label" style="margin-bottom: 20px;">Campaign Pipeline — Full Lifecycle View</div>
+
+            <!-- Demo Campaign 1: Content Submitted, Awaiting Review -->
+            <div class="brief-card" id="brand-campaign-1">
+                <div class="brief-header">
+                    <h3>Oolong Spring Launch</h3>
+                    <span class="brief-status st-review">REVIEW</span>
+                </div>
+                <div class="brief-meta">Creator #402 &nbsp;|&nbsp; 2× TikTok Reels, 1× IG Story &nbsp;|&nbsp; Escrow: £420</div>
+
+                <div class="pipeline-tracker">
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Brief Posted</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Matched</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Address Shared</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Shipped</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Received</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Content Created</div></div>
+                    <div class="pipeline-stage active" id="brand-stage-review"><div class="pip-dot"></div><div class="pip-label">Review</div></div>
+                    <div class="pipeline-stage" id="brand-stage-paid"><div class="pip-dot"></div><div class="pip-label">Paid</div></div>
+                </div>
+
+                <!-- 24-Hour Review Countdown -->
+                <div class="countdown-bar" id="review-countdown">
+                    <div class="cd-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="cd-text">
+                        <div class="cd-label">Review Window — Auto-releases if no action</div>
+                        <div class="cd-time" id="review-time-display">18h 42m</div>
+                    </div>
+                    <div class="cd-progress">
+                        <div class="cd-fill" style="width:22%;"></div>
+                    </div>
+                </div>
+
+                <!-- Review Panel -->
+                <div class="review-panel">
+                    <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#fbbf24; margin-bottom:16px; text-transform:uppercase;">Submitted Content Preview</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:20px;">
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center;">
+                            <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">TikTok Reel 1</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center;">
+                            <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">TikTok Reel 2</div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center;">
+                            <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">IG Story</div>
+                        </div>
+                    </div>
+                    <p style="font-size:0.7rem; opacity:0.3; margin-bottom:16px; line-height:1.5;">Creators maintain their authentic voice. You may only reject for factual inaccuracies or policy violations — not creative differences.</p>
+                    <div class="review-actions">
+                        <button class="btn-approve accept" onclick="approveContent('brand-campaign-1')">APPROVE &amp; RELEASE PAYMENT</button>
+                        <button class="btn-approve reject" onclick="openRejectModal('brand-campaign-1')">REJECT — POLICY VIOLATION</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Campaign 2: Shipping Phase -->
+            <div class="brief-card" id="brand-campaign-2">
+                <div class="brief-header">
+                    <h3>Matcha Premium Campaign</h3>
+                    <span class="brief-status st-shipping">SHIPPING</span>
+                </div>
+                <div class="brief-meta">Creator #187 &nbsp;|&nbsp; 1× YouTube Short, 2× IG Reels &nbsp;|&nbsp; Escrow: £680</div>
+
+                <div class="pipeline-tracker">
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Brief Posted</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Matched</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Address Shared</div></div>
+                    <div class="pipeline-stage active"><div class="pip-dot"></div><div class="pip-label">Shipping</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Received</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Content Created</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Review</div></div>
+                    <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Paid</div></div>
+                </div>
+
+                <div style="background:rgba(96,165,250,0.04); border:1px solid rgba(96,165,250,0.12); border-radius:var(--radius-md); padding:20px; margin-top:8px;">
+                    <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#60a5fa; margin-bottom:12px;">TRACKING DETAILS</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:1.1rem; font-weight:900; letter-spacing:2px;">RM274918392GB</div>
+                            <div style="font-size:0.75rem; opacity:0.4; margin-top:4px;">Royal Mail Tracked 24 &middot; Dispatched 2 days ago</div>
+                        </div>
+                        <div style="font-size:0.65rem; font-weight:800; color:#60a5fa; border:1px solid rgba(96,165,250,0.2); padding:6px 14px; border-radius:var(--radius-pill);">IN TRANSIT</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Campaign 3: Completed -->
+            <div class="brief-card" style="opacity:0.45;">
+                <div class="brief-header">
+                    <h3>Heritage Collection</h3>
+                    <span class="brief-status st-paid">PAID</span>
+                </div>
+                <div class="brief-meta">Creator #731 &nbsp;|&nbsp; 3× TikTok Reels &nbsp;|&nbsp; £350 Released 12 days ago</div>
+                <div class="pipeline-tracker">
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Brief</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Match</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Invite</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Address</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Ship</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Received</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Created</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Approved</div></div>
+                    <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Paid</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section: Escrow Wallet ── -->
+        <div id="section-escrow" style="display:none;">
+            <div class="section-label" style="margin-bottom: 16px;">Escrow Wallet</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Total Locked</h4>
+                    <p class="val" style="color:var(--brand);">£1,100</p>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">Across 2 active campaigns</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Released to Creators</h4>
+                    <p class="val" style="color:var(--accent);">£2,480</p>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">5 campaigns completed</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Platform Fees</h4>
+                    <p class="val">£297.60</p>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">12% transparent fee</div>
+                </div>
+            </div>
+
+            <div style="margin-top:32px;">
+                <div class="section-label" style="margin-bottom:16px;">Escrow Ledger</div>
+                <div class="brief-card">
+                    <div class="brief-header">
+                        <h3>Oolong Spring Launch</h3>
+                        <span class="brief-status st-review" style="font-size:0.55rem;">£420 LOCKED</span>
+                    </div>
+                    <div class="brief-meta">Escrowed on posting &nbsp;|&nbsp; Awaiting content approval to release</div>
+                </div>
+                <div class="brief-card">
+                    <div class="brief-header">
+                        <h3>Matcha Premium Campaign</h3>
+                        <span class="brief-status st-shipping" style="font-size:0.55rem;">£680 LOCKED</span>
+                    </div>
+                    <div class="brief-meta">Escrowed on posting &nbsp;|&nbsp; Product in transit</div>
+                </div>
+                <div class="brief-card" style="opacity:0.45;">
+                    <div class="brief-header">
+                        <h3>Heritage Collection</h3>
+                        <span class="brief-status st-paid" style="font-size:0.55rem;">£350 RELEASED</span>
+                    </div>
+                    <div class="brief-meta">Released 12 days ago &nbsp;|&nbsp; Content approved &nbsp;|&nbsp; Fee: £42 (12%)</div>
+                </div>
+            </div>
+
+            <div style="margin-top:40px; padding:28px; background:rgba(255,94,0,0.03); border:1px solid rgba(255,94,0,0.1); border-radius:var(--radius-lg); text-align:center;">
+                <h4 style="color:var(--brand); margin-bottom:8px;">Escrow Protection</h4>
+                <p style="opacity:0.4; font-size:0.82rem; line-height:1.7; max-width:480px; margin:0 auto;">Funds are held securely by TeaTrade until you approve content. If a creator fails to deliver, your escrow is fully refunded. Disputes are resolved within 48 hours by our independent review panel.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="system-modal" class="modal-overlay">
+        <div class="modal-card" style="text-align: center;">
+            <div class="modal-close" onclick="closeSystemModal()">×</div>
+            <span id="system-tag" class="section-label">SYSTEM</span>
+            <h2 id="system-title" style="margin: 12px 0;">Notice</h2>
+            <p id="system-message" style="opacity:0.5; line-height:1.6; margin-bottom: 24px;">Message details.</p>
+            <button class="btn-pill" style="width:100%;" onclick="closeSystemModal()">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <div id="brief-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 620px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-close" onclick="closeBriefModal()">×</div>
+            <span style="color:var(--brand); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">CAMPAIGN ENGINE</span>
+            <h2 style="margin: 10px 0 6px 0;">Post a New Brief.</h2>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:28px;">The more detail you provide, the better our algorithm matches you with the right creator. All fields help refine matching.</p>
+
+            <!-- Campaign Details -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Campaign Details</label>
+                <input type="text" id="brief-title" placeholder="Campaign Title (e.g. Spring Oolong Launch 2026)">
+                <textarea id="brief-description" placeholder="Describe your campaign goals, key messaging, product details, and anything the creator should know about your brand voice..." style="min-height:100px;"></textarea>
+            </div>
+
+            <!-- Deliverables -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Deliverables</label>
+                <div class="brief-form-row triple">
+                    <div>
+                        <select id="brief-video-count">
+                            <option value="" disabled selected>Videos</option>
+                            <option value="0">0 Videos</option>
+                            <option value="1">1 Video</option>
+                            <option value="2">2 Videos</option>
+                            <option value="3">3 Videos</option>
+                            <option value="4">4 Videos</option>
+                            <option value="5">5 Videos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="brief-photo-count">
+                            <option value="" disabled selected>Photos</option>
+                            <option value="0">0 Photos</option>
+                            <option value="1">1 Photo</option>
+                            <option value="2">2 Photos</option>
+                            <option value="3">3 Photos</option>
+                            <option value="5">5 Photos</option>
+                            <option value="10">10 Photos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="brief-video-length">
+                            <option value="" disabled selected>Video Length</option>
+                            <option value="15">15 seconds</option>
+                            <option value="30">30 seconds</option>
+                            <option value="60">60 seconds</option>
+                            <option value="90">90 seconds</option>
+                            <option value="180">3 minutes</option>
+                            <option value="300">5+ minutes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Target Platform(s)</label>
+                <div class="brief-check-grid">
+                    <label><input type="checkbox" class="platform-check" value="Instagram Reels"> Instagram Reels</label>
+                    <label><input type="checkbox" class="platform-check" value="TikTok"> TikTok</label>
+                    <label><input type="checkbox" class="platform-check" value="YouTube Shorts"> YouTube Shorts</label>
+                    <label><input type="checkbox" class="platform-check" value="Instagram Stories"> Instagram Stories</label>
+                    <label><input type="checkbox" class="platform-check" value="Instagram Static"> Instagram Static</label>
+                    <label><input type="checkbox" class="platform-check" value="YouTube Long-form"> YouTube Long-form</label>
+                </div>
+            </div>
+
+            <!-- Mood & Style -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Content Mood &amp; Style</label>
+                <div class="brief-form-row">
+                    <select id="brief-mood">
+                        <option value="" disabled selected>Mood / Tone</option>
+                        <option value="Educational">Educational</option>
+                        <option value="Lifestyle">Lifestyle / Aesthetic</option>
+                        <option value="Review">Honest Review</option>
+                        <option value="Unboxing">Unboxing / First Impressions</option>
+                        <option value="Tutorial">Tutorial / How-To</option>
+                        <option value="ASMR">ASMR / Sensory</option>
+                        <option value="Storytelling">Storytelling / Narrative</option>
+                        <option value="Comedy">Comedy / Entertaining</option>
+                    </select>
+                    <select id="brief-setting">
+                        <option value="" disabled selected>Setting</option>
+                        <option value="Home">Home / Studio</option>
+                        <option value="Outdoor">Outdoor / Nature</option>
+                        <option value="Cafe">Café / Tea House</option>
+                        <option value="Kitchen">Kitchen / Prep Area</option>
+                        <option value="Any">Creator's Choice</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Creator Expertise -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Required Creator Badges</label>
+                <div class="brief-check-grid">
+                    <label><input type="checkbox" class="badge-check" value="Terroir"> Terroir Certified</label>
+                    <label><input type="checkbox" class="badge-check" value="Chemistry"> Chemistry &amp; Oxidation</label>
+                    <label><input type="checkbox" class="badge-check" value="Botanical"> Botanical Specialist</label>
+                    <label><input type="checkbox" class="badge-check" value="Gongfu"> Gongfu Ceremony</label>
+                    <label><input type="checkbox" class="badge-check" value="Sourcing"> Sourcing &amp; Origin</label>
+                    <label><input type="checkbox" class="badge-check" value="Foundational"> Foundational Tea</label>
+                </div>
+            </div>
+
+            <!-- Audience -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Minimum Creator Requirements</label>
+                <div class="brief-form-row">
+                    <select id="brief-min-followers">
+                        <option value="" disabled selected>Min. Followers</option>
+                        <option value="5000">5,000+</option>
+                        <option value="10000">10,000+</option>
+                        <option value="25000">25,000+</option>
+                        <option value="50000">50,000+</option>
+                        <option value="100000">100,000+</option>
+                        <option value="250000">250,000+</option>
+                    </select>
+                    <select id="brief-min-engagement">
+                        <option value="" disabled selected>Min. Engagement</option>
+                        <option value="1">1%+ Engagement</option>
+                        <option value="2">2%+ Engagement</option>
+                        <option value="3">3%+ Engagement</option>
+                        <option value="5">5%+ Engagement</option>
+                        <option value="8">8%+ Engagement</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Budget -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Campaign Budget</label>
+                <input type="number" id="brief-budget" placeholder="Total budget in GBP (e.g. 500)" oninput="updateBudgetPreview()">
+                <div class="brief-budget-display" id="budget-preview" style="display:none;">
+                    <div class="escrow-amount" id="escrow-total">£0</div>
+                    <div class="escrow-breakdown" id="escrow-breakdown">Held in escrow until you approve content</div>
+                </div>
+            </div>
+
+            <button class="btn-pill" style="width:100%; padding:16px 0;" onclick="submitBrief()">LOCK ESCROW &amp; POST BRIEF</button>
+            <p style="opacity:0.2; font-size:0.7rem; text-align:center; margin-top:12px;">By posting, you agree that funds will be locked in TeaTrade escrow until campaign completion.</p>
+        </div>
+    </div>
+
+    <!-- Shipping Modal -->
+    <div id="shipping-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-close" onclick="closeShippingModal()">×</div>
+            <span style="color:#60a5fa; letter-spacing:3px; font-size:0.65rem; font-weight:800;">SHIPPING</span>
+            <h2 style="margin:10px 0 8px 0;">Add Tracking.</h2>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:24px;">Enter the tracking number once you've dispatched the product to the matched creator.</p>
+            <input type="text" id="tracking-carrier" placeholder="Carrier (e.g. Royal Mail, DPD, Evri)">
+            <input type="text" id="tracking-number" placeholder="Tracking Number">
+            <button class="btn-pill" style="width:100%;" onclick="submitTracking()">CONFIRM DISPATCH</button>
+        </div>
+    </div>
+
+    <!-- Reject Modal (policy violations only) -->
+    <div id="reject-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 520px;">
+            <div class="modal-close" onclick="closeRejectModal()">×</div>
+            <span style="color:#ff4444; letter-spacing:3px; font-size:0.65rem; font-weight:800;">CONTENT REJECTION</span>
+            <h2 style="margin:10px 0 8px 0;">Flag for Policy Violation.</h2>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:20px;">Rejection is only permitted for factual inaccuracies about your product or content that is offensive / obscene. Creative direction, editing style, and the creator's authentic voice are <strong style="color:#fff; opacity:1;">not valid grounds for rejection</strong>.</p>
+            <div style="background:rgba(255,68,68,0.04); border:1px solid rgba(255,68,68,0.12); border-radius:var(--radius-md); padding:20px; margin-bottom:20px;">
+                <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#ff4444; margin-bottom:12px;">SELECT REASON (REQUIRED)</div>
+                <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; font-size:0.85rem; opacity:0.7; cursor:pointer;">
+                    <input type="radio" name="reject-reason" value="factual" style="margin-top:4px; width:auto; accent-color:#ff4444;"> <span><strong>Factual Inaccuracy</strong> — Content contains incorrect claims about your product (e.g. wrong ingredients, false health claims, incorrect pricing)</span>
+                </label>
+                <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; font-size:0.85rem; opacity:0.7; cursor:pointer;">
+                    <input type="radio" name="reject-reason" value="offensive" style="margin-top:4px; width:auto; accent-color:#ff4444;"> <span><strong>Offensive / Obscene</strong> — Content contains inappropriate, vulgar, or offensive material</span>
+                </label>
+                <label style="display:flex; align-items:flex-start; gap:10px; font-size:0.85rem; opacity:0.7; cursor:pointer;">
+                    <input type="radio" name="reject-reason" value="misrepresentation" style="margin-top:4px; width:auto; accent-color:#ff4444;"> <span><strong>Brand Misrepresentation</strong> — Content misrepresents your brand in a way that could cause reputational damage</span>
+                </label>
+            </div>
+            <textarea id="reject-evidence" placeholder="Provide specific evidence (timestamps, screenshots description, exact factual errors)..." style="min-height:90px;"></textarea>
+            <p style="opacity:0.3; font-size:0.72rem; margin-bottom:16px;">All rejections trigger an independent TeaTrade review. If the rejection is found to be invalid, escrow auto-releases to the creator and your account is flagged.</p>
+            <button class="btn-pill" style="width:100%; background:rgba(255,68,68,0.15); color:#ff4444; border:1px solid rgba(255,68,68,0.3);" onclick="submitRejection()">SUBMIT REJECTION FOR REVIEW</button>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let activeBrandEmail = "";
+
+        function notify(title, message, type='info') {
+            document.getElementById('system-title').innerText = title;
+            document.getElementById('system-message').innerText = message;
+            const tag = document.getElementById('system-tag');
+            tag.style.color = type==='error' ? '#ff3333' : 'var(--brand)';
+            document.getElementById('system-modal').classList.add('active');
+        }
+        function closeSystemModal() { document.getElementById('system-modal').classList.remove('active'); }
+
+        async function initDashboard() {
+            // DEV MODE: Add ?dev=true to URL to bypass auth for Live Server testing
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (devMode) {
+                document.body.classList.add('auth-cleared');
+                activeBrandEmail = 'brand@teatrade.io';
+                document.getElementById('brand-email-display').innerText = activeBrandEmail;
+                document.getElementById('brand-avatar').innerText = 'BR';
+                return;
+            }
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) { window.location.href = 'brands.html'; return; }
+            document.body.classList.add('auth-cleared');
+            activeBrandEmail = session.user.email;
+            document.getElementById('brand-email-display').innerText = activeBrandEmail;
+            document.getElementById('brand-avatar').innerText = activeBrandEmail.substring(0,2).toUpperCase();
+            loadCampaigns();
+        }
+
+        function openBriefModal() { document.getElementById('brief-modal').classList.add('active'); }
+        function closeBriefModal() { document.getElementById('brief-modal').classList.remove('active'); }
+
+        async function submitBrief() {
+            const title = document.getElementById('brief-title').value;
+            const description = document.getElementById('brief-description').value;
+            const budget = document.getElementById('brief-budget').value;
+            const videoCount = document.getElementById('brief-video-count').value;
+            const photoCount = document.getElementById('brief-photo-count').value;
+            const videoLength = document.getElementById('brief-video-length').value;
+            const mood = document.getElementById('brief-mood').value;
+            const setting = document.getElementById('brief-setting').value;
+            const minFollowers = document.getElementById('brief-min-followers').value;
+            const minEngagement = document.getElementById('brief-min-engagement').value;
+            const platforms = [...document.querySelectorAll('.platform-check:checked')].map(c => c.value);
+            const badges = [...document.querySelectorAll('.badge-check:checked')].map(c => c.value);
+
+            // Validation
+            if (!title) { notify('Missing Field', 'Campaign title is required.', 'error'); return; }
+            if (!description || description.length < 30) { notify('Missing Field', 'Please provide a detailed campaign description (min 30 characters).', 'error'); return; }
+            if (!budget || parseFloat(budget) < 50) { notify('Budget Error', 'Minimum campaign budget is £50.', 'error'); return; }
+            if (!videoCount && !photoCount) { notify('Deliverables', 'Select at least one deliverable (videos or photos).', 'error'); return; }
+            if (platforms.length === 0) { notify('Platform', 'Select at least one target platform.', 'error'); return; }
+            if (badges.length === 0) { notify('Expertise', 'Select at least one required creator badge.', 'error'); return; }
+
+            const esc = calculateEscrow(parseFloat(budget));
+
+            // Build brief metadata JSON
+            const briefData = {
+                brand_name: activeBrandEmail,
+                brief_title: title,
+                total_budget: parseFloat(budget),
+                status: 'active'
+            };
+
+            const { error } = await _supabase.from('campaigns').insert([briefData]);
+            
+            if (error) { notify('Error', 'Escrow connection failed: ' + error.message, 'error'); }
+            else { 
+                notify('Brief Posted', `£${esc.gross.toLocaleString()} locked in escrow. £${esc.creatorPayout.toFixed(2)} will go to the creator on approval. Our algorithm is now matching against ${badges.join(', ')} badge holders on ${platforms.join(', ')}.`, 'success'); 
+                closeBriefModal();
+                // Reset form
+                document.getElementById('brief-title').value = '';
+                document.getElementById('brief-description').value = '';
+                document.getElementById('brief-budget').value = '';
+                document.getElementById('budget-preview').style.display = 'none';
+                document.querySelectorAll('#brief-modal select').forEach(s => s.selectedIndex = 0);
+                document.querySelectorAll('#brief-modal input[type=checkbox]').forEach(c => c.checked = false);
+                loadCampaigns(); 
+            }
+        }
+
+        async function loadCampaigns() {
+            const { data } = await _supabase.from('campaigns').select('*').eq('brand_name', activeBrandEmail).order('created_at', { ascending: false });
+            const container = document.getElementById('campaigns-container');
+            if (data && data.length > 0) {
+                container.innerHTML = ''; let total = 0;
+                data.forEach(c => {
+                    total += c.total_budget;
+                    const div = document.createElement('div'); div.className = 'campaign-card';
+                    div.innerHTML = `<div><h3 style="margin:0;">${c.brief_title}</h3><p style="font-size:0.95rem; opacity:0.5; margin-top:10px;">Escrow: £${c.total_budget.toLocaleString()} | Status: ${c.status.toUpperCase()}</p></div><div style="text-align:right;"><span class="tag-req">FINDING MATCHES...</span></div>`;
+                    container.appendChild(div);
+                });
+                document.getElementById('stat-active').innerText = data.length;
+                document.getElementById('stat-escrow').innerText = `£${total.toLocaleString()}`;
+            }
+        }
+
+        async function logOut() { await _supabase.auth.signOut(); location.href='brands.html'; }
+
+        /* ── Video Carousel (infinite loop) ── */
+        function slideCarousel(btn, dir) {
+            const carousel = btn.closest('[data-carousel]');
+            const track = carousel.querySelector('.vid-track');
+            const slides = track.querySelectorAll('.vid-slide');
+            const total = slides.length;
+            let idx = parseInt(carousel.dataset.idx || '0');
+            idx = (idx + dir + total) % total;
+            carousel.dataset.idx = idx;
+            track.style.transform = `translateX(-${idx * 100}%)`;
+            carousel.querySelector('.vid-counter').textContent = `${idx + 1} / ${total}`;
+        }
+
+        /* ── Section Navigation ── */
+        function switchBrandSection(section, el) {
+            event.preventDefault();
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            ['command','campaigns','escrow'].forEach(s => {
+                const div = document.getElementById('section-' + s);
+                if (div) div.style.display = s === section ? 'block' : 'none';
+            });
+        }
+
+        /* ── Escrow Engine ── */
+        const PLATFORM_FEE = 0.12; // 12% TeaTrade fee
+
+        function calculateEscrow(grossBudget) {
+            const fee = grossBudget * PLATFORM_FEE;
+            const creatorPayout = grossBudget - fee;
+            return { gross: grossBudget, fee: fee, creatorPayout: creatorPayout };
+        }
+
+        function updateBudgetPreview() {
+            const val = parseFloat(document.getElementById('brief-budget').value);
+            const preview = document.getElementById('budget-preview');
+            if (!val || val <= 0) { preview.style.display = 'none'; return; }
+            preview.style.display = 'block';
+            const esc = calculateEscrow(val);
+            document.getElementById('escrow-total').textContent = `£${esc.gross.toLocaleString()}`;
+            document.getElementById('escrow-breakdown').textContent = `£${esc.creatorPayout.toFixed(2)} to creator + £${esc.fee.toFixed(2)} platform fee (${PLATFORM_FEE * 100}%)`;
+        }
+
+        /* ── Campaign Actions ── */
+        function approveContent(cardId) {
+            const card = document.getElementById(cardId);
+            const budget = 420; // demo value
+            const esc = calculateEscrow(budget);
+
+            // Advance pipeline to "Paid"
+            const reviewStage = document.getElementById('brand-stage-review');
+            const paidStage = document.getElementById('brand-stage-paid');
+            reviewStage.classList.remove('active'); reviewStage.classList.add('done');
+            paidStage.classList.add('done');
+
+            // Update status
+            card.querySelector('.brief-status').textContent = 'PAID';
+            card.querySelector('.brief-status').className = 'brief-status st-paid';
+
+            // Show escrow release breakdown
+            const rp = card.querySelector('.review-panel');
+            const cd = document.getElementById('review-countdown');
+            if (rp) rp.innerHTML = `
+                <div style="text-align:center; padding:24px;">
+                    <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:12px;">ESCROW RELEASED — AUTOMATED</div>
+                    <div style="font-size:2.2rem; font-weight:900; color:var(--accent); margin-bottom:8px;">£${esc.creatorPayout.toFixed(2)}</div>
+                    <div style="font-size:0.82rem; opacity:0.4; margin-bottom:4px;">Released instantly to Creator #402</div>
+                    <div style="font-size:0.72rem; opacity:0.25;">Platform fee: £${esc.fee.toFixed(2)} (${PLATFORM_FEE * 100}%) &middot; Gross: £${esc.gross.toLocaleString()}</div>
+                </div>`;
+            if (cd) cd.style.display = 'none';
+            notify('Escrow Released', `£${esc.creatorPayout.toFixed(2)} has been automatically released to Creator #402. TeaTrade fee of £${esc.fee.toFixed(2)} deducted. Campaign complete.`, 'success');
+        }
+
+        /* ── Reject (policy violation only — no revisions) ── */
+        let activeRejectCard = '';
+        function openRejectModal(cardId) {
+            activeRejectCard = cardId;
+            document.getElementById('reject-modal').classList.add('active');
+        }
+        function closeRejectModal() { document.getElementById('reject-modal').classList.remove('active'); }
+        function submitRejection() {
+            const reason = document.querySelector('input[name="reject-reason"]:checked');
+            const evidence = document.getElementById('reject-evidence').value;
+            if (!reason) { notify('Reason Required', 'Select a policy violation category before submitting.', 'error'); return; }
+            if (!evidence || evidence.length < 20) { notify('Evidence Required', 'Please provide specific evidence (min 20 characters) to support your rejection.', 'error'); return; }
+            closeRejectModal();
+            const card = document.getElementById(activeRejectCard);
+            card.querySelector('.brief-status').textContent = 'DISPUTE';
+            card.querySelector('.brief-status').className = 'brief-status st-creating';
+            const rp = card.querySelector('.review-panel');
+            if (rp) rp.innerHTML = `
+                <div style="text-align:center; padding:24px;">
+                    <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#fbbf24; margin-bottom:12px;">TEATRADE INDEPENDENT REVIEW ACTIVATED</div>
+                    <div style="font-size:1.1rem; font-weight:700; margin-bottom:8px;">Rejection under review</div>
+                    <div style="font-size:0.82rem; opacity:0.4; line-height:1.7; max-width:420px; margin:0 auto;">Reason: <strong style="color:#ff4444;">${reason.value}</strong><br>Our independent panel will review within 48 hours. If the rejection is upheld, escrow is refunded. If not, payment auto-releases to the creator.</div>
+                </div>`;
+            notify('Dispute Filed', 'Your rejection has been submitted to the TeaTrade independent review panel. Escrow remains locked. Resolution within 48 hours.', 'info');
+        }
+
+        function closeShippingModal() { document.getElementById('shipping-modal').classList.remove('active'); }
+        function submitTracking() {
+            const carrier = document.getElementById('tracking-carrier').value;
+            const number = document.getElementById('tracking-number').value;
+            if (!carrier || !number) { notify('Required', 'Please enter carrier and tracking number.', 'error'); return; }
+            closeShippingModal();
+            notify('Dispatched', `Tracking ${number} (${carrier}) has been shared with the creator. They'll be notified to expect delivery.`, 'success');
+        }
+
+        initDashboard();
+    </script>
+</body>
+</html>
