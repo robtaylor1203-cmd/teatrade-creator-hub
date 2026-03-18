@@ -32,8 +32,8 @@
     <header class="reveal">
         <span class="hero-sub">The Brand Portal</span>
         <h1>Stop Wasting<br><span style="color:var(--brand)">Marketing Budget.</span></h1>
-        <p class="hero-p">Hire vetted, technically certified influencers in the prestige tea and wellness space. High ROI. Zero agency retainers. Guaranteed expertise.</p>
-        <button class="btn-pill btn-brand-orange" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">View Pricing</button>
+        <p class="hero-p">Hire vetted, technically certified influencers in the prestige tea and wellness space. Set your budget, choose your creator, pay only when you approve.</p>
+        <button class="btn-pill btn-brand-orange" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Post a Brief</button>
     </header>
 
     <div class="ticker-wrap reveal">
@@ -244,75 +244,72 @@
     <!-- PRICING -->
     <section id="pricing" class="pricing-section reveal">
         <div class="section-header">
-            <span style="color:var(--brand); letter-spacing: 5px; font-size: 0.6rem; font-weight: 900;">TRANSPARENT PRICING</span>
-            <h2 style="margin-top: 12px;">No Retainers. No Surprises.</h2>
-            <p style="opacity:0.4; font-size:0.9rem; margin-top:12px;">Pay for what you use. Every tier includes escrow protection, vetted creators, and API-verified audience data.</p>
+            <span style="color:var(--brand); letter-spacing: 5px; font-size: 0.6rem; font-weight: 900;">HOW IT WORKS</span>
+            <h2 style="margin-top: 12px;">You Set the Budget. Creators Decide.</h2>
+            <p style="opacity:0.4; font-size:0.9rem; margin-top:12px;">No fixed tiers. No retainers. No subscriptions. Post a brief with your budget and let vetted creators come to you.</p>
         </div>
         <div class="pricing-grid">
 
-            <!-- Tier 1: Single Brief -->
+            <!-- Step 1: Post Your Brief -->
             <div class="price-card">
-                <div class="tier-label">Starter</div>
-                <div class="tier-name">Single Brief</div>
-                <div class="price-amount">£495 <span>/ brief</span></div>
-                <div class="price-period">One-time. No commitment.</div>
+                <div class="tier-label">Step 1</div>
+                <div class="tier-name">Post Your Brief</div>
+                <div class="price-amount" style="font-size: 2rem; text-align:center;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF5E00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
+                <div class="price-period">Define what you need, set your budget.</div>
                 <hr class="price-divider">
                 <ul>
-                    <li>1 campaign brief</li>
-                    <li>Algorithmic creator matching</li>
-                    <li>Up to 3 creator shortlist</li>
-                    <li>14-day asset delivery window</li>
-                    <li>Full escrow protection</li>
-                    <li>API-verified audience metrics</li>
+                    <li>Describe your campaign requirements</li>
+                    <li>Set the budget you want to pay</li>
+                    <li>Choose content format &amp; platform</li>
+                    <li>We match you with vetted creators</li>
+                    <li>API-verified audience metrics shown</li>
+                    <li>No commitment until a creator accepts</li>
                 </ul>
-                <button class="btn-pill btn-outline" style="width:100%; font-size:0.65rem;" onclick="openLogin()">START A BRIEF</button>
-                <div class="price-note">Ideal for testing the network with a single campaign.</div>
+                <button class="btn-pill btn-outline" style="width:100%; font-size:0.65rem;" onclick="openLogin()">POST A BRIEF</button>
+                <div class="price-note">Your budget. Your requirements. Full control.</div>
             </div>
 
-            <!-- Tier 2: Growth -->
+            <!-- Step 2: Creators Accept -->
             <div class="price-card featured">
-                <div class="price-badge">MOST POPULAR</div>
-                <div class="tier-label">Growth</div>
-                <div class="tier-name">Monthly Retainer</div>
-                <div class="price-amount">£1,200 <span>/ month</span></div>
-                <div class="price-period">Billed monthly. Cancel anytime.</div>
+                <div class="price-badge">MARKETPLACE</div>
+                <div class="tier-label">Step 2</div>
+                <div class="tier-name">Creators Accept or Pass</div>
+                <div class="price-amount" style="font-size: 2rem; text-align:center;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF5E00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="price-period">Matched creators review and decide.</div>
                 <hr class="price-divider">
                 <ul>
-                    <li>Up to 4 campaign briefs / month</li>
-                    <li>Priority algorithmic matching</li>
-                    <li>Up to 5 creators per brief</li>
-                    <li>Dedicated account manager</li>
-                    <li>Full escrow protection</li>
-                    <li>Live API analytics dashboard</li>
-                    <li>Creator performance reporting</li>
+                    <li>Creators see your brief &amp; budget</li>
+                    <li>They accept or pass — no pressure</li>
+                    <li>Every creator is exam-vetted at 70%+</li>
+                    <li>Real metrics, verified by API</li>
+                    <li>Budget held in escrow on acceptance</li>
+                    <li>Transparent process, no middle-men</li>
                 </ul>
                 <button class="btn-pill btn-brand-orange" style="width:100%; font-size:0.65rem;" onclick="openLogin()">GET STARTED</button>
-                <div class="price-note">For brands with ongoing influencer content needs.</div>
+                <div class="price-note">Fair market. Creators choose work that fits.</div>
             </div>
 
-            <!-- Tier 3: Enterprise -->
+            <!-- Step 3: Approve & Pay -->
             <div class="price-card">
-                <div class="tier-label">Enterprise</div>
-                <div class="tier-name">Partnership</div>
-                <div class="price-amount">£2,800 <span>/ month</span></div>
-                <div class="price-period">Quarterly commitment. Priority everything.</div>
+                <div class="tier-label">Step 3</div>
+                <div class="tier-name">Approve &amp; Release</div>
+                <div class="price-amount" style="font-size: 2rem; text-align:center;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF5E00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+                <div class="price-period">Pay only when you're happy.</div>
                 <hr class="price-divider">
                 <ul>
-                    <li>Unlimited campaign briefs</li>
-                    <li>First-pick creator access</li>
-                    <li>Exclusive creator lock-outs</li>
-                    <li>White-glove onboarding</li>
-                    <li>Full escrow protection</li>
-                    <li>Custom analytics &amp; reporting</li>
-                    <li>Dedicated Slack channel</li>
-                    <li>Quarterly strategy review</li>
+                    <li>Review delivered content</li>
+                    <li>Approve to release escrowed funds</li>
+                    <li>Raise a dispute if brief wasn't met</li>
+                    <li>Full escrow protection throughout</li>
+                    <li>No hidden fees or surprise invoices</li>
+                    <li>Post another brief anytime</li>
                 </ul>
-                <button class="btn-pill btn-outline" style="width:100%; font-size:0.65rem;" onclick="openLogin()">CONTACT US</button>
-                <div class="price-note">For serious brands running always-on programmes.</div>
+                <button class="btn-pill btn-outline" style="width:100%; font-size:0.65rem;" onclick="openLogin()">POST A BRIEF</button>
+                <div class="price-note">Escrow means you never pay for undelivered work.</div>
             </div>
 
         </div>
-        <p style="opacity:0.25; font-size:0.75rem; margin-top:48px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.8;">All prices exclude VAT. Creator payouts are separate and held in escrow until deliverables are approved. A 12% platform service fee is applied to creator payouts. No hidden costs.</p>
+        <p style="opacity:0.25; font-size:0.75rem; margin-top:48px; max-width:600px; margin-left:auto; margin-right:auto; line-height:1.8;">A 12% platform service fee is applied to each brief. Your full budget is held in escrow and only released to the creator upon your approval. No subscriptions, no retainers, no hidden costs.</p>
     </section>
 
     <!-- FAQ -->
@@ -330,12 +327,12 @@
             <div class="faq-answer">Your campaign budget is held securely in escrow and only released to the creator once you’ve approved the deliverables. If content doesn’t meet the brief, funds stay protected. Full transparency, zero risk.</div>
         </details>
         <details class="faq-item">
-            <summary>Can I cancel my subscription?</summary>
-            <div class="faq-answer">Growth plans can be cancelled anytime — no lock-in. Enterprise partnerships run on a quarterly basis. Any briefs already in progress at cancellation will be completed and protected by escrow as normal.</div>
+            <summary>Can I cancel or withdraw a brief?</summary>
+            <div class="faq-answer">If no creator has accepted yet, you can withdraw your brief at any time with no charge. Once a creator has accepted and escrow is locked, funds are held until deliverables are reviewed. If the content doesn't meet the brief, you can raise a dispute and your budget stays protected.</div>
         </details>
         <details class="faq-item">
             <summary>How is this different from a traditional agency?</summary>
-            <div class="faq-answer">Traditional agencies charge 15–30% markups and monthly retainers regardless of output. TeaTrade is performance-first: you only pay for briefs posted, and every creator’s expertise is exam-certified. No account managers upselling you, no inflated metrics — just verified, niche talent matched by algorithm.</div>
+            <div class="faq-answer">Agencies charge 15–30% markups and monthly retainers regardless of output. TeaTrade is a marketplace: you set the budget, creators decide if it works for them. Every creator is exam-certified, every metric is API-verified. No account managers upselling you — just direct access to verified, niche talent.</div>
         </details>
         <details class="faq-item">
             <summary>What content formats can creators deliver?</summary>
