@@ -156,11 +156,11 @@
     <footer id="ecosystem" class="reveal">
         <div class="footer-col">
             <div class="logo">TeaTrade<span style="color:var(--accent)">.</span></div>
-            <p style="margin-top: 16px;">Technical tea authority benchmark.</p>
+            <p style="margin-top: 16px;">The vetted marketplace where tea expertise meets brand opportunity. Verified creators, escrowed payments, zero guesswork.</p>
         </div>
-        <div class="footer-col"><h4>Ecosystem</h4><ul><li>Library</li><li>Exchange</li></ul></div>
+        <div class="footer-col"><h4>Ecosystem</h4><ul><li><a href="https://teatrade.co.uk" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; opacity:0.6;">Learning</a></li><li><a href="https://exchange.teatrade.co.uk" target="_blank" rel="noopener" style="color:inherit; text-decoration:none; opacity:0.6;">Exchange</a></li></ul></div>
         <div class="footer-col"><h4>Network</h4><ul><li>Pro Badges</li><li>Escrow</li></ul></div>
-        <div class="footer-col"><h4>Legal</h4><ul><li>Privacy</li><li>Terms</li></ul></div>
+        <div class="footer-col"><h4>Legal</h4><ul><li><a href="about.html" style="color:inherit; text-decoration:none; opacity:0.6;">About Us</a></li><li><a href="terms.html" style="color:inherit; text-decoration:none; opacity:0.6;">Terms of Service</a></li></ul></div>
     </footer>
 
     <div id="system-modal" class="modal-overlay">
@@ -272,7 +272,7 @@
             if(!email.includes('@')) { showInlineError('email-error', 'Please enter a valid email address.'); return; }
             const btn = document.getElementById('auth-btn');
             btn.innerText = 'SENDING...'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
-            const { error } = await _supabase.auth.signInWithOtp({ email });
+            const { error } = await _supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
             btn.innerText = 'SEND CODE'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
             if (error) { showInlineError('email-error', error.message); return; }
             pendingEmail = email;
