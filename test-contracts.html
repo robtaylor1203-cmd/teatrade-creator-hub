@@ -329,35 +329,65 @@
         async function brandSign() {
             log(4, '→ Calling sign-contract as BRAND...', 'info');
             log(4, '  (In production, brand must sign before they can approve content & release payment)', 'info');
-
-            // Since we're using the same account for both roles, we need to
-            // insert the brand signature directly (the edge function would see
-            // the same email and detect the role automatically)
-            const token = await getToken();
-
-            // The sign-contract function determines role by matching email.
-            // Since brand_email = user email in our test, it will sign as either
-            // creator or brand depending on what's already signed.
-            // Creator already signed, so check if it detects brand role...
-            // Actually since brand_email === creator email in this test,
-            // we need to insert the brand signature directly for the test.
             log(4, '  (Test mode: same account for both parties — inserting brand signature directly)', 'info');
 
-            const { error: sigErr } = await _supabase.from('contract_signatures').insert({
-                contract_id: testContractId,
-                signer_role: 'brand',
-                signer_email: userEmail,
-                ip_address: 'test-mode',
-                user_agent: navigator.userAgent,
-            });
+            // Check if already signed (idempotent)
+            const { data: existingSig } = await _supabase.from('contract_signatures')
+                .select('id').eq('contract_id', testContractId).eq('signer_role', 'brand').single();
 
-            if (sigErr) { log(4, '✗ Signature insert failed: ' + sigErr.message, 'err'); return; }
+            if (existingSig) {
+                log(4, '⚠ Brand has already signed this contract — skipping insert', 'info');
+            } else {
+                const { error: sigErr } = await _supabase.from('contract_signatures').insert({
+                    contract_id: testContractId,
+                    signer_role: 'brand',
+                    signer_email: userEmail,
+                    ip_address: 'test-mode',
+                    user_agent: navigator.userAgent,
+                });
+                if (sigErr) { log(4, '✗ Signature insert failed: ' + sigErr.message, 'err'); return; }
+            }
 
             // Update contract status
             await _supabase.from('contracts').update({
                 status: 'fully_executed',
                 fully_executed_at: new Date().toISOString(),
             }).eq('id', testContractId);
+
+            // Stamp signatures into the HTML (mirrors what the edge function does in production)
+            const { data: sigs } = await _supabase.from('contract_signatures')
+                .select('signer_role, signer_email, signed_at, ip_address')
+                .eq('contract_id', testContractId);
+            const { data: contract } = await _supabase.from('contracts')
+                .select('contract_html').eq('id', testContractId).single();
+
+            if (contract && sigs) {
+                let stampedHtml = contract.contract_html;
+                const creatorSig = sigs.find(s => s.signer_role === 'creator');
+                const brandSig = sigs.find(s => s.signer_role === 'brand');
+
+                if (creatorSig) {
+                    stampedHtml = stampedHtml.replace(
+                        '<div class="sig-meta" id="sig-creator">Awaiting signature\u2026</div>',
+                        `<div class="sig-meta" id="sig-creator">Signed by ${esc(creatorSig.signer_email)}<br>${new Date(creatorSig.signed_at).toLocaleString('en-GB')}<br>IP: ${esc(creatorSig.ip_address)}</div>`
+                    );
+                }
+                if (brandSig) {
+                    stampedHtml = stampedHtml.replace(
+                        '<div class="sig-meta" id="sig-brand">Awaiting signature\u2026</div>',
+                        `<div class="sig-meta" id="sig-brand">Signed by ${esc(brandSig.signer_email)}<br>${new Date(brandSig.signed_at).toLocaleString('en-GB')}<br>IP: ${esc(brandSig.ip_address)}</div>`
+                    );
+                }
+
+                // Save stamped HTML back to DB
+                await _supabase.from('contracts').update({ contract_html: stampedHtml }).eq('id', testContractId);
+
+                // Show preview with stamped signatures
+                const iframe = document.getElementById('preview-signed');
+                iframe.style.display = 'block';
+                iframe.srcdoc = stampedHtml;
+                log(4, '↓ Signed contract preview below — signatures are now stamped into the document ↓', 'ok');
+            }
 
             log(4, '✓ Brand counter-signature recorded!', 'ok');
             log(4, '  Contract is now FULLY EXECUTED', 'ok');
@@ -374,18 +404,6 @@
             log(4, '  → Creator: fully executed contract with both signatures', '');
             log(4, '  → Brand: fully executed contract with both signatures', '');
             log(4, '  → contact@teatrade.co.uk: [COPY] of the same', '');
-            log(4, '', '');
-            log(4, '  Note: Email delivery may fail in this test since both parties', 'info');
-            log(4, '  use the same email. In production, they are different accounts.', 'info');
-
-            // Load stamped contract
-            const { data: contract } = await _supabase.from('contracts').select('contract_html').eq('id', testContractId).single();
-            if (contract) {
-                const iframe = document.getElementById('preview-signed');
-                iframe.style.display = 'block';
-                iframe.srcdoc = contract.contract_html;
-                log(4, '↓ Signed contract preview below (signatures still show "Awaiting" since edge function didn\'t stamp them — in production the sign-contract function stamps both) ↓', 'ok');
-            }
 
             setPill('pill-brand-sig', true);
             setPill('pill-email', true);
@@ -393,6 +411,8 @@
             document.getElementById('step-5').style.display = 'block';
             document.getElementById('step-6').style.display = 'block';
         }
+
+        function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
         // ── Step 5: Verify ──
         async function verifyAll() {
