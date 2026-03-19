@@ -8,7 +8,7 @@ serve(async (req) => {
   if (cors) return cors;
 
   try {
-    // 1. Authenticate — could be a brand or an admin/service_role
+    // 1. Authenticate
     const user = await getAuthUser(req);
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -41,9 +41,25 @@ serve(async (req) => {
       });
     }
 
-    // Only allow refund on certain statuses
-    if (['paid', 'refunded'].includes(campaign.status)) {
+    // 3. Verify the requesting user owns this campaign
+    if (campaign.brand_name !== user.email) {
+      return new Response(JSON.stringify({ error: 'Not your campaign' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 4. Block refund on terminal statuses AND after funds have been released
+    if (['paid', 'refunded', 'payment_failed'].includes(campaign.status)) {
       return new Response(JSON.stringify({ error: `Cannot refund — campaign status is "${campaign.status}"` }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Block refund if a transfer has already been made (funds already with creator)
+    if (campaign.stripe_transfer_id) {
+      return new Response(JSON.stringify({ error: 'Cannot refund — funds have already been released to the creator' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -56,10 +72,10 @@ serve(async (req) => {
       });
     }
 
-    // 3. Issue Stripe refund
+    // 5. Issue Stripe refund
     const refund = await createRefund(campaign.stripe_payment_intent);
 
-    // 4. Record escrow transaction
+    // 6. Record escrow transaction
     await db.from('escrow_transactions').insert({
       campaign_id,
       type: 'refund',
@@ -70,7 +86,7 @@ serve(async (req) => {
       metadata: { reason: reason || 'dispute_upheld' },
     });
 
-    // 5. Update campaign
+    // 7. Update campaign
     await db.from('campaigns').update({
       status: 'refunded',
       refunded_at: new Date().toISOString(),

@@ -26,13 +26,40 @@ serve(async (req) => {
     const db = getServiceClient();
 
     switch (event.type) {
-      // ─── Checkout completed → Lock escrow ───
+      // ─── Checkout completed → Lock escrow OR confirm entry fee ───
       case 'checkout.session.completed': {
         const session = event.data.object;
+        const metadataType = session.metadata?.type;
+        const paymentIntentId = session.payment_intent;
+
+        // ── Entry fee payment ──
+        if (metadataType === 'entry_fee') {
+          const creatorId = session.metadata?.creator_id;
+          if (!creatorId) break;
+
+          await db.from('creators').update({
+            has_paid: true,
+            stripe_payment_intent: paymentIntentId,
+            paid_at: new Date().toISOString(),
+          }).eq('id', creatorId);
+
+          // Record in escrow_transactions for audit
+          await db.from('escrow_transactions').insert({
+            campaign_id: null,
+            type: 'entry_fee',
+            amount: 49.00,
+            currency: 'gbp',
+            stripe_payment_intent: paymentIntentId,
+            status: 'succeeded',
+            metadata: { creator_id: creatorId },
+          });
+
+          break;
+        }
+
+        // ── Campaign escrow lock ──
         const campaignId = session.metadata?.campaign_id;
         if (!campaignId) break;
-
-        const paymentIntentId = session.payment_intent;
 
         // Update campaign with payment confirmation
         await db.from('campaigns').update({
@@ -95,14 +122,14 @@ serve(async (req) => {
         const piId = charge.payment_intent;
         if (!piId) break;
 
-        // Find the campaign and mark refunded
+        // Find the campaign — only mark refunded if funds haven't been released
         const { data: campaign } = await db
           .from('campaigns')
-          .select('id')
+          .select('id, status, stripe_transfer_id')
           .eq('stripe_payment_intent', piId)
           .single();
 
-        if (campaign) {
+        if (campaign && !campaign.stripe_transfer_id && campaign.status !== 'paid') {
           await db.from('campaigns').update({
             status: 'refunded',
             refunded_at: new Date().toISOString(),

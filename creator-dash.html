@@ -401,15 +401,19 @@
             const oauthHandle = params.get('handle');
             const stripeSuccess = params.get('stripe_success');
             const stripeRefresh = params.get('stripe_refresh');
+            const entrySuccess = params.get('entry_success');
+            const entryCancelled = params.get('entry_cancelled');
 
             // Clean URL after reading params
-            if (oauthSuccess || oauthError || stripeSuccess || stripeRefresh) {
+            if (oauthSuccess || oauthError || stripeSuccess || stripeRefresh || entrySuccess || entryCancelled) {
                 const cleanUrl = new URL(window.location.href);
                 cleanUrl.searchParams.delete('oauth_success');
                 cleanUrl.searchParams.delete('oauth_error');
                 cleanUrl.searchParams.delete('handle');
                 cleanUrl.searchParams.delete('stripe_success');
                 cleanUrl.searchParams.delete('stripe_refresh');
+                cleanUrl.searchParams.delete('entry_success');
+                cleanUrl.searchParams.delete('entry_cancelled');
                 window.history.replaceState({}, '', cleanUrl.toString());
             }
 
@@ -431,6 +435,36 @@
             if (!creator || !creator.is_verified) {
                 document.body.innerHTML = `<div style="height:100vh; width:100vw; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; padding: 40px;"><h1 style="color:#ff3333; font-family:'Playfair Display'; font-size:4rem;">Access Denied.</h1><p style="opacity:0.6; font-size:1.2rem; margin:20px 0 40px 0;">You must pass the vetting exam to unlock the terminal.</p><button class="btn-pill" onclick="location.href='index.html'">RETURN TO GATE</button></div>`;
                 document.body.classList.add('auth-cleared'); return;
+            }
+
+            // ── Entry fee gate: verified but not yet paid ──
+            if (!creator.has_paid) {
+                document.body.innerHTML = `<div style="height:100vh; width:100vw; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; padding: 40px;">
+                    <div style="max-width: 480px;">
+                        <span style="color:var(--accent); letter-spacing:4px; font-size:0.6rem; font-weight:900; text-transform:uppercase;">EXAM PASSED</span>
+                        <h1 style="font-family:'Playfair Display'; font-size:3rem; margin: 16px 0;">Welcome to the Network.</h1>
+                        <p style="opacity:0.5; font-size:1rem; line-height:1.8; margin-bottom:32px;">You've passed the TeaTrade vetting exam. To activate your creator profile and start receiving brand briefs, complete the one-time network entry fee.</p>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:32px; margin-bottom:32px;">
+                            <div style="font-family:'Playfair Display'; font-size:3rem; font-weight:900; color:var(--accent);">£49</div>
+                            <div style="opacity:0.4; font-size:0.85rem; margin-top:8px;">One-time entry fee · Lifetime access</div>
+                            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.06); margin:20px 0;">
+                            <ul style="text-align:left; list-style:none; padding:0; margin:0; font-size:0.85rem; opacity:0.6; line-height:2.2;">
+                                <li style="padding-left:20px; position:relative;"><span style="color:var(--accent); position:absolute; left:0;">✓</span> Full dashboard access</li>
+                                <li style="padding-left:20px; position:relative;"><span style="color:var(--accent); position:absolute; left:0;">✓</span> Brand brief matching</li>
+                                <li style="padding-left:20px; position:relative;"><span style="color:var(--accent); position:absolute; left:0;">✓</span> API-verified social metrics</li>
+                                <li style="padding-left:20px; position:relative;"><span style="color:var(--accent); position:absolute; left:0;">✓</span> Escrow-protected payments</li>
+                                <li style="padding-left:20px; position:relative;"><span style="color:var(--accent); position:absolute; left:0;">✓</span> Stripe Connect payouts</li>
+                            </ul>
+                        </div>
+                        <button class="btn-pill" style="width:100%; padding:16px 0; font-size:0.75rem;" onclick="payEntryFee()">PAY £49 &amp; ACTIVATE</button>
+                        <p style="opacity:0.2; font-size:0.7rem; margin-top:16px;">Secure payment via Stripe. No recurring charges.</p>
+                    </div>
+                </div>`;
+                document.body.classList.add('auth-cleared');
+                if (entryCancelled) {
+                    notify('Payment Cancelled', 'Entry fee payment was cancelled. You can try again when you\'re ready.', 'info');
+                }
+                return;
             }
             document.body.classList.add('auth-cleared');
             document.getElementById('user-email-display').innerText = activeUserEmail;
@@ -454,6 +488,11 @@
                 notify('Stripe Connected', 'Your payout account is set up. You can now receive campaign payments directly to your bank.', 'success');
             } else if (stripeRefresh) {
                 notify('Onboarding Incomplete', 'Stripe onboarding was not completed. Please try again from the Escrow Wallet tab.', 'info');
+            }
+
+            // ── Show entry fee result ──
+            if (entrySuccess) {
+                notify('Welcome to TeaTrade', 'Entry fee paid successfully. Your creator account is now fully activated!', 'success');
             }
         }
 
@@ -771,6 +810,23 @@
         }
 
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        /* ── Entry Fee Payment ── */
+        async function payEntryFee() {
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/creator-entry-fee`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                });
+                const result = await res.json();
+                if (result.error) throw new Error(result.error);
+                window.location.href = result.checkout_url;
+            } catch (err) {
+                notify('Payment Error', err.message, 'error');
+            }
+        }
 
         /* ── Stripe Connect / Wallet Functions ── */
         async function startStripeOnboarding() {

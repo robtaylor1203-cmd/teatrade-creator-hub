@@ -105,6 +105,20 @@ serve(async (req) => {
       stripeAccountId: connected.stripe_account_id,
     });
 
+    // 7. Record withdrawal in escrow_transactions for audit trail
+    await db.from('escrow_transactions').insert({
+      campaign_id: null,
+      type: 'withdrawal',
+      amount: payoutAmount / 100,
+      currency: 'gbp',
+      status: payout.status === 'paid' ? 'succeeded' : 'pending',
+      metadata: {
+        creator_id: creator.id,
+        payout_id: payout.id,
+        stripe_account_id: connected.stripe_account_id,
+      },
+    });
+
     return new Response(JSON.stringify({
       success: true,
       payout_id: payout.id,

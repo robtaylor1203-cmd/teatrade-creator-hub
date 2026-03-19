@@ -49,10 +49,18 @@ serve(async (req) => {
       });
     }
 
-    // Must be in reviewable state
+    // Must be in reviewable state (idempotency: block if already paid/refunded)
     if (!['review', 'active', 'escrow_locked'].includes(campaign.status)) {
       return new Response(JSON.stringify({ error: `Cannot release escrow — campaign status is "${campaign.status}"` }), {
         status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Idempotency: block if transfer already made
+    if (campaign.stripe_transfer_id) {
+      return new Response(JSON.stringify({ error: 'Funds have already been released for this campaign' }), {
+        status: 409,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -73,6 +81,13 @@ serve(async (req) => {
 
     if (!connectedAccount) {
       return new Response(JSON.stringify({ error: 'Creator has not connected their Stripe account. They must complete onboarding before funds can be released.' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!connectedAccount.payouts_enabled) {
+      return new Response(JSON.stringify({ error: 'Creator has not completed Stripe onboarding. Payouts are not yet enabled on their account.' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

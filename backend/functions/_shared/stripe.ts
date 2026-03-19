@@ -176,18 +176,6 @@ export async function createTransfer(params: {
 
 // ─── Payouts (creator withdrawals to bank) ───
 
-export async function createPayout(params: {
-  amount: number;
-  stripeAccountId: string;
-}) {
-  return stripeRequest('POST', '/payouts', {
-    amount: String(params.amount),
-    currency: 'gbp',
-    metadata: { platform: 'teatrade' },
-  });
-  // Note: for connected accounts, we need the Stripe-Account header
-}
-
 export async function createConnectedPayout(params: {
   amount: number;
   stripeAccountId: string;
