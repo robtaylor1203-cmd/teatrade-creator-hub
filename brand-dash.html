@@ -677,11 +677,20 @@
 
             const esc = calculateEscrow(parseFloat(budget));
 
-            // Build brief metadata JSON
             const briefData = {
                 brand_name: activeBrandEmail,
                 brief_title: title,
+                brief_description: description,
                 total_budget: parseFloat(budget),
+                video_count: parseInt(videoCount) || 0,
+                photo_count: parseInt(photoCount) || 0,
+                video_length: parseInt(videoLength) || null,
+                platforms: platforms,
+                mood: mood || null,
+                setting: setting || null,
+                required_badges: badges,
+                min_followers: parseInt(minFollowers) || null,
+                min_engagement: parseFloat(minEngagement) || null,
                 status: 'active'
             };
 
@@ -765,7 +774,14 @@
                     if (c.status === 'pending_payment') {
                         actions = `<button class="btn-pill" style="font-size:0.6rem; padding:8px 18px;" onclick="retryEscrowPayment('${c.id}')">PAY NOW</button>`;
                     }
-                    div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0;">${c.brief_title}</h3><p style="font-size:0.85rem; opacity:0.5; margin-top:8px;">Budget: £${c.total_budget.toLocaleString()}${c.creator_payout ? ` · Creator: £${c.creator_payout}` : ''}${c.platform_fee ? ` · Fee: £${c.platform_fee}` : ''}</p></div><div style="display:flex; align-items:center; gap:12px;"><span class="brief-status ${badge.cls}">${badge.label}</span>${actions}</div></div>`;
+                    // Build detail line from stored brief data
+                    const details = [];
+                    if (c.video_count) details.push(`${c.video_count}× Video`);
+                    if (c.photo_count) details.push(`${c.photo_count}× Photo`);
+                    if (c.platforms && c.platforms.length) details.push(c.platforms.join(', '));
+                    if (c.required_badges && c.required_badges.length) details.push('Badges: ' + c.required_badges.join(', '));
+                    const detailLine = details.length ? `<p style="font-size:0.8rem; opacity:0.35; margin-top:4px;">${details.join(' &nbsp;|&nbsp; ')}</p>` : '';
+                    div.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;"><div><h3 style="margin:0;">${c.brief_title}</h3><p style="font-size:0.85rem; opacity:0.5; margin-top:8px;">Budget: £${c.total_budget.toLocaleString()}${c.creator_payout ? ` · Creator: £${c.creator_payout}` : ''}${c.platform_fee ? ` · Fee: £${c.platform_fee}` : ''}</p>${detailLine}</div><div style="display:flex; align-items:center; gap:12px;"><span class="brief-status ${badge.cls}">${badge.label}</span>${actions}</div></div>`;
                     container.appendChild(div);
                 });
                 document.getElementById('stat-active').innerText = activeCount;
@@ -898,7 +914,7 @@
             document.getElementById('reject-modal').classList.add('active');
         }
         function closeRejectModal() { document.getElementById('reject-modal').classList.remove('active'); }
-        function submitRejection() {
+        async function submitRejection() {
             const reason = document.querySelector('input[name="reject-reason"]:checked');
             const evidence = document.getElementById('reject-evidence').value;
             if (!reason) { notify('Reason Required', 'Select a policy violation category before submitting.', 'error'); return; }

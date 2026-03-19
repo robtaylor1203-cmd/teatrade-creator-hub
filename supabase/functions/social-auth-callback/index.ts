@@ -38,10 +38,11 @@ serve(async (req: Request) => {
     const state = url.searchParams.get('state');
 
     if (!code || !state) {
-      return new Response('Missing code or state parameter', {
-        status: 400,
-        headers: corsHeaders,
-      });
+      const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://teatrade.co';
+      return Response.redirect(
+        `${frontendUrl}/creator-dash.html?oauth_error=${encodeURIComponent('Invalid callback. Please try connecting again.')}`,
+        302,
+      );
     }
 
     const db = getServiceClient();
