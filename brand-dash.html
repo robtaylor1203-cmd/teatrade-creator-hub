@@ -599,6 +599,31 @@
         </div>
     </div>
 
+    <!-- Contract Review & Sign Modal (Brand) -->
+    <div id="contract-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 720px; max-height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-close" onclick="closeContractModal()">×</div>
+            <span style="color:var(--brand); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">CREATOR CONTENT AGREEMENT</span>
+            <h2 style="margin:10px 0 8px 0;">Review &amp; Counter-Sign.</h2>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:16px;">The creator has signed this contract. Please review the full agreement below and counter-sign to proceed.</p>
+            <div id="contract-preview" style="flex:1; overflow-y:auto; background:#fff; border-radius:var(--radius-sm); padding:0; margin-bottom:16px; min-height:300px;">
+                <iframe id="contract-iframe" style="width:100%; height:100%; min-height:400px; border:none; border-radius:var(--radius-sm);"></iframe>
+            </div>
+            <div id="contract-sign-section">
+                <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:16px; cursor:pointer;">
+                    <input type="checkbox" id="contract-agree" style="margin-top:3px; accent-color:var(--brand);">
+                    <span style="font-size:0.78rem; opacity:0.5; line-height:1.5;">I have read and understood the full Creator Content Agreement. I agree to all terms including content rights, payment terms, and dispute resolution procedures.</span>
+                </label>
+                <button class="btn-pill" style="width:100%; opacity:0.3; pointer-events:none;" id="btn-sign-contract" onclick="brandSignContract()">I ACCEPT &amp; COUNTER-SIGN</button>
+            </div>
+            <div id="contract-signed-section" style="display:none; text-align:center; padding:16px;">
+                <div style="color:var(--brand); font-size:0.65rem; font-weight:800; letter-spacing:2px; margin-bottom:8px;">✓ CONTRACT FULLY EXECUTED</div>
+                <p style="opacity:0.4; font-size:0.82rem;">Both parties have signed. A copy has been emailed to all parties and stored securely.</p>
+            </div>
+            <p style="opacity:0.15; font-size:0.65rem; text-align:center; margin-top:8px;">Your signature is recorded with timestamp, IP address, and device info for legal compliance.</p>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
@@ -614,6 +639,95 @@
             document.getElementById('system-modal').classList.add('active');
         }
         function closeSystemModal() { document.getElementById('system-modal').classList.remove('active'); }
+
+        /* ── Contract System (Brand Side) ── */
+        let activeBrandContractId = null;
+        let pendingApproveCardId = null;
+        let pendingApproveCampaignId = null;
+
+        function closeContractModal() { document.getElementById('contract-modal').classList.remove('active'); }
+
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'contract-agree') {
+                const btn = document.getElementById('btn-sign-contract');
+                btn.style.opacity = e.target.checked ? '1' : '0.3';
+                btn.style.pointerEvents = e.target.checked ? 'auto' : 'none';
+            }
+        });
+
+        async function showContractForSigning(campaignId, cardId) {
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+
+                // Fetch contract for this campaign
+                const { data: contract } = await _supabase
+                    .from('contracts')
+                    .select('id, contract_html, status')
+                    .eq('campaign_id', campaignId)
+                    .single();
+
+                if (!contract) {
+                    // No contract exists yet (creator hasn't accepted/signed)
+                    notify('No Contract', 'The creator has not yet signed the contract for this campaign.', 'info');
+                    return false;
+                }
+
+                if (contract.status === 'fully_executed') {
+                    // Already signed by both — proceed directly
+                    return true;
+                }
+
+                activeBrandContractId = contract.id;
+                pendingApproveCardId = cardId;
+                pendingApproveCampaignId = campaignId;
+
+                // Load contract into iframe
+                const iframe = document.getElementById('contract-iframe');
+                iframe.srcdoc = contract.contract_html;
+
+                // Reset sign state
+                document.getElementById('contract-agree').checked = false;
+                document.getElementById('btn-sign-contract').style.opacity = '0.3';
+                document.getElementById('btn-sign-contract').style.pointerEvents = 'none';
+                document.getElementById('contract-sign-section').style.display = 'block';
+                document.getElementById('contract-signed-section').style.display = 'none';
+
+                document.getElementById('contract-modal').classList.add('active');
+                return false; // Don't proceed yet — wait for signing
+            } catch (err) {
+                notify('Contract Error', err.message, 'error');
+                return false;
+            }
+        }
+
+        async function brandSignContract() {
+            if (!activeBrandContractId) return;
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/sign-contract`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                    body: JSON.stringify({ contract_id: activeBrandContractId }),
+                });
+                const result = await res.json();
+                if (result.error) throw new Error(result.error);
+
+                document.getElementById('contract-sign-section').style.display = 'none';
+                document.getElementById('contract-signed-section').style.display = 'block';
+
+                if (result.fully_executed) {
+                    notify('Contract Executed', 'Both parties have signed. A copy has been emailed to all parties. You may now approve content and release payment.', 'success');
+                } else {
+                    notify('Contract Signed', 'Your counter-signature has been recorded.', 'success');
+                }
+
+                setTimeout(() => { closeContractModal(); }, 1500);
+            } catch (err) {
+                notify('Signing Error', err.message, 'error');
+            }
+        }
 
         async function initDashboard() {
             // DEV MODE: Add ?dev=true to URL to bypass auth for Live Server testing
@@ -863,6 +977,10 @@
             const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
 
             if (!devMode && campaignId) {
+                // Check contract is fully signed before releasing payment
+                const canProceed = await showContractForSigning(campaignId, cardId);
+                if (!canProceed) return; // Contract modal shown — user must sign first
+
                 // PRODUCTION: Call release-escrow Edge Function
                 try {
                     const session = await _supabase.auth.getSession();
