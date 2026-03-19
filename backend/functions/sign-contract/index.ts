@@ -120,36 +120,35 @@ serve(async (req) => {
       newStatus = 'creator_signed';
     }
 
-    // 7. Update contract status
-    const updateData: Record<string, unknown> = { status: newStatus };
+    // 7. Stamp all available signatures into the contract HTML
+    //    This runs on EVERY signature so the other party can see
+    //    the existing signature(s) when they view the contract.
+    let stampedHtml = contract.contract_html;
+    if (creatorSig) {
+      stampedHtml = stampedHtml.replace(
+        '<div class="sig-meta" id="sig-creator">Awaiting signature…</div>',
+        `<div class="sig-meta" id="sig-creator">Signed by ${escHtml(creatorSig.signer_email)}<br>
+        ${new Date(creatorSig.signed_at).toLocaleString('en-GB')}<br>
+        IP: ${escHtml(creatorSig.ip_address)}</div>`,
+      );
+    }
+    if (brandSig) {
+      stampedHtml = stampedHtml.replace(
+        '<div class="sig-meta" id="sig-brand">Awaiting signature…</div>',
+        `<div class="sig-meta" id="sig-brand">Signed by ${escHtml(brandSig.signer_email)}<br>
+        ${new Date(brandSig.signed_at).toLocaleString('en-GB')}<br>
+        IP: ${escHtml(brandSig.ip_address)}</div>`,
+      );
+    }
+
+    // 8. Update contract status + stamped HTML
+    const updateData: Record<string, unknown> = { status: newStatus, contract_html: stampedHtml };
     if (fullyExecuted) updateData.fully_executed_at = new Date().toISOString();
 
     await db.from('contracts').update(updateData).eq('id', contract_id);
 
-    // 8. If fully executed — stamp signatures into HTML, store, and email
+    // 9. If fully executed — store final copy and email all parties
     if (fullyExecuted) {
-      // Stamp signature details into the contract HTML
-      let stampedHtml = contract.contract_html;
-      if (creatorSig) {
-        stampedHtml = stampedHtml.replace(
-          '<div class="sig-meta" id="sig-creator">Awaiting signature…</div>',
-          `<div class="sig-meta" id="sig-creator">Signed by ${escHtml(creatorSig.signer_email)}<br>
-          ${new Date(creatorSig.signed_at).toLocaleString('en-GB')}<br>
-          IP: ${escHtml(creatorSig.ip_address)}</div>`,
-        );
-      }
-      if (brandSig) {
-        stampedHtml = stampedHtml.replace(
-          '<div class="sig-meta" id="sig-brand">Awaiting signature…</div>',
-          `<div class="sig-meta" id="sig-brand">Signed by ${escHtml(brandSig.signer_email)}<br>
-          ${new Date(brandSig.signed_at).toLocaleString('en-GB')}<br>
-          IP: ${escHtml(brandSig.ip_address)}</div>`,
-        );
-      }
-
-      // Update stored HTML with stamped signatures
-      await db.from('contracts').update({ contract_html: stampedHtml }).eq('id', contract_id);
-
       // Store in Supabase Storage
       const storagePath = `${contract.contract_ref}.html`;
       const { error: storageErr } = await db.storage
