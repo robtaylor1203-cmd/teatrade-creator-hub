@@ -28,9 +28,9 @@
     </nav>
 
     <header class="reveal">
-        <div class="scarcity-pill">
+        <div class="scarcity-pill" id="founding-pill">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            Founding 100 Initiative: 87/100 Claimed
+            <span id="founding-counter">Founding 100 Initiative: —/100 Claimed</span>
         </div>
         <h1>TeaTrade<br><span style="color:var(--accent)">Creator Hub.</span></h1>
         <p class="hero-p">A precision market network linking expert influencers with prestige brands. Verify your technical mastery and unlock the automated escrow network.</p>
@@ -221,6 +221,22 @@
         const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ── Live founding counter ──
+        (async function loadFoundingCount() {
+            try {
+                const { data, error } = await _supabase.rpc('get_founding_count');
+                const count = (!error && typeof data === 'number') ? data : 0;
+                const el = document.getElementById('founding-counter');
+                if (el) {
+                    if (count >= 100) {
+                        el.textContent = 'Founding 100 Initiative: SOLD OUT';
+                    } else {
+                        el.textContent = `Founding 100 Initiative: ${count}/100 Claimed`;
+                    }
+                }
+            } catch (e) { console.warn('Founding count:', e); }
+        })();
 
         function notify(title, message, type = 'info') {
             document.getElementById('system-title').innerText = title;
