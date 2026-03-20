@@ -1896,6 +1896,42 @@ header {
 .brief-status.st-review { color: #fbbf24; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); }
 .brief-status.st-approved { color: var(--accent); background: rgba(0,255,133,0.08); border: 1px solid rgba(0,255,133,0.2); }
 .brief-status.st-paid { color: #a78bfa; background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); }
+
+/* ── ANALYTICS ROI ROWS ── */
+.analytics-row { padding: 24px 28px; }
+.analytics-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+.analytics-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+.analytics-kpi {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    text-align: center;
+}
+.analytics-kpi-label {
+    display: block;
+    font-size: 0.55rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+.analytics-kpi-val {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: #fff;
+}
+
 .brief-card .brief-meta {
     font-size: 0.82rem;
     opacity: 0.4;
@@ -2504,6 +2540,11 @@ header {
 
     /* ── Academy grid ── */
     .academy-grid { grid-template-columns: 1fr !important; }
+
+    /* ── Analytics ROI responsive ── */
+    #section-analytics .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .analytics-kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .analytics-row-header { flex-direction: column; gap: 10px; }
 }
 
 /* ── Extra small screens ── */
