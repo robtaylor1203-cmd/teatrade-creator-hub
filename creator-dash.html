@@ -19,13 +19,21 @@
 
     <div class="ambient-glow" style="top: -10%; left: 20%;"></div>
 
+    <!-- Toast Notification Container -->
+    <div id="toast-container" style="position:fixed; bottom:24px; left:24px; z-index:9999; display:flex; flex-direction:column-reverse; gap:10px; pointer-events:none;"></div>
+
     <aside class="sidebar">
-        <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--accent)">.</span></a>
+        <div class="sidebar-top">
+            <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--accent)">.</span></a>
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
         <div class="nav-menu">
             <a href="#" class="nav-item active" onclick="switchSection('terminal', this)">Terminal</a>
             <a href="#" class="nav-item" onclick="switchSection('profile', this)">My Profile</a>
             <a href="#" class="nav-item" onclick="switchSection('academy', this)">Pro Academy</a>
-            <a href="#" class="nav-item" onclick="switchSection('briefs', this)">Campaign Briefs</a>
+            <a href="#" class="nav-item" onclick="switchSection('briefs', this)">Campaign Briefs <span class="nav-badge" id="briefs-badge-count" style="display:none;">0</span></a>
             <a href="#" class="nav-item" onclick="switchSection('wallet', this)">Escrow Wallet</a>
         </div>
         <div class="profile-mini">
@@ -255,11 +263,20 @@
         <div id="section-briefs" style="display:none;">
             <div class="section-label" style="margin-bottom: 16px;">Active Campaign Briefs</div>
 
+            <!-- Status Filter Tabs -->
+            <div class="brief-filters" style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+                <button class="filter-pill active" data-filter="all" onclick="filterBriefs('all', this)">All</button>
+                <button class="filter-pill" data-filter="pending" onclick="filterBriefs('pending', this)">Invites <span class="filter-count" id="count-pending"></span></button>
+                <button class="filter-pill" data-filter="accepted" onclick="filterBriefs('accepted', this)">Active <span class="filter-count" id="count-accepted"></span></button>
+                <button class="filter-pill" data-filter="paid" onclick="filterBriefs('paid', this)">Completed <span class="filter-count" id="count-paid"></span></button>
+                <button class="filter-pill" data-filter="declined" onclick="filterBriefs('declined', this)">Declined <span class="filter-count" id="count-declined"></span></button>
+            </div>
+
             <!-- Live invites from brands -->
             <div id="live-invites-container"></div>
 
             <!-- Demo Brief: In-Progress Campaign -->
-            <div class="brief-card" id="demo-brief-1">
+            <div class="brief-card" id="demo-brief-1" data-status="accepted">
                 <div class="brief-header">
                     <h3>Oolong Spring Launch — SipCo</h3>
                     <span class="brief-status st-creating" id="demo-brief-status">CREATING</span>
@@ -307,16 +324,21 @@
                 </div>
 
                 <!-- Upload Zone -->
-                <div class="upload-zone" id="upload-area" onclick="simulateUpload()">
+                <input type="file" id="file-input-demo" multiple accept="image/*,video/*" style="display:none;" onchange="handleFileSelect(event, 'demo-brief-1')">
+                <div class="upload-zone" id="upload-area" onclick="document.getElementById('file-input-demo').click()" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleFileDrop(event, 'demo-brief-1')">
                     <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     <div class="uz-label">Upload Final Content</div>
-                    <div class="uz-hint">Drag & drop video files or click to browse (MP4, MOV — max 500MB per file)</div>
+                    <div class="uz-hint">Drag & drop or click to browse — Images (JPG, PNG, WebP) &amp; Video (MP4, MOV) — max 100MB per file</div>
                 </div>
-                <button class="btn-pill" id="btn-submit-content" style="width:100%; padding:14px 0; font-size:0.65rem; opacity:0.3; pointer-events:none;" onclick="submitContent()">SUBMIT FOR BRAND REVIEW</button>
+
+                <!-- Uploaded Media Gallery -->
+                <div class="media-gallery" id="gallery-demo-brief-1"></div>
+
+                <button class="btn-pill" id="btn-submit-content" style="width:100%; padding:14px 0; font-size:0.65rem; opacity:0.3; pointer-events:none;" onclick="submitContent('demo-brief-1')">SUBMIT FOR BRAND REVIEW</button>
             </div>
 
             <!-- Demo Brief: Awaiting Address -->
-            <div class="brief-card" id="demo-brief-2">
+            <div class="brief-card" id="demo-brief-2" data-status="pending">
                 <div class="brief-header">
                     <h3>Matcha Premium Campaign — LeafHaus</h3>
                     <span class="brief-status st-active">INVITED</span>
@@ -354,8 +376,7 @@
                 </div>
             </div>
 
-            <!-- Demo Brief: Completed -->
-            <div class="brief-card" style="opacity:0.5;">
+            <div class="brief-card" data-status="paid" style="opacity:0.5;">
                 <div class="brief-header">
                     <h3>Heritage Collection — TrueLeaf</h3>
                     <span class="brief-status st-paid">PAID</span>
@@ -571,6 +592,20 @@
         </div>
     </div>
 
+    <!-- Media Lightbox / Viewer -->
+    <div id="media-lightbox" class="modal-overlay" onclick="if(event.target===this)closeLightbox()">
+        <div style="position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; padding:24px;">
+            <button onclick="closeLightbox()" style="position:absolute; top:20px; right:24px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:1.4rem; cursor:pointer; z-index:10; backdrop-filter:blur(8px);">&times;</button>
+            <button class="lb-nav lb-prev" onclick="event.stopPropagation(); lightboxNav(-1)" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8249;</button>
+            <button class="lb-nav lb-next" onclick="event.stopPropagation(); lightboxNav(1)" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8250;</button>
+            <div id="lightbox-viewer" style="display:flex; align-items:center; justify-content:center;"></div>
+            <div style="margin-top:16px; text-align:center;">
+                <div id="lightbox-filename" style="font-size:0.8rem; font-weight:700; opacity:0.7;"></div>
+                <div id="lightbox-counter" style="font-size:0.65rem; opacity:0.3; margin-top:4px;"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contract Review & Sign Modal -->
     <div id="contract-modal" class="modal-overlay">
         <div class="modal-card" style="max-width: 720px; max-height: 85vh; display: flex; flex-direction: column;">
@@ -603,6 +638,13 @@
 
         let activeUserEmail = "", activeUserId = null, currentOAuthPlatform = "";
 
+        // ── Persistent session: handle sign-out or expiry gracefully ──
+        _supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+                window.location.href = 'index.html';
+            }
+        });
+
         function notify(title, message, type='info') {
             document.getElementById('system-title').innerText = title;
             document.getElementById('system-message').innerText = message;
@@ -610,6 +652,133 @@
             document.getElementById('system-modal').classList.add('active');
         }
         function closeSystemModal() { document.getElementById('system-modal').classList.remove('active'); }
+
+        /* ── Toast Notification System ── */
+        function showToast(title, message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const icons = { success: '✓', info: 'ℹ', warning: '⚠' };
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div class="toast-icon ${type}">${icons[type] || icons.info}</div>
+                <div class="toast-body">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.classList.add('removing'); setTimeout(() => this.parentElement.remove(), 300);">&times;</button>
+            `;
+            container.appendChild(toast);
+            if (duration > 0) {
+                setTimeout(() => {
+                    toast.classList.add('removing');
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+        }
+
+        /* ── Real-time invite subscription ── */
+        function subscribeToInvites() {
+            if (!activeUserId) return;
+            _supabase.channel('invites-' + activeUserId)
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'campaign_invites',
+                    filter: 'creator_id=eq.' + activeUserId
+                }, async (payload) => {
+                    // New invite received — fetch campaign title
+                    const inv = payload.new;
+                    let campaignTitle = 'New Campaign';
+                    if (inv.campaign_id) {
+                        const { data } = await _supabase.from('campaigns').select('title, budget').eq('id', inv.campaign_id).single();
+                        if (data) campaignTitle = data.title + (data.budget ? ` — £${Number(data.budget).toLocaleString()}` : '');
+                    }
+                    showToast('New Campaign Invite!', campaignTitle, 'success', 8000);
+                    loadMyInvites(); // refresh the list
+                })
+                .subscribe();
+
+            // Subscribe to campaign status changes (for confetti on approval/payment)
+            _supabase.channel('campaigns-' + activeUserId)
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'campaigns'
+                }, async (payload) => {
+                    const updated = payload.new;
+                    if (updated.status === 'paid' || updated.status === 'completed') {
+                        // Check if this creator was on this campaign
+                        const { data: inv } = await _supabase.from('campaign_invites')
+                            .select('id')
+                            .eq('campaign_id', updated.id)
+                            .eq('creator_id', activeUserId)
+                            .eq('status', 'accepted')
+                            .maybeSingle();
+                        if (inv) {
+                            launchConfetti();
+                            showToast('Content Approved! 🎉', `Your work on "${updated.title || 'campaign'}" has been approved and payment released!`, 'success', 12000);
+                            loadMyInvites();
+                        }
+                    }
+                })
+                .subscribe();
+        }
+
+        /* ── Confetti Celebration ── */
+        function launchConfetti() {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'confetti-canvas';
+            canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;pointer-events:none;';
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#00FF85', '#FF5E00', '#FFD700', '#FF4081', '#00BCD4', '#E040FB'];
+            const particles = [];
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    w: Math.random() * 8 + 4,
+                    h: Math.random() * 6 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: Math.random() * 3 + 2,
+                    rot: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 10,
+                    opacity: 1,
+                });
+            }
+
+            let frame = 0;
+            function animate() {
+                frame++;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.05;
+                    p.rot += p.rotSpeed;
+                    if (frame > 100) p.opacity -= 0.015;
+                    if (p.opacity <= 0) return;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.opacity);
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+                if (frame < 200) {
+                    requestAnimationFrame(animate);
+                } else {
+                    canvas.remove();
+                }
+            }
+            animate();
+        }
 
         async function initDashboard() {
             // DEV MODE: Add ?dev=true to URL to bypass auth for Live Server testing
@@ -720,6 +889,7 @@
             activeUserId = creator.id;
             document.getElementById('match-score-display').innerText = creator.quiz_score || "--";
             loadSocialStats(); loadEarnedBadges(); loadWalletData(); loadCreatorProfile(); loadMyInvites();
+            subscribeToInvites(); // Real-time invite notifications
 
             // ── Show OAuth result notification ──
             if (oauthSuccess) {
@@ -1295,22 +1465,47 @@
         }
 
         /* ── Invite / Accept / Decline Flow ── */
+        let currentBriefFilter = 'all';
+
+        function filterBriefs(filter, el) {
+            currentBriefFilter = filter;
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+
+            // Filter live invite cards
+            document.querySelectorAll('#live-invites-container .brief-card').forEach(card => {
+                const status = card.dataset.status || '';
+                card.style.display = (filter === 'all' || status === filter) ? '' : 'none';
+            });
+
+            // Filter demo cards
+            document.querySelectorAll('#section-briefs > .brief-card').forEach(card => {
+                const status = card.dataset.status || '';
+                card.style.display = (filter === 'all' || status === filter) ? '' : 'none';
+            });
+        }
+
         async function loadMyInvites() {
             const box = document.getElementById('live-invites-container');
             if (!box) return;
             const { data, error } = await _supabase
                 .from('campaign_invites')
-                .select('id, status, match_score, campaigns(id, title, deliverables, budget, tea_category, delivery_deadline, talking_points, brand_id)')
+                .select('id, status, match_score, campaigns(id, title, deliverables, budget, tea_category, delivery_deadline, talking_points, brand_id, status)')
                 .eq('creator_id', activeUserId)
                 .order('invited_at', { ascending: false });
 
             if (error || !data || data.length === 0) {
                 box.innerHTML = '';
+                updateFilterCounts([]);
                 return;
             }
 
+            updateFilterCounts(data);
+
             const pending = data.filter(i => i.status === 'pending');
-            const responded = data.filter(i => i.status !== 'pending');
+            const accepted = data.filter(i => i.status === 'accepted');
+            const declined = data.filter(i => i.status === 'declined');
+            const paid = data.filter(i => i.campaigns?.status === 'paid' || i.campaigns?.status === 'completed');
 
             let html = '';
             if (pending.length) {
@@ -1319,7 +1514,7 @@
                     const c = inv.campaigns;
                     const deadline = c.delivery_deadline ? new Date(c.delivery_deadline).toLocaleDateString('en-GB') : 'TBC';
                     html += `
-                    <div class="brief-card" style="border-left:4px solid var(--brand);margin-bottom:14px;">
+                    <div class="brief-card" data-status="pending" style="border-left:4px solid var(--brand);margin-bottom:14px;">
                         <div class="brief-header">
                             <h3>${escapeHtml(c.title || 'Untitled Campaign')}</h3>
                             <span class="brief-status" style="background:var(--brand);color:#fff;">INVITE</span>
@@ -1340,17 +1535,35 @@
                 });
             }
 
-            if (responded.length) {
-                html += '<div class="section-label" style="margin-bottom:10px;margin-top:18px;">Past Invites</div>';
-                responded.forEach(inv => {
+            if (accepted.length) {
+                html += '<div class="section-label" style="margin-bottom:10px;margin-top:18px;">Active Campaigns</div>';
+                accepted.forEach(inv => {
                     const c = inv.campaigns;
-                    const stLabel = inv.status === 'accepted' ? 'ACCEPTED' : 'DECLINED';
-                    const stColor = inv.status === 'accepted' ? 'var(--accent)' : '#666';
+                    const deadline = c.delivery_deadline ? new Date(c.delivery_deadline).toLocaleDateString('en-GB') : 'TBC';
+                    const isPaid = c.status === 'paid' || c.status === 'completed';
                     html += `
-                    <div class="brief-card" style="opacity:0.6;margin-bottom:10px;">
+                    <div class="brief-card" data-status="${isPaid ? 'paid' : 'accepted'}" style="margin-bottom:10px;${isPaid ? 'opacity:0.5;' : ''}">
                         <div class="brief-header">
                             <h3>${escapeHtml(c.title || 'Untitled Campaign')}</h3>
-                            <span class="brief-status" style="background:${stColor};color:#fff;">${stLabel}</span>
+                            <span class="brief-status" style="background:${isPaid ? 'var(--accent)' : 'rgba(0,255,133,0.15)'};color:${isPaid ? '#000' : 'var(--accent)'};">${isPaid ? 'PAID' : 'ACTIVE'}</span>
+                        </div>
+                        <div class="brief-meta">
+                            Budget: £${Number(c.budget || 0).toLocaleString()} &nbsp;|&nbsp;
+                            Deadline: ${deadline}
+                        </div>
+                    </div>`;
+                });
+            }
+
+            if (declined.length) {
+                html += '<div class="section-label" style="margin-bottom:10px;margin-top:18px;">Declined</div>';
+                declined.forEach(inv => {
+                    const c = inv.campaigns;
+                    html += `
+                    <div class="brief-card" data-status="declined" style="opacity:0.4;margin-bottom:10px;">
+                        <div class="brief-header">
+                            <h3>${escapeHtml(c.title || 'Untitled Campaign')}</h3>
+                            <span class="brief-status" style="background:#333;color:#888;">DECLINED</span>
                         </div>
                         <div class="brief-meta">Budget: £${Number(c.budget || 0).toLocaleString()}</div>
                     </div>`;
@@ -1358,6 +1571,34 @@
             }
 
             box.innerHTML = html;
+
+            // Re-apply current filter after re-render
+            if (currentBriefFilter !== 'all') {
+                filterBriefs(currentBriefFilter, document.querySelector(`.filter-pill[data-filter="${currentBriefFilter}"]`));
+            }
+        }
+
+        function updateFilterCounts(data) {
+            const counts = { pending: 0, accepted: 0, paid: 0, declined: 0 };
+            (data || []).forEach(inv => {
+                if (inv.status === 'pending') counts.pending++;
+                else if (inv.status === 'accepted') {
+                    if (inv.campaigns?.status === 'paid' || inv.campaigns?.status === 'completed') counts.paid++;
+                    else counts.accepted++;
+                }
+                else if (inv.status === 'declined') counts.declined++;
+            });
+            ['pending', 'accepted', 'paid', 'declined'].forEach(k => {
+                const el = document.getElementById('count-' + k);
+                if (el) el.textContent = counts[k] > 0 ? counts[k] : '';
+            });
+
+            // Update badge count on nav
+            const pendingBadge = document.getElementById('briefs-badge-count');
+            if (pendingBadge) {
+                pendingBadge.textContent = counts.pending;
+                pendingBadge.style.display = counts.pending > 0 ? 'inline-flex' : 'none';
+            }
         }
 
         function escapeHtml(str) {
@@ -1621,33 +1862,283 @@
             notify('Receipt Confirmed', 'Product received! Your 7-day content creation window has started. The clock is ticking.', 'success');
         }
 
-        /* ── Upload Simulation ── */
-        let filesUploaded = 0;
-        function simulateUpload() {
-            filesUploaded++;
-            const area = document.getElementById('upload-area');
-            area.innerHTML = `
-                <svg viewBox="0 0 24 24" style="stroke:var(--accent);"><polyline points="20 6 9 17 4 12"/></svg>
-                <div class="uz-label" style="color:var(--accent);">${filesUploaded} file${filesUploaded > 1 ? 's' : ''} uploaded</div>
-                <div class="uz-hint">Click to add more files</div>
-            `;
-            const btn = document.getElementById('btn-submit-content');
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'auto';
+        /* ── Real File Upload System ── */
+        const uploadedFiles = {}; // keyed by cardId → array of { file, url, type, name, size, storagePath, id }
+        const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+        const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/quicktime', 'video/webm'];
+
+        function handleFileDrop(e, cardId) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files);
+            processFiles(files, cardId);
         }
-        function submitContent() {
-            if (filesUploaded < 1) return;
-            // Advance pipeline to "Submitted"
-            document.getElementById('stage-creating').classList.remove('active');
-            document.getElementById('stage-creating').classList.add('done');
-            document.getElementById('stage-submitted').classList.add('active');
-            document.getElementById('demo-brief-status').textContent = 'SUBMITTED';
-            document.getElementById('demo-brief-status').className = 'brief-status st-review';
-            // Hide upload zone and countdown, show waiting message
-            document.getElementById('countdown-creation').innerHTML = '<div style=\"text-align:center; padding:16px;\"><div style=\"font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:8px;\">CONTENT SUBMITTED</div><div style=\"font-size:0.9rem; opacity:0.5; line-height:1.6;\">Awaiting brand review (24-hour window). Brands can only reject for factual inaccuracies or policy violations — your creative voice is protected. If no action is taken, payment auto-releases to you.</div></div>';
-            document.getElementById('upload-area').style.display = 'none';
-            document.getElementById('btn-submit-content').style.display = 'none';
-            notify('Content Submitted', 'Your content has been submitted for review. The brand has 24 hours to approve or reject. If no action is taken, payment auto-releases.', 'success');
+
+        function handleFileSelect(e, cardId) {
+            const files = Array.from(e.target.files);
+            processFiles(files, cardId);
+            e.target.value = ''; // reset so same file can be re-selected
+        }
+
+        async function processFiles(files, cardId) {
+            if (!uploadedFiles[cardId]) uploadedFiles[cardId] = [];
+
+            for (const file of files) {
+                if (!ALLOWED_TYPES.includes(file.type)) {
+                    showToast('Invalid File Type', `"${file.name}" is not a supported format. Use JPG, PNG, WebP, MP4, MOV, or WebM.`, 'warning');
+                    continue;
+                }
+                if (file.size > MAX_FILE_SIZE) {
+                    showToast('File Too Large', `"${file.name}" exceeds the 100MB limit.`, 'warning');
+                    continue;
+                }
+                await uploadFile(file, cardId);
+            }
+        }
+
+        async function uploadFile(file, cardId) {
+            const gallery = document.getElementById('gallery-' + cardId);
+            if (!gallery) return;
+
+            // Create placeholder card with progress
+            const placeholder = document.createElement('div');
+            placeholder.className = 'media-card uploading';
+            const isVideo = file.type.startsWith('video/');
+            placeholder.innerHTML = `
+                <div class="media-thumb">
+                    <div class="upload-progress">
+                        <div class="upload-progress-ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/><circle class="progress-arc" cx="18" cy="18" r="16" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="100.5 100.5" stroke-dashoffset="100.5" stroke-linecap="round"/></svg></div>
+                        <span class="upload-pct">0%</span>
+                    </div>
+                </div>
+                <div class="media-info">
+                    <span class="media-name">${escapeHtml(file.name)}</span>
+                    <span class="media-size">${formatFileSize(file.size)}</span>
+                </div>
+            `;
+            gallery.appendChild(placeholder);
+
+            // Upload to Supabase Storage
+            const ext = file.name.split('.').pop();
+            const safeName = crypto.randomUUID() + '.' + ext;
+            // Use a campaign-specific path; for demo cards, use a pseudo campaign id
+            const campaignId = document.getElementById(cardId)?.dataset?.campaignId || 'demo';
+            const storagePath = `${activeUserId}/${campaignId}/${safeName}`;
+
+            // Simulate progress since Supabase SDK doesn't emit upload progress
+            let progressInterval;
+            let fakeProgress = 0;
+            const arc = placeholder.querySelector('.progress-arc');
+            const pctEl = placeholder.querySelector('.upload-pct');
+            const circumference = 2 * Math.PI * 16; // ~100.5
+
+            progressInterval = setInterval(() => {
+                fakeProgress = Math.min(fakeProgress + Math.random() * 15 + 5, 90);
+                const offset = circumference - (fakeProgress / 100) * circumference;
+                if (arc) arc.style.strokeDashoffset = offset;
+                if (pctEl) pctEl.textContent = Math.round(fakeProgress) + '%';
+            }, 200);
+
+            const { data, error } = await _supabase.storage
+                .from('campaign-content')
+                .upload(storagePath, file, { contentType: file.type, upsert: false });
+
+            clearInterval(progressInterval);
+
+            if (error) {
+                placeholder.remove();
+                showToast('Upload Failed', `"${file.name}": ${error.message}`, 'warning');
+                return;
+            }
+
+            // Complete progress
+            if (arc) arc.style.strokeDashoffset = '0';
+            if (pctEl) pctEl.textContent = '100%';
+
+            // Get public URL
+            const { data: urlData } = _supabase.storage
+                .from('campaign-content')
+                .getPublicUrl(storagePath);
+            const publicUrl = urlData?.publicUrl || '';
+
+            // Save record to DB (non-blocking for demo cards)
+            let recordId = null;
+            if (campaignId !== 'demo') {
+                const { data: rec } = await _supabase.from('content_uploads').insert({
+                    campaign_id: campaignId,
+                    creator_id: activeUserId,
+                    file_name: file.name,
+                    file_type: file.type,
+                    file_size: file.size,
+                    storage_path: storagePath,
+                }).select('id').single();
+                recordId = rec?.id;
+            }
+
+            // Store in memory
+            const entry = { file, url: publicUrl, type: file.type, name: file.name, size: file.size, storagePath, id: recordId };
+            uploadedFiles[cardId].push(entry);
+
+            // Replace placeholder with real thumbnail
+            setTimeout(() => {
+                placeholder.classList.remove('uploading');
+                const idx = uploadedFiles[cardId].length - 1;
+                placeholder.innerHTML = buildMediaCardInner(entry, cardId, idx);
+                placeholder.onclick = () => openLightbox(cardId, idx);
+            }, 400);
+
+            // Enable submit button
+            const btn = cardId === 'demo-brief-1' ? document.getElementById('btn-submit-content') : document.querySelector(`#${cardId} .btn-submit-content`);
+            if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+
+            showToast('File Uploaded', `"${file.name}" uploaded successfully`, 'success', 3000);
+        }
+
+        function buildMediaCardInner(entry, cardId, idx) {
+            const isVideo = entry.type.startsWith('video/');
+            return `
+                <div class="media-thumb">
+                    ${isVideo
+                        ? `<video src="${entry.url}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></video>
+                           <div class="media-play-icon"><svg viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`
+                        : `<img src="${entry.url}" alt="${escapeHtml(entry.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+                    }
+                </div>
+                <div class="media-info">
+                    <span class="media-name">${escapeHtml(entry.name)}</span>
+                    <span class="media-size">${formatFileSize(entry.size)}</span>
+                </div>
+                <button class="media-remove" onclick="event.stopPropagation(); removeUpload('${cardId}', ${idx})" title="Remove">&times;</button>
+            `;
+        }
+
+        async function removeUpload(cardId, idx) {
+            const files = uploadedFiles[cardId];
+            if (!files || !files[idx]) return;
+            const entry = files[idx];
+
+            // Remove from storage
+            await _supabase.storage.from('campaign-content').remove([entry.storagePath]);
+
+            // Remove from DB if it had a record
+            if (entry.id) {
+                await _supabase.from('content_uploads').delete().eq('id', entry.id);
+            }
+
+            files.splice(idx, 1);
+            rebuildGallery(cardId);
+
+            // Disable submit if no files left
+            if (files.length === 0) {
+                const btn = cardId === 'demo-brief-1' ? document.getElementById('btn-submit-content') : document.querySelector(`#${cardId} .btn-submit-content`);
+                if (btn) { btn.style.opacity = '0.3'; btn.style.pointerEvents = 'none'; }
+            }
+        }
+
+        function rebuildGallery(cardId) {
+            const gallery = document.getElementById('gallery-' + cardId);
+            if (!gallery) return;
+            gallery.innerHTML = '';
+            (uploadedFiles[cardId] || []).forEach((entry, idx) => {
+                const card = document.createElement('div');
+                card.className = 'media-card';
+                card.innerHTML = buildMediaCardInner(entry, cardId, idx);
+                card.onclick = () => openLightbox(cardId, idx);
+                gallery.appendChild(card);
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        /* ── Lightbox / Media Viewer ── */
+        let lightboxCardId = null, lightboxIndex = 0;
+
+        function openLightbox(cardId, idx) {
+            const files = uploadedFiles[cardId];
+            if (!files || !files[idx]) return;
+            lightboxCardId = cardId;
+            lightboxIndex = idx;
+            renderLightbox();
+            document.getElementById('media-lightbox').classList.add('active');
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('media-lightbox');
+            lb.classList.remove('active');
+            // Pause any playing video
+            const vid = lb.querySelector('video');
+            if (vid) vid.pause();
+        }
+
+        function lightboxNav(dir) {
+            const files = uploadedFiles[lightboxCardId];
+            if (!files) return;
+            lightboxIndex = (lightboxIndex + dir + files.length) % files.length;
+            renderLightbox();
+        }
+
+        function renderLightbox() {
+            const files = uploadedFiles[lightboxCardId];
+            if (!files || !files[lightboxIndex]) return;
+            const entry = files[lightboxIndex];
+            const isVideo = entry.type.startsWith('video/');
+            const viewer = document.getElementById('lightbox-viewer');
+            const counter = document.getElementById('lightbox-counter');
+            const navs = document.querySelectorAll('.lb-nav');
+
+            if (isVideo) {
+                viewer.innerHTML = `<video src="${entry.url}" controls autoplay playsinline style="max-width:100%;max-height:80vh;border-radius:12px;"></video>`;
+            } else {
+                viewer.innerHTML = `<img src="${entry.url}" alt="${escapeHtml(entry.name)}" style="max-width:100%;max-height:80vh;border-radius:12px;">`;
+            }
+
+            counter.textContent = `${lightboxIndex + 1} / ${files.length}`;
+            document.getElementById('lightbox-filename').textContent = entry.name;
+
+            // Show/hide nav arrows
+            navs.forEach(n => n.style.display = files.length > 1 ? 'flex' : 'none');
+        }
+
+        /* ── Submit Content for Review ── */
+        async function submitContent(cardId) {
+            const files = uploadedFiles[cardId];
+            if (!files || files.length === 0) return;
+
+            const campaignId = document.getElementById(cardId)?.dataset?.campaignId;
+
+            // Advance pipeline (demo)
+            const stageCreating = document.getElementById('stage-creating');
+            const stageSubmitted = document.getElementById('stage-submitted');
+            const briefStatus = document.getElementById('demo-brief-status');
+            if (stageCreating) { stageCreating.classList.remove('active'); stageCreating.classList.add('done'); }
+            if (stageSubmitted) stageSubmitted.classList.add('active');
+            if (briefStatus) { briefStatus.textContent = 'SUBMITTED'; briefStatus.className = 'brief-status st-review'; }
+
+            // Show submitted message
+            const countdown = document.getElementById('countdown-creation');
+            if (countdown) countdown.innerHTML = '<div style="text-align:center; padding:16px;"><div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:8px;">CONTENT SUBMITTED</div><div style="font-size:0.9rem; opacity:0.5; line-height:1.6;">Awaiting brand review (24-hour window). Brands can only reject for factual inaccuracies or policy violations — your creative voice is protected. If no action is taken, payment auto-releases to you.</div></div>';
+            const uploadArea = document.getElementById('upload-area');
+            if (uploadArea) uploadArea.style.display = 'none';
+            const submitBtn = document.getElementById('btn-submit-content');
+            if (submitBtn) submitBtn.style.display = 'none';
+
+            showToast('Content Submitted!', `${files.length} file${files.length > 1 ? 's' : ''} submitted for brand review. You'll be notified of the outcome.`, 'success', 6000);
+
+            // Notify brand via edge function (if real campaign)
+            if (campaignId && campaignId !== 'demo') {
+                try {
+                    const { data: { session } } = await _supabase.auth.getSession();
+                    fetch(`${SUPABASE_URL}/functions/v1/notify-brand-upload`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token, 'apikey': SUPABASE_KEY },
+                        body: JSON.stringify({ campaign_id: campaignId }),
+                    }).catch(() => {});
+                } catch (e) { /* non-blocking */ }
+            }
         }
 
         initDashboard();

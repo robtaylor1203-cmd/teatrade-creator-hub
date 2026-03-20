@@ -222,6 +222,29 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // ── Persistent auth: auto-redirect if already logged in ──
+        (async function checkExistingSession() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session) {
+                // Verify they're a verified creator before redirecting
+                const { data: creator } = await _supabase.from('creators')
+                    .select('is_verified')
+                    .eq('email', session.user.email)
+                    .single();
+                if (creator?.is_verified) {
+                    window.location.href = 'creator-dash.html';
+                    return;
+                }
+            }
+        })();
+
+        // Listen for auth state changes (e.g. session restored from another tab)
+        _supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                window.location.href = 'creator-dash.html';
+            }
+        });
+
         // ── Live founding counter ──
         (async function loadFoundingCount() {
             try {

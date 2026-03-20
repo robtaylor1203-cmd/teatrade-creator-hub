@@ -324,16 +324,17 @@
                 <!-- Review Panel -->
                 <div class="review-panel">
                     <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#fbbf24; margin-bottom:16px; text-transform:uppercase;">Submitted Content Preview</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:20px;">
-                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center;">
+                    <div class="brand-media-gallery" id="brand-gallery-brand-campaign-1" style="display:flex; gap:12px; overflow-x:auto; padding:4px 0 16px 0; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;">
+                        <!-- Real uploads will load here; demo fallback below -->
+                        <div class="brand-media-card" style="flex:0 0 140px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
                             <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">TikTok Reel 1</div>
                         </div>
-                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center;">
+                        <div class="brand-media-card" style="flex:0 0 140px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
                             <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">TikTok Reel 2</div>
                         </div>
-                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center;">
+                        <div class="brand-media-card" style="flex:0 0 140px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
                             <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">IG Story</div>
                         </div>
@@ -785,6 +786,20 @@
         </div>
     </div>
 
+    <!-- Brand Media Lightbox -->
+    <div id="brand-media-lightbox" class="modal-overlay" onclick="if(event.target===this)closeBrandLightbox()">
+        <div style="position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; padding:24px;">
+            <button onclick="closeBrandLightbox()" style="position:absolute; top:20px; right:24px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:1.4rem; cursor:pointer; z-index:10; backdrop-filter:blur(8px);">&times;</button>
+            <button class="brand-lb-nav" onclick="event.stopPropagation(); brandLbNav(-1)" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8249;</button>
+            <button class="brand-lb-nav" onclick="event.stopPropagation(); brandLbNav(1)" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8250;</button>
+            <div id="brand-lb-viewer" style="display:flex; align-items:center; justify-content:center;"></div>
+            <div style="margin-top:16px; text-align:center;">
+                <div id="brand-lb-filename" style="font-size:0.8rem; font-weight:700; opacity:0.7;"></div>
+                <div id="brand-lb-counter" style="font-size:0.65rem; opacity:0.3; margin-top:4px;"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
@@ -1223,6 +1238,97 @@
             document.getElementById('escrow-breakdown').textContent = `£${esc.creatorPayout.toFixed(2)} to creator + £${esc.fee.toFixed(2)} platform fee (${PLATFORM_FEE * 100}%)`;
         }
 
+        /* ── Load Real Uploaded Content for Review ── */
+        const brandUploadCache = {};
+
+        async function loadCampaignUploads(campaignId, galleryId) {
+            const gallery = document.getElementById(galleryId);
+            if (!gallery || !campaignId) return;
+
+            const { data: uploads, error } = await _supabase
+                .from('content_uploads')
+                .select('id, file_name, file_type, file_size, storage_path, uploaded_at')
+                .eq('campaign_id', campaignId)
+                .order('uploaded_at', { ascending: true });
+
+            if (error || !uploads || uploads.length === 0) return; // keep demo fallback
+
+            brandUploadCache[campaignId] = uploads.map(u => {
+                const { data: urlData } = _supabase.storage.from('campaign-content').getPublicUrl(u.storage_path);
+                return { ...u, url: urlData?.publicUrl || '' };
+            });
+
+            gallery.innerHTML = '';
+            brandUploadCache[campaignId].forEach((u, idx) => {
+                const isVideo = u.file_type.startsWith('video/');
+                const card = document.createElement('div');
+                card.className = 'brand-media-card';
+                card.style.cssText = 'flex:0 0 160px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; overflow:hidden; cursor:pointer; scroll-snap-align:start; transition:all 0.3s;';
+                card.innerHTML = `
+                    <div style="width:100%;height:110px;position:relative;overflow:hidden;background:rgba(0,0,0,0.3);">
+                        ${isVideo
+                            ? `<video src="${u.url}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video>
+                               <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);"><svg viewBox="0 0 24 24" fill="white" width="14" height="14"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`
+                            : `<img src="${u.url}" style="width:100%;height:100%;object-fit:cover;">`
+                        }
+                    </div>
+                    <div style="padding:8px 10px;">
+                        <div style="font-size:0.65rem;font-weight:600;opacity:0.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(u.file_name)}</div>
+                        <div style="font-size:0.55rem;opacity:0.3;margin-top:2px;">${formatBytes(u.file_size)}</div>
+                    </div>
+                `;
+                card.onclick = () => openBrandLightbox(campaignId, idx);
+                gallery.appendChild(card);
+            });
+        }
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(str));
+            return d.innerHTML;
+        }
+
+        /* ── Brand Media Lightbox ── */
+        let brandLbCampaign = null, brandLbIdx = 0;
+
+        function openBrandLightbox(campaignId, idx) {
+            brandLbCampaign = campaignId;
+            brandLbIdx = idx;
+            renderBrandLightbox();
+            document.getElementById('brand-media-lightbox').classList.add('active');
+        }
+        function closeBrandLightbox() {
+            const lb = document.getElementById('brand-media-lightbox');
+            lb.classList.remove('active');
+            const vid = lb.querySelector('video');
+            if (vid) vid.pause();
+        }
+        function brandLbNav(dir) {
+            const files = brandUploadCache[brandLbCampaign];
+            if (!files) return;
+            brandLbIdx = (brandLbIdx + dir + files.length) % files.length;
+            renderBrandLightbox();
+        }
+        function renderBrandLightbox() {
+            const files = brandUploadCache[brandLbCampaign];
+            if (!files || !files[brandLbIdx]) return;
+            const u = files[brandLbIdx];
+            const isVideo = u.file_type.startsWith('video/');
+            const viewer = document.getElementById('brand-lb-viewer');
+            viewer.innerHTML = isVideo
+                ? `<video src="${u.url}" controls autoplay playsinline style="max-width:100%;max-height:80vh;border-radius:12px;"></video>`
+                : `<img src="${u.url}" style="max-width:100%;max-height:80vh;border-radius:12px;">`;
+            document.getElementById('brand-lb-counter').textContent = `${brandLbIdx + 1} / ${files.length}`;
+            document.getElementById('brand-lb-filename').textContent = u.file_name;
+            document.querySelectorAll('.brand-lb-nav').forEach(n => n.style.display = files.length > 1 ? 'flex' : 'none');
+        }
+
         /* ── Campaign Actions ── */
         async function approveContent(cardId, campaignId) {
             const card = document.getElementById(cardId);
@@ -1279,6 +1385,19 @@
                 </div>`;
             if (cd) cd.style.display = 'none';
             notify('Escrow Released', `£${esc.creatorPayout.toFixed(2)} has been released to the creator. TeaTrade fee of £${esc.fee.toFixed(2)} deducted. Campaign complete.`, 'success');
+
+            // Send celebration email to creator (fire-and-forget)
+            if (campaignId) {
+                try {
+                    const session = await _supabase.auth.getSession();
+                    const token = session.data.session?.access_token;
+                    fetch(`${SUPABASE_URL}/functions/v1/notify-creator-paid`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                        body: JSON.stringify({ campaign_id: campaignId }),
+                    }).catch(() => {});
+                } catch (e) { /* non-blocking */ }
+            }
         }
 
         /* ── Reject (policy violation only — no revisions) ── */
@@ -1547,6 +1666,16 @@
                 notify('Invite Failed', error.message, 'error');
             } else {
                 notify('Creator Invited', 'Invitation sent. The creator will see this brief in their Campaign Briefs section.', 'success');
+                // Send email notification to creator (fire-and-forget)
+                try {
+                    const session = await _supabase.auth.getSession();
+                    const token = session.data.session?.access_token;
+                    fetch(`${SUPABASE_URL}/functions/v1/notify-creator`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                        body: JSON.stringify({ creator_id: creatorId, campaign_id: campaignId }),
+                    }).catch(() => {});
+                } catch (e) { /* non-blocking */ }
             }
         }
 
