@@ -895,6 +895,89 @@ input:focus, select:focus, textarea:focus {
     background: rgba(255,94,0,0.03);
 }
 
+/* ── Profile Cards ── */
+.profile-card {
+    background: rgba(255,255,255,0.015);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+.profile-card:hover {
+    border-color: rgba(255,255,255,0.12);
+}
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--brand);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.profile-card-header svg { opacity: 0.6; }
+.profile-card-body {
+    padding: 20px;
+}
+.profile-card-body input[type="text"],
+.profile-card-body input[type="url"],
+.profile-card-body textarea {
+    margin-bottom: 0;
+}
+
+/* ── Public Portfolio Toggle (inline) ── */
+.profile-public-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+.profile-public-label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    transition: color 0.3s;
+}
+.profile-public-toggle:has(input:checked) .profile-public-label {
+    color: var(--accent);
+}
+.profile-public-toggle input {
+    display: none;
+}
+.toggle-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 24px;
+    transition: background 0.3s;
+    flex-shrink: 0;
+}
+.profile-public-toggle:has(input:checked) .toggle-track {
+    background: rgba(0,255,133,0.2);
+}
+.toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: #555;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+.profile-public-toggle:has(input:checked) .toggle-knob {
+    left: 23px;
+    background: var(--accent);
+}
+
 .brief-budget-display {
     background: rgba(255,94,0,0.04);
     border: 1px solid rgba(255,94,0,0.15);

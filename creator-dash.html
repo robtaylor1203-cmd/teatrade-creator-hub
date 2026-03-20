@@ -103,106 +103,151 @@
 
         <!-- ── Section: Creator Profile ── -->
         <div id="section-profile" style="display:none;">
-            <div class="section-label" style="margin-bottom:16px;">Creator Profile</div>
-            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:28px;">Complete your profile to appear in brand search results. The more detail you provide, the better our algorithm matches you with relevant campaigns.</p>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                <div class="section-label" style="margin-bottom:0;">Creator Profile</div>
+                <!-- Public Portfolio Toggle — inline -->
+                <label class="profile-public-toggle">
+                    <span class="profile-public-label">Public Portfolio</span>
+                    <input type="checkbox" id="public-profile-toggle" onchange="togglePublicProfile()">
+                    <span class="toggle-track"><span class="toggle-knob" id="toggle-knob"></span></span>
+                </label>
+            </div>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:36px;">Complete your profile to appear in brand search results. The more detail you provide, the better our algorithm matches you with relevant campaigns.</p>
 
-            <div id="profile-incomplete-banner" style="display:none; background:linear-gradient(135deg, rgba(255,94,0,0.04), rgba(0,255,133,0.04)); border:1px solid rgba(0,255,133,0.15); border-radius:12px; padding:20px; margin-bottom:24px; text-align:center;">
+            <div id="profile-incomplete-banner" style="display:none; background:linear-gradient(135deg, rgba(255,94,0,0.04), rgba(0,255,133,0.04)); border:1px solid rgba(0,255,133,0.15); border-radius:12px; padding:20px; margin-bottom:32px; text-align:center;">
                 <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:6px;">PROFILE INCOMPLETE</div>
                 <p style="opacity:0.4; font-size:0.82rem; margin:0;">Fill in all fields below to unlock brand matching and appear in the talent pool.</p>
             </div>
 
-            <div class="brief-form-group">
-                <label class="brief-form-label">Display Name</label>
-                <input type="text" id="profile-name" placeholder="Your name or creator alias (visible to brands)">
-            </div>
-
-            <div class="brief-form-group">
-                <label class="brief-form-label">Bio</label>
-                <textarea id="profile-bio" placeholder="Tell brands about yourself — your tea journey, content style, what makes you unique..." style="min-height:100px;"></textarea>
-            </div>
-
-            <div class="brief-form-group">
-                <label class="brief-form-label">Location</label>
-                <input type="text" id="profile-location" list="location-options" placeholder="Start typing your city..." autocomplete="off">
-                <datalist id="location-options">
-                    <option value="London, UK"><option value="Manchester, UK"><option value="Birmingham, UK"><option value="Leeds, UK"><option value="Bristol, UK"><option value="Edinburgh, UK"><option value="Glasgow, UK"><option value="Liverpool, UK"><option value="Cardiff, UK"><option value="Belfast, UK">
-                    <option value="Newcastle, UK"><option value="Sheffield, UK"><option value="Nottingham, UK"><option value="Brighton, UK"><option value="Cambridge, UK"><option value="Oxford, UK"><option value="Bath, UK"><option value="York, UK"><option value="Southampton, UK"><option value="Aberdeen, UK">
-                    <option value="New York, US"><option value="Los Angeles, US"><option value="Chicago, US"><option value="San Francisco, US"><option value="Austin, US"><option value="Portland, US"><option value="Seattle, US"><option value="Miami, US"><option value="Denver, US"><option value="Boston, US">
-                    <option value="Toronto, CA"><option value="Vancouver, CA"><option value="Montreal, CA"><option value="Sydney, AU"><option value="Melbourne, AU"><option value="Auckland, NZ"><option value="Dublin, IE"><option value="Amsterdam, NL"><option value="Berlin, DE"><option value="Paris, FR">
-                    <option value="Tokyo, JP"><option value="Taipei, TW"><option value="Seoul, KR"><option value="Singapore, SG"><option value="Hong Kong, HK"><option value="Shanghai, CN"><option value="Kunming, CN"><option value="Mumbai, IN"><option value="Kolkata, IN"><option value="Bangkok, TH">
-                </datalist>
-            </div>
-
-            <div class="brief-form-group">
-                <label class="brief-form-label">Tea Niches — select all that apply</label>
-                <div class="profile-chip-grid">
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Green Tea"><span>Green Tea</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Black Tea"><span>Black Tea</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Oolong"><span>Oolong</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Pu-erh"><span>Pu-erh</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="White Tea"><span>White Tea</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Matcha"><span>Matcha</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Herbal / Tisane"><span>Herbal / Tisane</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Chai / Spiced"><span>Chai / Spiced</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Ceremonial"><span>Ceremonial</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Wellness / Functional"><span>Wellness / Functional</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Sourcing / Direct Trade"><span>Sourcing / Direct Trade</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Tea Education"><span>Tea Education</span></label>
+            <!-- Identity card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>Identity</span>
                 </div>
-            </div>
-
-            <div class="brief-form-group">
-                <label class="brief-form-label">Content Types — what do you create?</label>
-                <div class="profile-chip-grid">
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Short-form Video"><span>Short-form Video</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Long-form Video"><span>Long-form Video</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Photography"><span>Photography</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Blog / Written"><span>Blog / Written</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Live Streaming"><span>Live Streaming</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="ASMR / Sensory"><span>ASMR / Sensory</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Educational"><span>Educational / Tutorial</span></label>
-                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Review / Tasting"><span>Review / Tasting</span></label>
-                </div>
-            </div>
-
-            <div class="brief-form-group">
-                <label class="brief-form-label">Showcase Links — up to 5</label>
-                <div class="showcase-link-grid">
-                    <div class="showcase-link-row"><span class="showcase-link-icon">1</span><input type="url" class="showcase-link" placeholder="https://youtube.com/..."></div>
-                    <div class="showcase-link-row"><span class="showcase-link-icon">2</span><input type="url" class="showcase-link" placeholder="https://tiktok.com/@..."></div>
-                    <div class="showcase-link-row"><span class="showcase-link-icon">3</span><input type="url" class="showcase-link" placeholder="https://instagram.com/..."></div>
-                    <div class="showcase-link-row"><span class="showcase-link-icon">4</span><input type="url" class="showcase-link" placeholder="https://..."></div>
-                    <div class="showcase-link-row"><span class="showcase-link-icon">5</span><input type="url" class="showcase-link" placeholder="https://..."></div>
-                </div>
-            </div>
-
-            <!-- Public Profile Toggle -->
-            <div style="background:rgba(0,255,133,0.03); border:1px solid rgba(0,255,133,0.1); border-radius:var(--radius-md); padding:20px; margin-bottom:20px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-                    <div>
-                        <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:4px;">PUBLIC PORTFOLIO</div>
-                        <div style="font-size:0.82rem; opacity:0.4;">Share a public link so brands can discover you outside the marketplace.</div>
-                    </div>
-                    <label style="position:relative; width:44px; height:24px; flex-shrink:0; cursor:pointer;">
-                        <input type="checkbox" id="public-profile-toggle" onchange="togglePublicProfile()" style="opacity:0; width:0; height:0;">
-                        <span style="position:absolute; inset:0; background:rgba(255,255,255,0.08); border-radius:24px; transition:0.3s;"></span>
-                        <span id="toggle-knob" style="position:absolute; top:3px; left:3px; width:18px; height:18px; background:#555; border-radius:50%; transition:0.3s;"></span>
-                    </label>
-                </div>
-                <div class="brief-form-group" style="margin-bottom:0;">
-                    <label class="brief-form-label">Username (your public URL)</label>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:0.78rem; opacity:0.3; white-space:nowrap;">creator.teatrade.co.uk/profile?u=</span>
-                        <input type="text" id="profile-username" placeholder="your-username" style="flex:1;" pattern="[a-z0-9\-]+" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9\-]/g, '')">
+                <div class="profile-card-body">
+                    <div class="brief-form-group" style="margin-bottom:0;">
+                        <label class="brief-form-label">Display Name</label>
+                        <input type="text" id="profile-name" placeholder="Your name or creator alias (visible to brands)" style="margin-bottom:0;">
                     </div>
                 </div>
-                <div id="public-profile-link" style="display:none; margin-top:12px; text-align:center;">
-                    <a id="public-profile-url" href="#" target="_blank" style="color:var(--accent); font-size:0.78rem;">View your public profile →</a>
+            </div>
+
+            <!-- Bio card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>Bio</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="brief-form-group" style="margin-bottom:0;">
+                        <textarea id="profile-bio" placeholder="Tell brands about yourself — your tea journey, content style, what makes you unique..." style="min-height:120px; margin-bottom:0;"></textarea>
+                    </div>
                 </div>
             </div>
 
-            <div style="text-align:center; margin-top:8px;">
-                <button class="btn-pill" style="width:50%; padding:14px 0; font-size:0.65rem;" onclick="saveCreatorProfile()">SAVE PROFILE</button>
+            <!-- Location card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>Location</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="brief-form-group" style="margin-bottom:0;">
+                        <input type="text" id="profile-location" list="location-options" placeholder="Start typing your city..." autocomplete="off" style="margin-bottom:0;">
+                        <datalist id="location-options">
+                            <option value="London, UK"><option value="Manchester, UK"><option value="Birmingham, UK"><option value="Leeds, UK"><option value="Bristol, UK"><option value="Edinburgh, UK"><option value="Glasgow, UK"><option value="Liverpool, UK"><option value="Cardiff, UK"><option value="Belfast, UK">
+                            <option value="Newcastle, UK"><option value="Sheffield, UK"><option value="Nottingham, UK"><option value="Brighton, UK"><option value="Cambridge, UK"><option value="Oxford, UK"><option value="Bath, UK"><option value="York, UK"><option value="Southampton, UK"><option value="Aberdeen, UK">
+                            <option value="New York, US"><option value="Los Angeles, US"><option value="Chicago, US"><option value="San Francisco, US"><option value="Austin, US"><option value="Portland, US"><option value="Seattle, US"><option value="Miami, US"><option value="Denver, US"><option value="Boston, US">
+                            <option value="Toronto, CA"><option value="Vancouver, CA"><option value="Montreal, CA"><option value="Sydney, AU"><option value="Melbourne, AU"><option value="Auckland, NZ"><option value="Dublin, IE"><option value="Amsterdam, NL"><option value="Berlin, DE"><option value="Paris, FR">
+                            <option value="Tokyo, JP"><option value="Taipei, TW"><option value="Seoul, KR"><option value="Singapore, SG"><option value="Hong Kong, HK"><option value="Shanghai, CN"><option value="Kunming, CN"><option value="Mumbai, IN"><option value="Kolkata, IN"><option value="Bangkok, TH">
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tea Niches card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+                    <span>Tea Niches</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-chip-grid">
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Green Tea"><span>Green Tea</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Black Tea"><span>Black Tea</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Oolong"><span>Oolong</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Pu-erh"><span>Pu-erh</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="White Tea"><span>White Tea</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Matcha"><span>Matcha</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Herbal / Tisane"><span>Herbal / Tisane</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Chai / Spiced"><span>Chai / Spiced</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Ceremonial"><span>Ceremonial</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Wellness / Functional"><span>Wellness / Functional</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Sourcing / Direct Trade"><span>Sourcing / Direct Trade</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="niche-check" value="Tea Education"><span>Tea Education</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Types card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    <span>Content Types</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-chip-grid">
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Short-form Video"><span>Short-form Video</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Long-form Video"><span>Long-form Video</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Photography"><span>Photography</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Blog / Written"><span>Blog / Written</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Live Streaming"><span>Live Streaming</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="ASMR / Sensory"><span>ASMR / Sensory</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Educational"><span>Educational / Tutorial</span></label>
+                        <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Review / Tasting"><span>Review / Tasting</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Showcase Links card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <span>Showcase Links</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="showcase-link-grid">
+                        <div class="showcase-link-row"><span class="showcase-link-icon">1</span><input type="url" class="showcase-link" placeholder="https://youtube.com/..."></div>
+                        <div class="showcase-link-row"><span class="showcase-link-icon">2</span><input type="url" class="showcase-link" placeholder="https://tiktok.com/@..."></div>
+                        <div class="showcase-link-row"><span class="showcase-link-icon">3</span><input type="url" class="showcase-link" placeholder="https://instagram.com/..."></div>
+                        <div class="showcase-link-row"><span class="showcase-link-icon">4</span><input type="url" class="showcase-link" placeholder="https://..."></div>
+                        <div class="showcase-link-row"><span class="showcase-link-icon">5</span><input type="url" class="showcase-link" placeholder="https://..."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public URL card -->
+            <div class="profile-card" id="public-url-card" style="border-color:rgba(0,255,133,0.12); background:rgba(0,255,133,0.02);">
+                <div class="profile-card-header" style="color:var(--accent); border-color:rgba(0,255,133,0.08);">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span>Public URL</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="brief-form-group" style="margin-bottom:0;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:0.78rem; opacity:0.3; white-space:nowrap;">creator.teatrade.co.uk/profile?u=</span>
+                            <input type="text" id="profile-username" placeholder="your-username" style="flex:1; margin-bottom:0;" pattern="[a-z0-9\-]+" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9\-]/g, '')">
+                        </div>
+                    </div>
+                    <div id="public-profile-link" style="display:none; margin-top:12px; text-align:center;">
+                        <a id="public-profile-url" href="#" target="_blank" style="color:var(--accent); font-size:0.78rem;">View your public profile →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:12px;">
+                <button class="btn-pill" style="width:50%; padding:16px 0; font-size:0.65rem;" onclick="saveCreatorProfile()">SAVE PROFILE</button>
             </div>
             <div id="profile-saved-msg" style="display:none; text-align:center; margin-top:12px; color:var(--accent); font-size:0.75rem; font-weight:700;">Profile saved successfully.</div>
         </div>
@@ -1397,11 +1442,8 @@
             document.getElementById('profile-incomplete-banner').style.display = data.profile_complete ? 'none' : 'block';
             // Public profile
             const toggle = document.getElementById('public-profile-toggle');
-            const knob = document.getElementById('toggle-knob');
             if (data.public_profile_enabled) {
                 toggle.checked = true;
-                knob.style.left = '23px'; knob.style.background = 'var(--accent)';
-                knob.parentElement.querySelector('span:first-of-type').style.background = 'rgba(0,255,133,0.2)';
             }
             if (data.username) {
                 document.getElementById('profile-username').value = data.username;
@@ -1452,15 +1494,11 @@
 
         async function togglePublicProfile() {
             const toggle = document.getElementById('public-profile-toggle');
-            const knob = document.getElementById('toggle-knob');
             const enabled = toggle.checked;
             if (enabled) {
                 const uname = document.getElementById('profile-username').value.trim();
                 if (!uname) { notify('Username Required', 'Set a username before enabling your public profile.', 'error'); toggle.checked = false; return; }
             }
-            knob.style.left = enabled ? '23px' : '3px';
-            knob.style.background = enabled ? 'var(--accent)' : '#555';
-            knob.parentElement.querySelector('span:first-of-type').style.background = enabled ? 'rgba(0,255,133,0.2)' : 'rgba(255,255,255,0.08)';
             const { error } = await _supabase.from('creators').update({ public_profile_enabled: enabled }).eq('id', activeUserId);
             if (error) { notify('Error', error.message, 'error'); toggle.checked = !enabled; return; }
             const linkEl = document.getElementById('public-profile-link');
