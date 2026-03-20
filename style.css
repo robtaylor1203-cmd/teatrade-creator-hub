@@ -2323,7 +2323,8 @@ header {
     /* ── Landing page nav → hamburger menu ── */
     nav {
         padding: 0 16px;
-        height: 56px;
+        height: auto;
+        min-height: 56px;
         flex-wrap: wrap;
         position: fixed;
         overflow: hidden;
@@ -2339,7 +2340,8 @@ header {
     nav.nav-open .nav-hamburger span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
     nav.nav-open .nav-hamburger span:nth-child(2) { opacity: 0; }
     nav.nav-open .nav-hamburger span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-    .nav-hamburger { display: flex; }
+    .nav-hamburger { display: flex; align-items: center; }
+    .nav-links-center { flex: none; }
     .nav-links {
         display: none;
         flex-direction: column;
@@ -2366,6 +2368,7 @@ header {
     }
     nav.nav-open .nav-actions { display: flex !important; }
     .nav-actions .btn-pill { width: 100%; text-align: center; }
+    .nav-actions-end { flex: none; }
     nav > .logo { flex: 1; }
     nav > div:first-child { flex: 1; }
     .logo { font-size: 1.4rem; }
