@@ -784,6 +784,90 @@ input:focus, select:focus, textarea:focus {
     padding: 0;
     accent-color: var(--brand);
 }
+
+/* ── Profile chip selector (wrap-flow tags) ── */
+.profile-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.profile-chip {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 100px;
+    font-size: 0.78rem;
+    opacity: 0.55;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.profile-chip:hover {
+    opacity: 0.8;
+    border-color: rgba(255,255,255,0.15);
+}
+.profile-chip input[type="checkbox"] {
+    display: none;
+}
+.profile-chip:has(input:checked) {
+    border-color: var(--brand);
+    background: rgba(255,94,0,0.08);
+    opacity: 1;
+    color: #fff;
+}
+.profile-chip:has(input:checked) span::before {
+    content: '✓ ';
+    color: var(--brand);
+    font-weight: 700;
+}
+
+/* ── Showcase link rows ── */
+.showcase-link-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.showcase-link-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.showcase-link-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.35;
+    flex-shrink: 0;
+}
+.showcase-link-row input.showcase-link {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+}
+.showcase-link-row input.showcase-link::placeholder {
+    color: rgba(255,255,255,0.2);
+}
+.showcase-link-row input.showcase-link:focus {
+    outline: none;
+    border-color: var(--brand);
+    background: rgba(255,94,0,0.03);
+}
+
 .brief-budget-display {
     background: rgba(255,94,0,0.04);
     border: 1px solid rgba(255,94,0,0.15);

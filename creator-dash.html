@@ -112,51 +112,62 @@
 
             <div class="brief-form-group">
                 <label class="brief-form-label">Location</label>
-                <input type="text" id="profile-location" placeholder="e.g. London, UK">
+                <input type="text" id="profile-location" list="location-options" placeholder="Start typing your city..." autocomplete="off">
+                <datalist id="location-options">
+                    <option value="London, UK"><option value="Manchester, UK"><option value="Birmingham, UK"><option value="Leeds, UK"><option value="Bristol, UK"><option value="Edinburgh, UK"><option value="Glasgow, UK"><option value="Liverpool, UK"><option value="Cardiff, UK"><option value="Belfast, UK">
+                    <option value="Newcastle, UK"><option value="Sheffield, UK"><option value="Nottingham, UK"><option value="Brighton, UK"><option value="Cambridge, UK"><option value="Oxford, UK"><option value="Bath, UK"><option value="York, UK"><option value="Southampton, UK"><option value="Aberdeen, UK">
+                    <option value="New York, US"><option value="Los Angeles, US"><option value="Chicago, US"><option value="San Francisco, US"><option value="Austin, US"><option value="Portland, US"><option value="Seattle, US"><option value="Miami, US"><option value="Denver, US"><option value="Boston, US">
+                    <option value="Toronto, CA"><option value="Vancouver, CA"><option value="Montreal, CA"><option value="Sydney, AU"><option value="Melbourne, AU"><option value="Auckland, NZ"><option value="Dublin, IE"><option value="Amsterdam, NL"><option value="Berlin, DE"><option value="Paris, FR">
+                    <option value="Tokyo, JP"><option value="Taipei, TW"><option value="Seoul, KR"><option value="Singapore, SG"><option value="Hong Kong, HK"><option value="Shanghai, CN"><option value="Kunming, CN"><option value="Mumbai, IN"><option value="Kolkata, IN"><option value="Bangkok, TH">
+                </datalist>
             </div>
 
             <div class="brief-form-group">
                 <label class="brief-form-label">Tea Niches — select all that apply</label>
-                <div class="brief-check-grid">
-                    <label><input type="checkbox" class="niche-check" value="Green Tea"> Green Tea</label>
-                    <label><input type="checkbox" class="niche-check" value="Black Tea"> Black Tea</label>
-                    <label><input type="checkbox" class="niche-check" value="Oolong"> Oolong</label>
-                    <label><input type="checkbox" class="niche-check" value="Pu-erh"> Pu-erh</label>
-                    <label><input type="checkbox" class="niche-check" value="White Tea"> White Tea</label>
-                    <label><input type="checkbox" class="niche-check" value="Matcha"> Matcha</label>
-                    <label><input type="checkbox" class="niche-check" value="Herbal / Tisane"> Herbal / Tisane</label>
-                    <label><input type="checkbox" class="niche-check" value="Chai / Spiced"> Chai / Spiced</label>
-                    <label><input type="checkbox" class="niche-check" value="Ceremonial"> Ceremonial</label>
-                    <label><input type="checkbox" class="niche-check" value="Wellness / Functional"> Wellness / Functional</label>
-                    <label><input type="checkbox" class="niche-check" value="Sourcing / Direct Trade"> Sourcing / Direct Trade</label>
-                    <label><input type="checkbox" class="niche-check" value="Tea Education"> Tea Education</label>
+                <div class="profile-chip-grid">
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Green Tea"><span>Green Tea</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Black Tea"><span>Black Tea</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Oolong"><span>Oolong</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Pu-erh"><span>Pu-erh</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="White Tea"><span>White Tea</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Matcha"><span>Matcha</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Herbal / Tisane"><span>Herbal / Tisane</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Chai / Spiced"><span>Chai / Spiced</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Ceremonial"><span>Ceremonial</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Wellness / Functional"><span>Wellness / Functional</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Sourcing / Direct Trade"><span>Sourcing / Direct Trade</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="niche-check" value="Tea Education"><span>Tea Education</span></label>
                 </div>
             </div>
 
             <div class="brief-form-group">
                 <label class="brief-form-label">Content Types — what do you create?</label>
-                <div class="brief-check-grid">
-                    <label><input type="checkbox" class="ctype-check" value="Short-form Video"> Short-form Video (Reels / TikTok)</label>
-                    <label><input type="checkbox" class="ctype-check" value="Long-form Video"> Long-form Video (YouTube)</label>
-                    <label><input type="checkbox" class="ctype-check" value="Photography"> Photography</label>
-                    <label><input type="checkbox" class="ctype-check" value="Blog / Written"> Blog / Written Content</label>
-                    <label><input type="checkbox" class="ctype-check" value="Live Streaming"> Live Streaming</label>
-                    <label><input type="checkbox" class="ctype-check" value="ASMR / Sensory"> ASMR / Sensory</label>
-                    <label><input type="checkbox" class="ctype-check" value="Educational"> Educational / Tutorial</label>
-                    <label><input type="checkbox" class="ctype-check" value="Review / Tasting"> Review / Tasting Notes</label>
+                <div class="profile-chip-grid">
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Short-form Video"><span>Short-form Video</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Long-form Video"><span>Long-form Video</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Photography"><span>Photography</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Blog / Written"><span>Blog / Written</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Live Streaming"><span>Live Streaming</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="ASMR / Sensory"><span>ASMR / Sensory</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Educational"><span>Educational / Tutorial</span></label>
+                    <label class="profile-chip"><input type="checkbox" class="ctype-check" value="Review / Tasting"><span>Review / Tasting</span></label>
                 </div>
             </div>
 
             <div class="brief-form-group">
-                <label class="brief-form-label">Showcase Links — up to 5 (YouTube, TikTok, Instagram URLs)</label>
-                <input type="url" class="showcase-link" placeholder="https://...">
-                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
-                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
-                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
-                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
+                <label class="brief-form-label">Showcase Links — up to 5</label>
+                <div class="showcase-link-grid">
+                    <div class="showcase-link-row"><span class="showcase-link-icon">1</span><input type="url" class="showcase-link" placeholder="https://youtube.com/..."></div>
+                    <div class="showcase-link-row"><span class="showcase-link-icon">2</span><input type="url" class="showcase-link" placeholder="https://tiktok.com/@..."></div>
+                    <div class="showcase-link-row"><span class="showcase-link-icon">3</span><input type="url" class="showcase-link" placeholder="https://instagram.com/..."></div>
+                    <div class="showcase-link-row"><span class="showcase-link-icon">4</span><input type="url" class="showcase-link" placeholder="https://..."></div>
+                    <div class="showcase-link-row"><span class="showcase-link-icon">5</span><input type="url" class="showcase-link" placeholder="https://..."></div>
+                </div>
             </div>
 
-            <button class="btn-pill" style="width:100%; padding:16px 0; font-size:0.65rem; margin-top:8px;" onclick="saveCreatorProfile()">SAVE PROFILE</button>
+            <div style="text-align:center; margin-top:8px;">
+                <button class="btn-pill" style="width:50%; padding:14px 0; font-size:0.65rem;" onclick="saveCreatorProfile()">SAVE PROFILE</button>
+            </div>
             <div id="profile-saved-msg" style="display:none; text-align:center; margin-top:12px; color:var(--accent); font-size:0.75rem; font-weight:700;">Profile saved successfully.</div>
         </div>
 
