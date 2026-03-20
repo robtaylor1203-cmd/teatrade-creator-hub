@@ -534,7 +534,13 @@
 
             <!-- Campaign Details -->
             <div class="brief-form-group">
-                <label class="brief-form-label">Campaign Details</label>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0;">
+                    <label class="brief-form-label" style="margin-bottom:0;">Campaign Details</label>
+                    <button type="button" id="ai-polish-btn" class="btn-pill btn-outline" style="padding:6px 14px; font-size:0.55rem; display:flex; align-items:center; gap:6px;" onclick="polishBrief()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
+                        AI POLISH
+                    </button>
+                </div>
                 <input type="text" id="brief-title" placeholder="Campaign Title (e.g. Spring Oolong Launch 2026)">
                 <textarea id="brief-description" placeholder="Describe your campaign goals, key messaging, product details, and anything the creator should know about your brand voice..." style="min-height:100px;"></textarea>
             </div>
@@ -894,6 +900,52 @@
         function downloadInvoice(campaignId, role) {
             showToast('Invoice', 'Generating secure PDF invoice...', 'info', 4000);
             // Future: call generate-invoice edge function
+        }
+
+        async function polishBrief() {
+            const textarea = document.getElementById('brief-description');
+            const btn = document.getElementById('ai-polish-btn');
+            const rawText = textarea.value.trim();
+
+            if (!rawText) {
+                showToast('AI Polish', 'Write some brief notes first, then click AI Polish to refine them.', 'warning', 4000);
+                return;
+            }
+
+            // Loading state
+            textarea.disabled = true;
+            textarea.style.opacity = '0.4';
+            textarea.style.borderColor = 'rgba(0,255,133,0.3)';
+            textarea.style.boxShadow = '0 0 20px rgba(0,255,133,0.05)';
+            btn.disabled = true;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite;"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg> POLISHING...';
+
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/polish-brief`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'apikey': SUPABASE_KEY,
+                    },
+                    body: JSON.stringify({ text: rawText }),
+                });
+                const result = await res.json();
+                if (result.error) throw new Error(result.error);
+                textarea.value = result.polished;
+                showToast('AI Polish', 'Brief has been professionally refined.', 'success', 4000);
+            } catch (err) {
+                showToast('AI Polish', 'Could not polish brief: ' + err.message, 'warning', 5000);
+            } finally {
+                textarea.disabled = false;
+                textarea.style.opacity = '';
+                textarea.style.borderColor = '';
+                textarea.style.boxShadow = '';
+                btn.disabled = false;
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg> AI POLISH';
+            }
         }
 
         /* ── Contract System (Brand Side) ── */
