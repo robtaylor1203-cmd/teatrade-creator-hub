@@ -300,15 +300,21 @@
 
         // ── Step 3: Creator Signs ──
         async function creatorSign() {
+            try {
             log(3, '→ Calling sign-contract as CREATOR...', 'info');
-            log(3, '  (In production, this happens when creator clicks "I Accept & Sign" in the modal)', 'info');
             const token = await getToken();
             const res = await fetch(`${SUPABASE_URL}/functions/v1/sign-contract`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
                 body: JSON.stringify({ contract_id: testContractId }),
             });
-            const result = await res.json();
+            log(3, '  HTTP ' + res.status + ' ' + res.statusText, res.ok ? 'ok' : 'err');
+            const text = await res.text();
+            let result;
+            try { result = JSON.parse(text); } catch(e) {
+                log(3, '✗ Non-JSON response: ' + text.substring(0, 300), 'err');
+                return;
+            }
 
             if (result.error) { log(3, '✗ ' + result.error, 'err'); return; }
 
@@ -337,28 +343,40 @@
             setPill('pill-creator-sig', true);
             markDone(3);
             document.getElementById('step-4').style.display = 'block';
+            } catch(e) { log(3, '✗ UNCAUGHT ERROR: ' + e.message, 'err'); }
         }
 
         // ── Step 4: Brand Counter-Signs ──
         async function brandSign() {
+            try {
             log(4, '→ Calling sign-contract Edge Function as BRAND...', 'info');
-            log(4, '  (Edge function now detects creator already signed → assigns brand role)', 'info');
+            log(4, '  (Edge function detects creator already signed → assigns brand role)', 'info');
             const token = await getToken();
             const res = await fetch(`${SUPABASE_URL}/functions/v1/sign-contract`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
                 body: JSON.stringify({ contract_id: testContractId }),
             });
-            const result = await res.json();
+            log(4, '  HTTP ' + res.status + ' ' + res.statusText, res.ok ? 'ok' : 'err');
+            const text = await res.text();
+            let result;
+            try { result = JSON.parse(text); } catch(e) {
+                log(4, '✗ Non-JSON response: ' + text.substring(0, 300), 'err');
+                return;
+            }
 
-            if (result.error) { log(4, '✗ ' + result.error, 'err'); return; }
+            if (result.error) {
+                log(4, '✗ ' + result.error, 'err');
+                log(4, '  (If "already signed" — run Cleanup and start from Step 1)', 'info');
+                return;
+            }
 
             log(4, '✓ Brand counter-signature recorded via Edge Function!', 'ok');
             log(4, '  Signer Role: ' + result.signer_role, 'info');
             log(4, '  Contract Status: ' + result.contract_status, 'info');
             log(4, '  Fully Executed: ' + result.fully_executed, 'info');
 
-            // Load the fully stamped contract from DB (edge function already stamped both signatures)
+            // Load the fully stamped contract from DB
             const { data: contract } = await _supabase.from('contracts')
                 .select('contract_html').eq('id', testContractId).single();
             if (contract) {
@@ -391,6 +409,7 @@
             markDone(4);
             document.getElementById('step-5').style.display = 'block';
             document.getElementById('step-6').style.display = 'block';
+            } catch(e) { log(4, '✗ UNCAUGHT ERROR: ' + e.message, 'err'); }
         }
 
         // ── Step 5: Verify ──

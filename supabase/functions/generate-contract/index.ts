@@ -49,10 +49,18 @@ serve(async (req) => {
       .single();
 
     if (existingContract) {
+      // Fetch full contract HTML for preview
+      const { data: fullContract } = await db
+        .from('contracts')
+        .select('contract_html')
+        .eq('id', existingContract.id)
+        .single();
+
       return new Response(JSON.stringify({
         contract_id: existingContract.id,
         contract_ref: existingContract.contract_ref,
         status: existingContract.status,
+        contract_html: fullContract?.contract_html || '',
         already_exists: true,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
