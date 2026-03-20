@@ -63,9 +63,18 @@ serve(async (req) => {
       .single();
 
     let signerRole: string;
-    if (creator && user.email === creator.email) {
+    const matchesCreator = creator && user.email === creator.email;
+    const matchesBrand = user.email === contract.brand_email;
+
+    if (matchesCreator && matchesBrand) {
+      // Same person is both creator and brand (e.g. testing) — pick whichever hasn't signed yet
+      const { data: creatorSigExists } = await db
+        .from('contract_signatures').select('id')
+        .eq('contract_id', contract_id).eq('signer_role', 'creator').single();
+      signerRole = creatorSigExists ? 'brand' : 'creator';
+    } else if (matchesCreator) {
       signerRole = 'creator';
-    } else if (user.email === contract.brand_email) {
+    } else if (matchesBrand) {
       signerRole = 'brand';
     } else {
       return new Response(JSON.stringify({ error: 'You are not a party to this contract' }), {

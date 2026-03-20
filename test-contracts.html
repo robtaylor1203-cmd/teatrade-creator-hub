@@ -341,92 +341,57 @@
 
         // ── Step 4: Brand Counter-Signs ──
         async function brandSign() {
-            log(4, '→ Calling sign-contract as BRAND...', 'info');
-            log(4, '  (In production, brand must sign before they can approve content & release payment)', 'info');
-            log(4, '  (Test mode: same account for both parties — inserting brand signature directly)', 'info');
+            log(4, '→ Calling sign-contract Edge Function as BRAND...', 'info');
+            log(4, '  (Edge function now detects creator already signed → assigns brand role)', 'info');
+            const token = await getToken();
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/sign-contract`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                body: JSON.stringify({ contract_id: testContractId }),
+            });
+            const result = await res.json();
 
-            // Check if already signed (idempotent)
-            const { data: existingSig } = await _supabase.from('contract_signatures')
-                .select('id').eq('contract_id', testContractId).eq('signer_role', 'brand').single();
+            if (result.error) { log(4, '✗ ' + result.error, 'err'); return; }
 
-            if (existingSig) {
-                log(4, '⚠ Brand has already signed this contract — skipping insert', 'info');
-            } else {
-                const { error: sigErr } = await _supabase.from('contract_signatures').insert({
-                    contract_id: testContractId,
-                    signer_role: 'brand',
-                    signer_email: userEmail,
-                    ip_address: 'test-mode',
-                    user_agent: navigator.userAgent,
-                });
-                if (sigErr) { log(4, '✗ Signature insert failed: ' + sigErr.message, 'err'); return; }
-            }
+            log(4, '✓ Brand counter-signature recorded via Edge Function!', 'ok');
+            log(4, '  Signer Role: ' + result.signer_role, 'info');
+            log(4, '  Contract Status: ' + result.contract_status, 'info');
+            log(4, '  Fully Executed: ' + result.fully_executed, 'info');
 
-            // Update contract status
-            await _supabase.from('contracts').update({
-                status: 'fully_executed',
-                fully_executed_at: new Date().toISOString(),
-            }).eq('id', testContractId);
-
-            // Stamp signatures into the HTML (mirrors what the edge function does in production)
-            const { data: sigs } = await _supabase.from('contract_signatures')
-                .select('signer_role, signer_email, signed_at, ip_address')
-                .eq('contract_id', testContractId);
+            // Load the fully stamped contract from DB (edge function already stamped both signatures)
             const { data: contract } = await _supabase.from('contracts')
                 .select('contract_html').eq('id', testContractId).single();
-
-            if (contract && sigs) {
-                let stampedHtml = contract.contract_html;
-                const creatorSig = sigs.find(s => s.signer_role === 'creator');
-                const brandSig = sigs.find(s => s.signer_role === 'brand');
-
-                if (creatorSig) {
-                    stampedHtml = stampedHtml.replace(
-                        '<div class="sig-meta" id="sig-creator">Awaiting signature\u2026</div>',
-                        `<div class="sig-meta" id="sig-creator">Signed by ${esc(creatorSig.signer_email)}<br>${new Date(creatorSig.signed_at).toLocaleString('en-GB')}<br>IP: ${esc(creatorSig.ip_address)}</div>`
-                    );
-                }
-                if (brandSig) {
-                    stampedHtml = stampedHtml.replace(
-                        '<div class="sig-meta" id="sig-brand">Awaiting signature\u2026</div>',
-                        `<div class="sig-meta" id="sig-brand">Signed by ${esc(brandSig.signer_email)}<br>${new Date(brandSig.signed_at).toLocaleString('en-GB')}<br>IP: ${esc(brandSig.ip_address)}</div>`
-                    );
-                }
-
-                // Save stamped HTML back to DB
-                await _supabase.from('contracts').update({ contract_html: stampedHtml }).eq('id', testContractId);
-
-                // Show preview with stamped signatures
+            if (contract) {
                 const iframe = document.getElementById('preview-signed');
                 iframe.style.display = 'block';
-                iframe.srcdoc = stampedHtml;
-                log(4, '↓ Signed contract preview below — signatures are now stamped into the document ↓', 'ok');
+                iframe.srcdoc = contract.contract_html;
+                log(4, '↓ Fully executed contract below — both signatures stamped by the server ↓', 'ok');
             }
 
-            log(4, '✓ Brand counter-signature recorded!', 'ok');
-            log(4, '  Contract is now FULLY EXECUTED', 'ok');
+            if (result.fully_executed) {
+                log(4, '', 'info');
+                log(4, '  EMAILS SENT (3):', 'ok');
+                log(4, '  → Creator: fully executed contract with both signatures', 'info');
+                log(4, '  → Brand: fully executed contract with both signatures', 'info');
+                log(4, '  → contact@teatrade.co.uk: [COPY] of the same', 'info');
+                log(4, '  Check your inbox for the contract email from TeaTrade!', 'ok');
+                setPill('pill-email', true);
+            }
+
             log(4, '', 'info');
-            log(4, '  WHAT THE BRAND SEES:', 'info');
-            log(4, '  → When clicking "Approve & Release Payment", contract modal appears', 'info');
-            log(4, '  → Full agreement preview with creator\'s signature visible', 'info');
+            log(4, '  WHAT THE BRAND SEES IN PRODUCTION:', 'info');
+            log(4, '  → Click "Approve & Release Payment" → contract modal appears', 'info');
+            log(4, '  → Full agreement preview with creator\'s signature already visible', 'info');
             log(4, '  → "I have read and understood..." checkbox', 'info');
             log(4, '  → "I ACCEPT & COUNTER-SIGN" button', 'info');
             log(4, '  → Success: "Both parties have signed. Copy emailed to all parties."', 'info');
-            log(4, '  → Then payment release proceeds automatically', 'info');
-            log(4, '', 'info');
-            log(4, '  EMAILS TRIGGERED (3):', 'info');
-            log(4, '  → Creator: fully executed contract with both signatures', 'info');
-            log(4, '  → Brand: fully executed contract with both signatures', 'info');
-            log(4, '  → contact@teatrade.co.uk: [COPY] of the same', 'info');
+            log(4, '  → Payment release proceeds automatically', 'info');
 
             setPill('pill-brand-sig', true);
-            setPill('pill-email', true);
             markDone(4);
             document.getElementById('step-5').style.display = 'block';
             document.getElementById('step-6').style.display = 'block';
         }
-
-        function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
         // ── Step 5: Verify ──
         async function verifyAll() {
@@ -435,35 +400,35 @@
             // Check contract record
             const { data: contract } = await _supabase.from('contracts').select('*').eq('id', testContractId).single();
             if (contract) {
-                log(5, '', '');
+                log(5, '', 'info');
                 log(5, '── CONTRACT RECORD ──', 'info');
-                log(5, '  ID: ' + contract.id, '');
-                log(5, '  Ref: ' + contract.contract_ref, '');
+                log(5, '  ID: ' + contract.id, 'info');
+                log(5, '  Ref: ' + contract.contract_ref, 'info');
                 log(5, '  Status: ' + contract.status, contract.status === 'fully_executed' ? 'ok' : 'err');
-                log(5, '  Brand: ' + contract.brand_email, '');
-                log(5, '  Creator: ' + contract.creator_id, '');
-                log(5, '  Created: ' + contract.created_at, '');
-                log(5, '  Fully Executed: ' + (contract.fully_executed_at || 'N/A'), '');
-                log(5, '  Storage Path: ' + (contract.storage_path || 'Not stored (test mode)'), '');
-                log(5, '  HTML Length: ' + (contract.contract_html?.length || 0) + ' chars', '');
+                log(5, '  Brand: ' + contract.brand_email, 'info');
+                log(5, '  Creator: ' + contract.creator_id, 'info');
+                log(5, '  Created: ' + contract.created_at, 'info');
+                log(5, '  Fully Executed: ' + (contract.fully_executed_at || 'N/A'), 'info');
+                log(5, '  Storage Path: ' + (contract.storage_path || 'Not stored yet'), contract.storage_path ? 'ok' : 'err');
+                log(5, '  HTML Length: ' + (contract.contract_html?.length || 0) + ' chars', 'info');
             }
 
             // Check signatures
             const { data: sigs } = await _supabase.from('contract_signatures').select('*').eq('contract_id', testContractId);
-            log(5, '', '');
+            log(5, '', 'info');
             log(5, '── SIGNATURES (' + (sigs?.length || 0) + ') ──', 'info');
             sigs?.forEach(s => {
                 log(5, `  ${s.signer_role.toUpperCase()}: ${s.signer_email}`, 'ok');
-                log(5, `    Signed: ${s.signed_at}`, '');
-                log(5, `    IP: ${s.ip_address}`, '');
-                log(5, `    UA: ${s.user_agent?.substring(0, 80)}...`, '');
+                log(5, `    Signed: ${s.signed_at}`, 'info');
+                log(5, `    IP: ${s.ip_address}`, 'info');
+                log(5, `    UA: ${s.user_agent?.substring(0, 80)}...`, 'info');
             });
 
             // Check campaign link
             const { data: campaign } = await _supabase.from('campaigns').select('id, contract_id, brief_title').eq('id', testCampaignId).single();
-            log(5, '', '');
+            log(5, '', 'info');
             log(5, '── CAMPAIGN LINK ──', 'info');
-            log(5, '  Campaign: ' + campaign?.brief_title, '');
+            log(5, '  Campaign: ' + campaign?.brief_title, 'info');
             log(5, '  Contract ID on campaign: ' + (campaign?.contract_id || 'Not linked'), campaign?.contract_id ? 'ok' : 'err');
 
             // Check storage
