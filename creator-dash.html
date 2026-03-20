@@ -337,10 +337,36 @@
             <div class="section-label" style="margin-bottom: 16px;">Escrow Wallet</div>
 
             <!-- Stripe Connect onboarding banner (hidden when connected) -->
-            <div id="stripe-onboard-banner" style="display:none; background:linear-gradient(135deg, #1a1a2e, #16213e); border:1px solid rgba(99,102,241,0.3); border-radius:12px; padding:28px; margin-bottom:24px; text-align:center;">
-                <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:10px;">PAYOUT SETUP REQUIRED</div>
-                <p style="opacity:0.5; font-size:0.9rem; line-height:1.6; margin-bottom:20px;">Connect your bank account via Stripe to receive campaign payments. This takes less than 2 minutes.</p>
-                <button class="btn-pill" style="padding:14px 48px; font-size:0.65rem;" onclick="startStripeOnboarding()">SET UP PAYOUTS</button>
+            <div id="stripe-onboard-banner" style="display:none; margin-bottom:28px;">
+                <div style="background:linear-gradient(135deg, rgba(0,255,133,0.03), rgba(255,94,0,0.03)); border:1px solid rgba(0,255,133,0.12); border-radius:16px; padding:36px 32px; text-align:center;">
+                    <div style="width:56px; height:56px; border-radius:50%; background:rgba(0,255,133,0.08); border:1px solid rgba(0,255,133,0.2); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    </div>
+                    <div style="font-size:0.6rem; font-weight:800; letter-spacing:3px; color:var(--accent); margin-bottom:8px;">SET UP PAYOUTS</div>
+                    <h3 style="font-family:'Playfair Display'; font-size:1.6rem; margin:0 0 12px;">Connect Your Bank</h3>
+                    <p style="opacity:0.4; font-size:0.85rem; line-height:1.7; max-width:400px; margin:0 auto 24px;">Link your bank account securely via Stripe to receive campaign payments. It takes under 2 minutes and your details are never stored on our servers.</p>
+
+                    <div style="display:flex; justify-content:center; gap:32px; margin-bottom:28px;">
+                        <div style="text-align:center;">
+                            <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">1</div>
+                            <div style="font-size:0.7rem; opacity:0.4;">Verify identity</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">2</div>
+                            <div style="font-size:0.7rem; opacity:0.4;">Add bank details</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">3</div>
+                            <div style="font-size:0.7rem; opacity:0.4;">Start earning</div>
+                        </div>
+                    </div>
+
+                    <button id="payout-setup-btn" class="btn-pill" style="padding:14px 48px; font-size:0.65rem;" onclick="startStripeOnboarding()">CONNECT BANK ACCOUNT</button>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:16px; opacity:0.25;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span style="font-size:0.7rem;">Secured by Stripe — bank-level encryption</span>
+                    </div>
+                </div>
             </div>
 
             <div class="stats-grid">
@@ -364,7 +390,10 @@
             <div style="margin-top: 32px;">
                 <div class="section-label" style="margin-bottom: 16px;">Transaction History</div>
                 <div id="wallet-transactions">
-                    <div style="text-align:center; padding:32px; opacity:0.3;">No transactions yet</div>
+                    <div style="text-align:center; padding:40px; opacity:0.25;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        <div style="font-size:0.82rem;">No transactions yet</div>
+                    </div>
                 </div>
             </div>
 
@@ -993,6 +1022,8 @@
         async function startStripeOnboarding() {
             const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
             if (devMode) { notify('Dev Mode', 'Stripe onboarding is disabled in dev mode.', 'info'); return; }
+            const btn = document.getElementById('payout-setup-btn');
+            if (btn) { btn.innerText = 'CONNECTING...'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
             try {
                 const session = await _supabase.auth.getSession();
                 const token = session.data.session?.access_token;
@@ -1001,10 +1032,23 @@
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
                 });
                 const result = await res.json();
-                if (result.error) throw new Error(result.error);
+                if (result.error) {
+                    if (result.error.includes('signed up for Connect')) {
+                        notify('Platform Setup Pending', 'Stripe Connect is being configured for TeaTrade. Payout setup will be available very shortly — we\'ll notify you when it\'s ready.', 'info');
+                    } else {
+                        throw new Error(result.error);
+                    }
+                    return;
+                }
+                if (result.already_onboarded) {
+                    notify('Already Connected', 'Your Stripe payout account is already set up and active.', 'success');
+                    return;
+                }
                 window.location.href = result.url;
             } catch (err) {
                 notify('Onboarding Error', err.message, 'error');
+            } finally {
+                if (btn) { btn.innerText = 'CONNECT BANK ACCOUNT'; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
             }
         }
 
@@ -1017,7 +1061,7 @@
             const banner = document.getElementById('stripe-onboard-banner');
             const withdrawSection = document.getElementById('wallet-withdraw-section');
 
-            if (!account || account.onboarding_status !== 'complete') {
+            if (!account || !account.onboarding_complete) {
                 banner.style.display = 'block';
                 withdrawSection.style.display = 'none';
             } else {
