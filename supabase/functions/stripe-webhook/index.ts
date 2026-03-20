@@ -25,6 +25,26 @@ serve(async (req) => {
     const event = JSON.parse(payload);
     const db = getServiceClient();
 
+    // ── Idempotency guard: skip if event already processed ──
+    const { data: existing } = await db
+      .from('processed_webhook_events')
+      .select('event_id')
+      .eq('event_id', event.id)
+      .single();
+
+    if (existing) {
+      return new Response(JSON.stringify({ received: true, skipped: 'duplicate' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Record this event as processed BEFORE handling (claim it)
+    await db.from('processed_webhook_events').insert({
+      event_id: event.id,
+      event_type: event.type,
+    });
+
     switch (event.type) {
       // ─── Checkout completed → Lock escrow OR confirm entry fee ───
       case 'checkout.session.completed': {

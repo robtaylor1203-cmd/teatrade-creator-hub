@@ -1618,6 +1618,53 @@ header {
     margin: 0;
 }
 
+/* ── ESCROW TRUST INDICATOR BAR ── */
+.escrow-trust-bar {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    margin: 12px 0 4px;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: var(--radius-sm);
+}
+.etb-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.etb-step span {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    opacity: 0.25;
+    text-transform: uppercase;
+}
+.etb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    flex-shrink: 0;
+}
+.etb-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    margin: 0 8px;
+    min-width: 12px;
+}
+.etb-step.done span { opacity: 0.5; }
+.etb-step.done .etb-dot { background: rgba(255,255,255,0.3); }
+.etb-line.done { background: rgba(255,255,255,0.15); }
+.etb-step.active span { opacity: 0.8; color: var(--brand); }
+.etb-step.active .etb-dot { background: var(--brand); box-shadow: 0 0 8px rgba(255,94,0,0.4); }
+.etb-step.secured span { color: var(--accent); opacity: 0.9; }
+.etb-step.secured .etb-dot { background: var(--accent); box-shadow: 0 0 8px rgba(0,255,133,0.4); }
+.etb-step.paid span { color: var(--accent); opacity: 0.9; }
+.etb-step.paid .etb-dot { background: var(--accent); box-shadow: 0 0 8px rgba(0,255,133,0.4); }
+
 /* ── CAMPAIGN PIPELINE (stage tracker) ── */
 .pipeline-tracker {
     display: flex;

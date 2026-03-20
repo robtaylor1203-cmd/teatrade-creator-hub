@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Profile | TeaTrade</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-hero { max-width: 720px; margin: 0 auto; padding: 60px 24px 40px; }
+        .profile-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 1.4rem; letter-spacing: 1px;
+            margin: 0 auto 20px;
+        }
+        .profile-display-name { font-size: 1.6rem; font-weight: 900; text-align: center; margin-bottom: 4px; }
+        .profile-location-text { text-align: center; font-size: 0.82rem; opacity: 0.4; margin-bottom: 20px; }
+        .profile-bio-text { text-align: center; font-size: 0.92rem; opacity: 0.6; line-height: 1.8; max-width: 560px; margin: 0 auto 32px; }
+        .profile-section-title {
+            font-size: 0.6rem; font-weight: 800; letter-spacing: 3px;
+            text-transform: uppercase; opacity: 0.3; margin-bottom: 12px;
+        }
+        .profile-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+        .profile-tag {
+            padding: 6px 14px; border-radius: var(--radius-pill);
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.75rem; font-weight: 600; opacity: 0.65;
+        }
+        .profile-tag.niche { border-color: rgba(0,255,133,0.15); color: var(--accent); opacity: 1; }
+        .profile-tag.ctype { border-color: rgba(255,94,0,0.15); color: var(--brand); opacity: 1; }
+        .profile-links { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+        .profile-link-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px; border-radius: var(--radius-sm);
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+            text-decoration: none; color: #fff; font-size: 0.85rem; transition: all 0.2s;
+        }
+        .profile-link-item:hover { border-color: var(--accent); background: rgba(0,255,133,0.03); }
+        .profile-link-num {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: 800; opacity: 0.4; flex-shrink: 0;
+        }
+        .profile-link-url { opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .profile-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+        .profile-badge-pill {
+            padding: 8px 16px; border-radius: var(--radius-pill);
+            background: rgba(0,255,133,0.06); border: 1px solid rgba(0,255,133,0.15);
+            font-size: 0.72rem; font-weight: 700; color: var(--accent);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .profile-badge-pill svg { width: 14px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 2; }
+        .profile-not-found {
+            text-align: center; padding: 120px 24px;
+            font-size: 1.1rem; opacity: 0.4;
+        }
+        .profile-back {
+            display: inline-block; margin-bottom: 20px; font-size: 0.75rem;
+            opacity: 0.35; text-decoration: none; color: #fff; transition: opacity 0.2s;
+        }
+        .profile-back:hover { opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div style="flex: 1;"><a href="index.html" class="logo">TeaTrade<span style="color:var(--accent)">.</span></a></div>
+        <div style="flex: 1; display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="btn-pill btn-outline" onclick="window.location.href='index.html'">Home</button>
+        </div>
+    </nav>
+
+    <div id="profile-loading" class="profile-hero" style="text-align:center; padding-top:120px;">
+        <div style="opacity:0.3; font-size:0.85rem;">Loading profile...</div>
+    </div>
+
+    <div id="profile-not-found" class="profile-not-found" style="display:none;">
+        <div style="font-size:2rem; margin-bottom:12px;">🍵</div>
+        <div>This creator profile doesn't exist or isn't public.</div>
+        <a href="index.html" style="color:var(--accent); font-size:0.85rem; margin-top:16px; display:inline-block;">← Back to TeaTrade</a>
+    </div>
+
+    <div id="profile-content" class="profile-hero" style="display:none;">
+        <a href="index.html" class="profile-back">← teatrade.co.uk</a>
+
+        <div class="profile-avatar" id="pub-avatar"></div>
+        <div class="profile-display-name" id="pub-name"></div>
+        <div class="profile-location-text" id="pub-location"></div>
+        <div class="profile-bio-text" id="pub-bio"></div>
+
+        <div id="pub-badges-section" style="display:none;">
+            <div class="profile-section-title">Verified Badges</div>
+            <div class="profile-badges" id="pub-badges"></div>
+        </div>
+
+        <div id="pub-niches-section" style="display:none;">
+            <div class="profile-section-title">Tea Niches</div>
+            <div class="profile-tags" id="pub-niches"></div>
+        </div>
+
+        <div id="pub-ctypes-section" style="display:none;">
+            <div class="profile-section-title">Content Types</div>
+            <div class="profile-tags" id="pub-ctypes"></div>
+        </div>
+
+        <div id="pub-links-section" style="display:none;">
+            <div class="profile-section-title">Showcase</div>
+            <div class="profile-links" id="pub-links"></div>
+        </div>
+    </div>
+
+<script>
+    const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    (async function loadPublicProfile() {
+        const params = new URLSearchParams(window.location.search);
+        const username = params.get('u');
+        if (!username || username.length < 2) {
+            document.getElementById('profile-loading').style.display = 'none';
+            document.getElementById('profile-not-found').style.display = 'block';
+            return;
+        }
+
+        const { data: creator, error } = await _supabase
+            .from('creators')
+            .select('display_name, bio, location, tea_niches, content_types, showcase_links, badges_earned, public_profile_enabled')
+            .eq('username', username)
+            .eq('public_profile_enabled', true)
+            .single();
+
+        document.getElementById('profile-loading').style.display = 'none';
+
+        if (error || !creator) {
+            document.getElementById('profile-not-found').style.display = 'block';
+            return;
+        }
+
+        // Populate
+        const initials = (creator.display_name || '??').substring(0, 2).toUpperCase();
+        document.getElementById('pub-avatar').textContent = initials;
+        document.getElementById('pub-name').textContent = creator.display_name || 'Creator';
+        document.getElementById('pub-location').textContent = creator.location || '';
+        document.getElementById('pub-bio').textContent = creator.bio || '';
+
+        document.title = (creator.display_name || 'Creator') + ' | TeaTrade';
+
+        // Badges
+        const badges = creator.badges_earned || [];
+        if (badges.length > 0) {
+            document.getElementById('pub-badges-section').style.display = 'block';
+            document.getElementById('pub-badges').innerHTML = badges.map(b =>
+                `<div class="profile-badge-pill"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${b}</div>`
+            ).join('');
+        }
+
+        // Niches
+        const niches = creator.tea_niches || [];
+        if (niches.length > 0) {
+            document.getElementById('pub-niches-section').style.display = 'block';
+            document.getElementById('pub-niches').innerHTML = niches.map(n =>
+                `<span class="profile-tag niche">${n}</span>`
+            ).join('');
+        }
+
+        // Content types
+        const ctypes = creator.content_types || [];
+        if (ctypes.length > 0) {
+            document.getElementById('pub-ctypes-section').style.display = 'block';
+            document.getElementById('pub-ctypes').innerHTML = ctypes.map(t =>
+                `<span class="profile-tag ctype">${t}</span>`
+            ).join('');
+        }
+
+        // Showcase links
+        const links = creator.showcase_links || [];
+        if (links.length > 0) {
+            document.getElementById('pub-links-section').style.display = 'block';
+            document.getElementById('pub-links').innerHTML = links.map((url, i) => {
+                const display = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="profile-link-item">
+                    <span class="profile-link-num">${i + 1}</span>
+                    <span class="profile-link-url">${display}</span>
+                </a>`;
+            }).join('');
+        }
+
+        document.getElementById('profile-content').style.display = 'block';
+    })();
+</script>
+
+</body>
+</html>

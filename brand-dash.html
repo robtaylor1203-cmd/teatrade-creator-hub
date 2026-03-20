@@ -343,6 +343,9 @@
                         <button class="btn-approve accept" onclick="approveContent('brand-campaign-1')">APPROVE &amp; RELEASE PAYMENT</button>
                         <button class="btn-approve reject" onclick="openRejectModal('brand-campaign-1')">REJECT — POLICY VIOLATION</button>
                     </div>
+                    <div style="text-align:center; margin-top:12px;">
+                        <button style="background:none; border:none; color:#666; font-size:0.7rem; cursor:pointer; text-decoration:underline; opacity:0.5;" onclick="openDisputeModal('brand-campaign-1')">Raise a formal dispute</button>
+                    </div>
                 </div>
             </div>
 
@@ -648,8 +651,20 @@
                 </div>
             </div>
 
-            <button class="btn-pill" style="width:100%; padding:16px 0;" onclick="submitBrief()">LOCK ESCROW &amp; POST BRIEF</button>
-            <p style="opacity:0.2; font-size:0.7rem; text-align:center; margin-top:12px;">By posting, you agree that funds will be locked in TeaTrade escrow until campaign completion.</p>
+            <!-- Legal Consent -->
+            <div class="brief-form-group" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:20px;">
+                <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--brand); margin-bottom:12px; text-transform:uppercase;">Legal Agreement</div>
+                <div id="escrow-contract-preview" style="max-height:160px; overflow-y:auto; font-size:0.75rem; opacity:0.4; line-height:1.7; margin-bottom:16px; padding:12px; background:rgba(0,0,0,0.2); border-radius:8px;">
+                    By proceeding, you agree to the TeaTrade Creator Content Agreement. Upon escrow lock, funds are held by TeaTrade and will only be released to the assigned creator upon your approval of submitted content, or automatically after the 24-hour review window. Disputes are mediated by the TeaTrade team. Platform fee (12%) is deducted at deposit. Full contract terms will be generated and sent to both parties upon creator assignment.
+                </div>
+                <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:0.78rem; opacity:0.7;">
+                    <input type="checkbox" id="escrow-legal-consent" style="margin-top:3px; accent-color:var(--brand);" onchange="toggleEscrowButton()">
+                    <span>I have reviewed the escrow terms and agree to deposit funds under the TeaTrade Creator Content Agreement. I understand funds are non-refundable once content is approved.</span>
+                </label>
+            </div>
+
+            <button id="btn-lock-escrow" class="btn-pill" style="width:100%; padding:16px 0; opacity:0.35; pointer-events:none;" onclick="submitBrief()">LOCK ESCROW &amp; POST BRIEF</button>
+            <p style="opacity:0.2; font-size:0.7rem; text-align:center; margin-top:12px;">Funds are held securely via Stripe until campaign completion or dispute resolution.</p>
         </div>
     </div>
 
@@ -688,6 +703,19 @@
             <textarea id="reject-evidence" placeholder="Provide specific evidence (timestamps, screenshots description, exact factual errors)..." style="min-height:90px;"></textarea>
             <p style="opacity:0.3; font-size:0.72rem; margin-bottom:16px;">All rejections trigger an independent TeaTrade review. If the rejection is found to be invalid, escrow auto-releases to the creator and your account is flagged.</p>
             <button class="btn-pill" style="width:100%; background:rgba(255,68,68,0.15); color:#ff4444; border:1px solid rgba(255,68,68,0.3);" onclick="submitRejection()">SUBMIT REJECTION FOR REVIEW</button>
+        </div>
+    </div>
+
+    <!-- Dispute Modal -->
+    <div id="dispute-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 520px;">
+            <div class="modal-close" onclick="closeDisputeModal()">×</div>
+            <span style="color:#fbbf24; letter-spacing:3px; font-size:0.65rem; font-weight:800;">FORMAL DISPUTE</span>
+            <h2 style="margin:10px 0 8px 0;">Raise a Dispute.</h2>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:20px;">Disputes are reviewed by the TeaTrade mediation team within 48 hours. Escrow funds are frozen until resolution. Only raise a dispute if you believe there is a genuine breach of the campaign agreement.</p>
+            <textarea id="dispute-reason" placeholder="Describe the issue in detail — what went wrong, what was agreed, and what evidence you have..." style="min-height:120px;"></textarea>
+            <p style="opacity:0.3; font-size:0.72rem; margin-bottom:16px;">Frivolous disputes may result in account restrictions. All evidence is reviewed impartially.</p>
+            <button class="btn-pill" style="width:100%; background:rgba(251,191,36,0.15); color:#fbbf24; border:1px solid rgba(251,191,36,0.3);" onclick="disputeCampaign()">SUBMIT DISPUTE</button>
         </div>
     </div>
 
@@ -859,6 +887,13 @@
         function openBriefModal() { document.getElementById('brief-modal').classList.add('active'); }
         function closeBriefModal() { document.getElementById('brief-modal').classList.remove('active'); }
 
+        function toggleEscrowButton() {
+            const checked = document.getElementById('escrow-legal-consent').checked;
+            const btn = document.getElementById('btn-lock-escrow');
+            btn.style.opacity = checked ? '1' : '0.35';
+            btn.style.pointerEvents = checked ? 'auto' : 'none';
+        }
+
         async function submitBrief() {
             const title = document.getElementById('brief-title').value;
             const description = document.getElementById('brief-description').value;
@@ -884,6 +919,7 @@
             if (!videoCount && !photoCount) { notify('Deliverables', 'Select at least one deliverable (videos or photos).', 'error'); return; }
             if (platforms.length === 0) { notify('Platform', 'Select at least one target platform.', 'error'); return; }
             if (badges.length === 0) { notify('Expertise', 'Select at least one required creator badge.', 'error'); return; }
+            if (!document.getElementById('escrow-legal-consent').checked) { notify('Legal Consent', 'You must agree to the escrow terms before proceeding.', 'error'); return; }
 
             const esc = calculateEscrow(parseFloat(budget));
 
@@ -1160,6 +1196,49 @@
                     <div style="font-size:0.82rem; opacity:0.4; line-height:1.7; max-width:420px; margin:0 auto;">Reason: <strong style="color:#ff4444;">${reason.value}</strong><br>Our independent panel will review within 48 hours. If the rejection is upheld, escrow is refunded. If not, payment auto-releases to the creator.</div>
                 </div>`;
             notify('Dispute Filed', 'Your rejection has been submitted to the TeaTrade independent review panel. Escrow remains locked. Resolution within 48 hours.', 'info');
+        }
+
+        /* ── Dispute (formal mediation request) ── */
+        let activeDisputeCard = '';
+        function openDisputeModal(cardId) {
+            activeDisputeCard = cardId;
+            document.getElementById('dispute-reason').value = '';
+            document.getElementById('dispute-modal').classList.add('active');
+        }
+        function closeDisputeModal() { document.getElementById('dispute-modal').classList.remove('active'); }
+        async function disputeCampaign() {
+            const reason = document.getElementById('dispute-reason').value;
+            if (!reason || reason.length < 10) { notify('More Detail Needed', 'Please describe the issue in at least 10 characters.', 'error'); return; }
+            const card = document.getElementById(activeDisputeCard);
+            const cid = card ? card.dataset.campaignId : null;
+            const devMode = new URLSearchParams(window.location.search).get('dev') === 'true';
+            if (!devMode && cid) {
+                try {
+                    const sess = await _supabase.auth.getSession();
+                    const resp = await fetch('https://hfdjdiduacehchuwvajr.supabase.co/functions/v1/dispute-escrow', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sess.data.session.access_token },
+                        body: JSON.stringify({ campaign_id: cid, reason: reason })
+                    });
+                    const data = await resp.json();
+                    if (!resp.ok) { notify('Dispute Failed', data.error || 'Something went wrong.', 'error'); return; }
+                } catch (e) {
+                    notify('Error', 'Could not submit dispute. Please try again.', 'error'); return;
+                }
+            }
+            closeDisputeModal();
+            if (card) {
+                card.querySelector('.brief-status').textContent = 'DISPUTED';
+                card.querySelector('.brief-status').className = 'brief-status st-creating';
+                const rp = card.querySelector('.review-panel');
+                if (rp) rp.innerHTML = `
+                    <div style="text-align:center; padding:24px;">
+                        <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#fbbf24; margin-bottom:12px;">TEATRADE MEDIATION ACTIVATED</div>
+                        <div style="font-size:1.1rem; font-weight:700; margin-bottom:8px;">Dispute under review</div>
+                        <div style="font-size:0.82rem; opacity:0.4; line-height:1.7; max-width:420px; margin:0 auto;">Escrow funds are frozen. Our mediation team will review the case and respond within 48 hours.</div>
+                    </div>`;
+            }
+            notify('Dispute Filed', 'Your dispute has been submitted. TeaTrade mediation will review within 48 hours. Escrow funds are frozen.', 'info');
         }
 
         function closeShippingModal() { document.getElementById('shipping-modal').classList.remove('active'); }

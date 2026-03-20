@@ -20,6 +20,7 @@ import { corsHeaders, handleCors } from '../_shared/cors.ts';
 import { getServiceClient, getAuthUser } from '../_shared/supabase.ts';
 import { getPlatform } from '../_shared/platforms.ts';
 import { decrypt, encrypt } from '../_shared/crypto.ts';
+import { sendEmail } from '../_shared/email.ts';
 
 serve(async (req: Request) => {
   const corsRes = handleCors(req);
@@ -114,10 +115,49 @@ serve(async (req: Request) => {
         }
 
         // ── Fetch fresh metrics ──
-        const metrics = await platformCfg.fetchMetrics(
-          accessToken,
-          token.platform_user_id || '',
-        );
+        let metrics;
+        try {
+          metrics = await platformCfg.fetchMetrics(
+            accessToken,
+            token.platform_user_id || '',
+          );
+        } catch (apiErr) {
+          // Detect expired/revoked tokens (401 Unauthorized)
+          const errMsg = apiErr.message || '';
+          if (errMsg.includes('401') || errMsg.includes('Unauthorized') || errMsg.includes('expired') || errMsg.includes('invalid_token')) {
+            console.warn(`Token expired/revoked for ${token.platform} creator ${token.creator_id}`);
+
+            // Mark token as invalid
+            await db.from('social_tokens').update({ is_valid: false }).eq('id', token.id);
+
+            // Get creator email for notification
+            const { data: creator } = await db.from('creators').select('email').eq('id', token.creator_id).single();
+            if (creator?.email) {
+              const platformName = token.platform.charAt(0).toUpperCase() + token.platform.slice(1);
+              try {
+                await sendEmail({
+                  to: creator.email,
+                  subject: `Action Required: Reconnect your ${platformName} to TeaTrade`,
+                  html: `
+                    <div style="font-family:sans-serif; max-width:500px;">
+                      <h2 style="color:#FF5E00;">Reconnection Needed</h2>
+                      <p>Your <strong>${platformName}</strong> connection to TeaTrade has expired. This means your verified metrics are no longer updating, which may affect your visibility in brand searches.</p>
+                      <p><a href="https://creator.teatrade.co.uk/creator-dash.html" style="display:inline-block; background:#00FF85; color:#000; padding:12px 28px; border-radius:100px; text-decoration:none; font-weight:700; font-size:0.85rem;">Reconnect Now</a></p>
+                      <p style="opacity:0.5; font-size:0.85rem;">This only takes 30 seconds — just click the ${platformName} card on your Terminal.</p>
+                      <p style="opacity:0.4; font-size:0.8rem;">— TeaTrade</p>
+                    </div>
+                  `,
+                });
+              } catch (emailErr) {
+                console.error('Token expiry email failed:', emailErr);
+              }
+            }
+
+            results.push({ creator_id: token.creator_id, platform: token.platform, status: 'token_expired' });
+            continue;
+          }
+          throw apiErr; // Re-throw non-auth errors
+        }
 
         // ── Update creator_socials ──
         await db.from('creator_socials').upsert({

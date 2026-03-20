@@ -165,6 +165,31 @@
                 </div>
             </div>
 
+            <!-- Public Profile Toggle -->
+            <div style="background:rgba(0,255,133,0.03); border:1px solid rgba(0,255,133,0.1); border-radius:var(--radius-md); padding:20px; margin-bottom:20px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+                    <div>
+                        <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:4px;">PUBLIC PORTFOLIO</div>
+                        <div style="font-size:0.82rem; opacity:0.4;">Share a public link so brands can discover you outside the marketplace.</div>
+                    </div>
+                    <label style="position:relative; width:44px; height:24px; flex-shrink:0; cursor:pointer;">
+                        <input type="checkbox" id="public-profile-toggle" onchange="togglePublicProfile()" style="opacity:0; width:0; height:0;">
+                        <span style="position:absolute; inset:0; background:rgba(255,255,255,0.08); border-radius:24px; transition:0.3s;"></span>
+                        <span id="toggle-knob" style="position:absolute; top:3px; left:3px; width:18px; height:18px; background:#555; border-radius:50%; transition:0.3s;"></span>
+                    </label>
+                </div>
+                <div class="brief-form-group" style="margin-bottom:0;">
+                    <label class="brief-form-label">Username (your public URL)</label>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:0.78rem; opacity:0.3; white-space:nowrap;">creator.teatrade.co.uk/profile?u=</span>
+                        <input type="text" id="profile-username" placeholder="your-username" style="flex:1;" pattern="[a-z0-9\-]+" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9\-]/g, '')">
+                    </div>
+                </div>
+                <div id="public-profile-link" style="display:none; margin-top:12px; text-align:center;">
+                    <a id="public-profile-url" href="#" target="_blank" style="color:var(--accent); font-size:0.78rem;">View your public profile →</a>
+                </div>
+            </div>
+
             <div style="text-align:center; margin-top:8px;">
                 <button class="btn-pill" style="width:50%; padding:14px 0; font-size:0.65rem;" onclick="saveCreatorProfile()">SAVE PROFILE</button>
             </div>
@@ -243,6 +268,17 @@
                     Deliverables: 2× TikTok Reels, 1× Instagram Story &nbsp;|&nbsp; Budget: £420 Escrow Locked &nbsp;|&nbsp; Required: Terroir, Chemistry
                 </div>
 
+                <!-- Escrow Trust Indicator -->
+                <div class="escrow-trust-bar">
+                    <div class="etb-step done"><div class="etb-dot"></div><span>Agreement</span></div>
+                    <div class="etb-line done"></div>
+                    <div class="etb-step done secured"><div class="etb-dot"></div><span>Funds Secured</span></div>
+                    <div class="etb-line"></div>
+                    <div class="etb-step"><div class="etb-dot"></div><span>Content Review</span></div>
+                    <div class="etb-line"></div>
+                    <div class="etb-step"><div class="etb-dot"></div><span>Paid</span></div>
+                </div>
+
                 <!-- Pipeline Tracker -->
                 <div class="pipeline-tracker">
                     <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
@@ -289,6 +325,17 @@
                     Deliverables: 1× YouTube Short, 2× Instagram Reels &nbsp;|&nbsp; Budget: £680 Escrow Locked &nbsp;|&nbsp; Required: Chemistry, Gongfu
                 </div>
 
+                <!-- Escrow Trust Indicator -->
+                <div class="escrow-trust-bar">
+                    <div class="etb-step active"><div class="etb-dot"></div><span>Agreement</span></div>
+                    <div class="etb-line"></div>
+                    <div class="etb-step"><div class="etb-dot"></div><span>Funds Secured</span></div>
+                    <div class="etb-line"></div>
+                    <div class="etb-step"><div class="etb-dot"></div><span>Content Review</span></div>
+                    <div class="etb-line"></div>
+                    <div class="etb-step"><div class="etb-dot"></div><span>Paid</span></div>
+                </div>
+
                 <div class="pipeline-tracker">
                     <div class="pipeline-stage active"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
                     <div class="pipeline-stage"><div class="pip-dot"></div><div class="pip-label">Accepted</div></div>
@@ -315,6 +362,17 @@
                 </div>
                 <div class="brief-meta">
                     Deliverables: 3× TikTok Reels &nbsp;|&nbsp; Payment: £350 Released &nbsp;|&nbsp; Completed 12 days ago
+                </div>
+
+                <!-- Escrow Trust Indicator -->
+                <div class="escrow-trust-bar">
+                    <div class="etb-step done"><div class="etb-dot"></div><span>Agreement</span></div>
+                    <div class="etb-line done"></div>
+                    <div class="etb-step done secured"><div class="etb-dot"></div><span>Funds Secured</span></div>
+                    <div class="etb-line done"></div>
+                    <div class="etb-step done"><div class="etb-dot"></div><span>Content Review</span></div>
+                    <div class="etb-line done"></div>
+                    <div class="etb-step done paid"><div class="etb-dot"></div><span>Paid</span></div>
                 </div>
                 <div class="pipeline-tracker">
                     <div class="pipeline-stage done"><div class="pip-dot"></div><div class="pip-label">Invited</div></div>
@@ -1135,7 +1193,7 @@
 
         /* ── Creator Profile ── */
         async function loadCreatorProfile() {
-            const { data } = await _supabase.from('creators').select('display_name, bio, location, tea_niches, content_types, showcase_links, profile_complete').eq('id', activeUserId).single();
+            const { data } = await _supabase.from('creators').select('display_name, bio, location, tea_niches, content_types, showcase_links, profile_complete, public_profile_enabled, username').eq('id', activeUserId).single();
             if (!data) return;
             if (data.display_name) document.getElementById('profile-name').value = data.display_name;
             if (data.bio) document.getElementById('profile-bio').value = data.bio;
@@ -1156,6 +1214,22 @@
                 document.getElementById('avatar-initials').innerText = data.display_name.substring(0,2).toUpperCase();
             }
             document.getElementById('profile-incomplete-banner').style.display = data.profile_complete ? 'none' : 'block';
+            // Public profile
+            const toggle = document.getElementById('public-profile-toggle');
+            const knob = document.getElementById('toggle-knob');
+            if (data.public_profile_enabled) {
+                toggle.checked = true;
+                knob.style.left = '23px'; knob.style.background = 'var(--accent)';
+                knob.parentElement.querySelector('span:first-of-type').style.background = 'rgba(0,255,133,0.2)';
+            }
+            if (data.username) {
+                document.getElementById('profile-username').value = data.username;
+                if (data.public_profile_enabled) {
+                    const linkEl = document.getElementById('public-profile-link');
+                    linkEl.style.display = 'block';
+                    document.getElementById('public-profile-url').href = 'profile.html?u=' + encodeURIComponent(data.username);
+                }
+            }
         }
 
         async function saveCreatorProfile() {
@@ -1173,7 +1247,8 @@
 
             const isComplete = name && bio.length >= 20 && niches.length > 0 && ctypes.length > 0;
 
-            const { error } = await _supabase.from('creators').update({
+            const uname = document.getElementById('profile-username').value.trim();
+            const updateObj = {
                 display_name: name,
                 bio: bio,
                 location: location || null,
@@ -1181,7 +1256,9 @@
                 content_types: ctypes,
                 showcase_links: links,
                 profile_complete: isComplete
-            }).eq('id', activeUserId);
+            };
+            if (uname) updateObj.username = uname;
+            const { error } = await _supabase.from('creators').update(updateObj).eq('id', activeUserId);
 
             if (error) { notify('Save Failed', error.message, 'error'); return; }
 
@@ -1190,6 +1267,31 @@
             const msg = document.getElementById('profile-saved-msg');
             msg.style.display = 'block';
             setTimeout(() => msg.style.display = 'none', 3000);
+        }
+
+        async function togglePublicProfile() {
+            const toggle = document.getElementById('public-profile-toggle');
+            const knob = document.getElementById('toggle-knob');
+            const enabled = toggle.checked;
+            if (enabled) {
+                const uname = document.getElementById('profile-username').value.trim();
+                if (!uname) { notify('Username Required', 'Set a username before enabling your public profile.', 'error'); toggle.checked = false; return; }
+            }
+            knob.style.left = enabled ? '23px' : '3px';
+            knob.style.background = enabled ? 'var(--accent)' : '#555';
+            knob.parentElement.querySelector('span:first-of-type').style.background = enabled ? 'rgba(0,255,133,0.2)' : 'rgba(255,255,255,0.08)';
+            const { error } = await _supabase.from('creators').update({ public_profile_enabled: enabled }).eq('id', activeUserId);
+            if (error) { notify('Error', error.message, 'error'); toggle.checked = !enabled; return; }
+            const linkEl = document.getElementById('public-profile-link');
+            if (enabled) {
+                const uname = document.getElementById('profile-username').value.trim();
+                linkEl.style.display = 'block';
+                document.getElementById('public-profile-url').href = 'profile.html?u=' + encodeURIComponent(uname);
+                notify('Public Profile Enabled', 'Your profile is now visible to anyone with the link.', 'success');
+            } else {
+                linkEl.style.display = 'none';
+                notify('Profile Hidden', 'Your public profile is now hidden.', 'info');
+            }
         }
 
         /* ── Invite / Accept / Decline Flow ── */
