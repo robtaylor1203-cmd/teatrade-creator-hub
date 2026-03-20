@@ -21,6 +21,7 @@
 
     <!-- Mobile overlay for sidebar -->
     <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div id="toast-container" style="position:fixed; bottom:24px; left:24px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <aside class="sidebar">
         <div class="sidebar-top">
@@ -493,7 +494,12 @@
                 <div class="brief-card" style="opacity:0.45;">
                     <div class="brief-header">
                         <h3>Heritage Collection</h3>
-                        <span class="brief-status st-paid" style="font-size:0.55rem;">£350 RELEASED</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="brief-status st-paid" style="font-size:0.55rem;">£350 RELEASED</span>
+                            <button class="invoice-dl-btn" onclick="downloadInvoice('heritage-demo','brand')" title="Download Invoice">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="brief-meta">Released 12 days ago &nbsp;|&nbsp; Content approved &nbsp;|&nbsp; Fee: £42 (12%)</div>
                 </div>
@@ -865,6 +871,30 @@
             document.getElementById('system-modal').classList.add('active');
         }
         function closeSystemModal() { document.getElementById('system-modal').classList.remove('active'); }
+
+        function showToast(title, message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const colors = { success: 'var(--accent)', info: '#60a5fa', warning: 'var(--brand)' };
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.cssText = 'display:flex; align-items:flex-start; gap:12px; background:rgba(17,20,18,0.95); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px 20px; min-width:300px; max-width:420px; backdrop-filter:blur(20px); animation:toastIn 0.3s ease;';
+            toast.innerHTML = `
+                <div style="width:8px; height:8px; border-radius:50%; background:${colors[type] || colors.info}; margin-top:5px; flex-shrink:0;"></div>
+                <div style="flex:1;">
+                    <div style="font-size:0.75rem; font-weight:700; margin-bottom:2px;">${title}</div>
+                    <div style="font-size:0.78rem; opacity:0.5; line-height:1.5;">${message}</div>
+                </div>
+                <button onclick="this.parentElement.remove()" style="background:none; border:none; color:rgba(255,255,255,0.3); cursor:pointer; font-size:1rem; padding:0; line-height:1;">&times;</button>
+            `;
+            container.appendChild(toast);
+            if (duration > 0) setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, duration);
+        }
+
+        function downloadInvoice(campaignId, role) {
+            showToast('Invoice', 'Generating secure PDF invoice...', 'info', 4000);
+            // Future: call generate-invoice edge function
+        }
 
         /* ── Contract System (Brand Side) ── */
         let activeBrandContractId = null;

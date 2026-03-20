@@ -721,6 +721,11 @@
             }
         }
 
+        function downloadInvoice(campaignId, role) {
+            showToast('Invoice', 'Generating secure PDF invoice...', 'info', 4000);
+            // Future: call generate-invoice edge function
+        }
+
         /* ── Mobile Menu Toggle ── */
         function toggleMobileMenu() {
             const sidebar = document.querySelector('.sidebar');
@@ -1373,7 +1378,8 @@
                         const card = document.createElement('div');
                         card.className = 'brief-card';
                         card.style.opacity = tx.event_type === 'withdrawal' ? '0.5' : '1';
-                        card.innerHTML = `<div class="brief-header"><h3>${title}${brand ? ' — ' + brand : ''}</h3><span class="brief-status ${isCredit ? 'st-paid' : 'st-creating'}">${isCredit ? '+' : '-'}£${amount.toFixed(2)}</span></div><div class="brief-meta">${labels[tx.event_type] || tx.event_type} · ${new Date(tx.created_at).toLocaleDateString()}</div>`;
+                        const dlBtn = tx.event_type === 'release' && tx.campaign_id ? `<button class="invoice-dl-btn" onclick="downloadInvoice('${tx.campaign_id}','creator')" title="Download Invoice"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>` : '';
+                        card.innerHTML = `<div class="brief-header"><h3>${title}${brand ? ' — ' + brand : ''}</h3><div style="display:flex; align-items:center; gap:8px;"><span class="brief-status ${isCredit ? 'st-paid' : 'st-creating'}">${isCredit ? '+' : '-'}£${amount.toFixed(2)}</span>${dlBtn}</div></div><div class="brief-meta">${labels[tx.event_type] || tx.event_type} · ${new Date(tx.created_at).toLocaleDateString()}</div>`;
                         txContainer.appendChild(card);
                     }
                 });

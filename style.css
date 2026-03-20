@@ -1932,6 +1932,27 @@ header {
     color: #fff;
 }
 
+/* ── INVOICE DOWNLOAD BUTTON ── */
+.invoice-dl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+.invoice-dl-btn:hover {
+    background: rgba(167,139,250,0.1);
+    border-color: rgba(167,139,250,0.3);
+    color: #a78bfa;
+}
+
 .brief-card .brief-meta {
     font-size: 0.82rem;
     opacity: 0.4;
