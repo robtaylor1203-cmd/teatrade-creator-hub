@@ -63,6 +63,55 @@
             opacity: 0.35; text-decoration: none; color: #fff; transition: opacity 0.2s;
         }
         .profile-back:hover { opacity: 0.7; }
+
+        /* Verified Metrics */
+        .verified-metrics {
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0,255,133,0.08);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        .vm-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .vm-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: var(--radius-pill);
+            background: rgba(0,255,133,0.06); border: 1px solid rgba(0,255,133,0.15);
+            font-size: 0.62rem; font-weight: 800; color: var(--accent);
+            letter-spacing: 1px; text-transform: uppercase; cursor: help;
+            position: relative;
+        }
+        .vm-badge svg { width: 12px; height: 12px; stroke: var(--accent); fill: none; stroke-width: 2.5; }
+        .vm-badge .vm-tooltip {
+            display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+            transform: translateX(-50%); width: 240px; padding: 12px 14px;
+            background: rgba(10,12,11,0.95); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+            font-size: 0.7rem; font-weight: 400; color: rgba(255,255,255,0.7);
+            letter-spacing: 0; text-transform: none; line-height: 1.5;
+            text-align: center; z-index: 10; pointer-events: none;
+        }
+        .vm-badge .vm-tooltip::after {
+            content: ''; position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent; border-top-color: rgba(255,255,255,0.08);
+        }
+        .vm-badge:hover .vm-tooltip { display: block; }
+        .vm-timestamp { font-size: 0.68rem; opacity: 0.3; }
+        .vm-platforms { display: flex; flex-wrap: wrap; gap: 12px; }
+        .vm-platform {
+            flex: 1; min-width: 140px;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius-sm); padding: 16px; text-align: center;
+        }
+        .vm-platform-name { font-size: 0.6rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.4; margin-bottom: 6px; }
+        .vm-follower-count { font-size: 1.4rem; font-weight: 900; color: #fff; }
+        .vm-platform-src { font-size: 0.6rem; opacity: 0.25; margin-top: 3px; }
     </style>
 </head>
 <body>
@@ -91,6 +140,19 @@
         <div class="profile-display-name" id="pub-name"></div>
         <div class="profile-location-text" id="pub-location"></div>
         <div class="profile-bio-text" id="pub-bio"></div>
+
+        <!-- Verified Metrics Header -->
+        <div id="pub-metrics-section" class="verified-metrics" style="display:none;">
+            <div class="vm-header">
+                <div class="vm-badge">
+                    <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                    Verified by API
+                    <div class="vm-tooltip">These stats are pulled directly from each platform's official API and cannot be edited by the creator. Verified by TeaTrade.</div>
+                </div>
+                <div class="vm-timestamp" id="pub-metrics-time"></div>
+            </div>
+            <div class="vm-platforms" id="pub-metrics-grid"></div>
+        </div>
 
         <div id="pub-badges-section" style="display:none;">
             <div class="profile-section-title">Verified Badges</div>
@@ -129,7 +191,7 @@
 
         const { data: creator, error } = await _supabase
             .from('creators')
-            .select('display_name, bio, location, tea_niches, content_types, showcase_links, badges_earned, public_profile_enabled')
+            .select('id, display_name, bio, location, tea_niches, content_types, showcase_links, badges_earned, public_profile_enabled')
             .eq('username', username)
             .eq('public_profile_enabled', true)
             .single();
@@ -191,7 +253,48 @@
         }
 
         document.getElementById('profile-content').style.display = 'block';
+
+        // Verified Metrics
+        try {
+            const { data: tokens } = await _supabase
+                .from('social_tokens')
+                .select('platform, follower_count, updated_at, is_valid')
+                .eq('creator_id', creator.id)
+                .eq('is_valid', true);
+
+            if (tokens && tokens.length > 0) {
+                document.getElementById('pub-metrics-section').style.display = 'block';
+                // Find most recent update
+                const latest = tokens.reduce((a, b) => new Date(a.updated_at) > new Date(b.updated_at) ? a : b);
+                const ago = timeAgo(new Date(latest.updated_at));
+                document.getElementById('pub-metrics-time').textContent = 'Last verified ' + ago;
+
+                const platformLabels = { tiktok: 'TikTok', instagram: 'Instagram', youtube: 'YouTube', twitter: 'X (Twitter)' };
+                const platformApi = { tiktok: 'TikTok API', instagram: 'Instagram Graph API', youtube: 'YouTube Data API', twitter: 'X API' };
+
+                document.getElementById('pub-metrics-grid').innerHTML = tokens.map(t => {
+                    const name = platformLabels[t.platform] || t.platform;
+                    const src = platformApi[t.platform] || 'Platform API';
+                    const count = t.follower_count || 0;
+                    const display = count >= 1000000 ? (count/1000000).toFixed(1) + 'M' : count >= 1000 ? (count/1000).toFixed(1) + 'K' : count;
+                    return `<div class="vm-platform">
+                        <div class="vm-platform-name">${name}</div>
+                        <div class="vm-follower-count">${display}</div>
+                        <div class="vm-platform-src">Verified via ${src}</div>
+                    </div>`;
+                }).join('');
+            }
+        } catch (e) { /* metrics are optional */ }
     })();
+
+    function timeAgo(date) {
+        const secs = Math.floor((Date.now() - date.getTime()) / 1000);
+        if (secs < 60) return 'just now';
+        if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
+        if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+        if (secs < 604800) return Math.floor(secs / 86400) + 'd ago';
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
 </script>
 
 </body>

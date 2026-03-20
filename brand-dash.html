@@ -466,11 +466,14 @@
     </div>
 
     <div id="brief-modal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 620px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-card" style="max-width: 920px; max-height: 90vh; overflow-y: auto; padding: 40px;">
             <div class="modal-close" onclick="closeBriefModal()">×</div>
             <span style="color:var(--brand); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">CAMPAIGN ENGINE</span>
             <h2 style="margin: 10px 0 6px 0;">Post a New Brief.</h2>
             <p style="opacity:0.35; font-size:0.82rem; margin-bottom:28px;">The more detail you provide, the better our algorithm matches you with the right creator. All fields help refine matching.</p>
+
+            <div style="display:grid; grid-template-columns:1fr 260px; gap:28px; align-items:start;">
+            <div><!-- FORM COLUMN -->
 
             <!-- Campaign Details -->
             <div class="brief-form-group">
@@ -665,6 +668,44 @@
 
             <button id="btn-lock-escrow" class="btn-pill" style="width:100%; padding:16px 0; opacity:0.35; pointer-events:none;" onclick="submitBrief()">LOCK ESCROW &amp; POST BRIEF</button>
             <p style="opacity:0.2; font-size:0.7rem; text-align:center; margin-top:12px;">Funds are held securely via Stripe until campaign completion or dispute resolution.</p>
+
+            </div><!-- END FORM COLUMN -->
+
+            <!-- CAMPAIGN INSIGHT SIDEBAR -->
+            <div id="campaign-insight" style="position:sticky; top:0; background:rgba(255,255,255,0.02); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,94,0,0.1); border-radius:var(--radius-md); padding:24px; min-height:200px;">
+                <div style="font-size:0.55rem; font-weight:800; letter-spacing:2.5px; color:var(--brand); text-transform:uppercase; margin-bottom:16px;">Campaign Insight</div>
+
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:0.6rem; opacity:0.35; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Matching Creators</div>
+                    <div id="insight-creators" style="font-size:1.8rem; font-weight:900; color:#fff; line-height:1;">—</div>
+                    <div style="font-size:0.68rem; opacity:0.3; margin-top:2px;">in our network</div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:0.6rem; opacity:0.35; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Potential Reach</div>
+                    <div id="insight-reach" style="font-size:1.8rem; font-weight:900; color:var(--brand); line-height:1;">—</div>
+                    <div style="font-size:0.68rem; opacity:0.3; margin-top:2px;">combined followers</div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:0.6rem; opacity:0.35; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Est. Engagement</div>
+                    <div id="insight-engagement" style="font-size:1.8rem; font-weight:900; color:var(--accent); line-height:1;">—</div>
+                    <div style="font-size:0.68rem; opacity:0.3; margin-top:2px;">projected interactions</div>
+                </div>
+
+                <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:14px; margin-top:8px;">
+                    <div style="font-size:0.6rem; opacity:0.35; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;">Match Strength</div>
+                    <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                        <div id="insight-bar" style="height:100%; width:0%; background:linear-gradient(90deg, var(--brand), var(--accent)); border-radius:3px; transition:width 0.5s ease;"></div>
+                    </div>
+                    <div id="insight-bar-label" style="font-size:0.65rem; opacity:0.4; margin-top:6px; text-align:right;">Fill in more fields</div>
+                </div>
+
+                <div style="margin-top:16px; padding:10px 12px; background:rgba(255,94,0,0.04); border:1px solid rgba(255,94,0,0.08); border-radius:8px;">
+                    <div style="font-size:0.65rem; opacity:0.5; line-height:1.6;" id="insight-tip">💡 Add tea category and platforms to see real-time creator matches.</div>
+                </div>
+            </div>
+            </div><!-- END GRID -->
         </div>
     </div>
 
@@ -884,8 +925,87 @@
             if (escrowCancelled) notify('Payment Cancelled', 'Escrow was not locked. You can retry from your campaign list.', 'info');
         }
 
-        function openBriefModal() { document.getElementById('brief-modal').classList.add('active'); }
+        function openBriefModal() {
+            document.getElementById('brief-modal').classList.add('active');
+            updateCampaignInsight();
+        }
         function closeBriefModal() { document.getElementById('brief-modal').classList.remove('active'); }
+
+        /* ── Campaign Insight — live-updating sidebar ── */
+        let insightDebounce = null;
+        function scheduleInsightUpdate() {
+            clearTimeout(insightDebounce);
+            insightDebounce = setTimeout(updateCampaignInsight, 400);
+        }
+        async function updateCampaignInsight() {
+            const tea = document.getElementById('brief-tea-category').value || '';
+            const platforms = [...document.querySelectorAll('.platform-check:checked')].map(c => c.value);
+            const badges = [...document.querySelectorAll('.badge-check:checked')].map(c => c.value);
+            const minFollowers = parseInt(document.getElementById('brief-min-followers').value) || 0;
+
+            // Score how many fields are filled (for match-strength bar)
+            let filled = 0;
+            if (tea) filled++;
+            if (platforms.length) filled++;
+            if (badges.length) filled++;
+            if (minFollowers) filled++;
+            if (document.getElementById('brief-title').value.trim()) filled++;
+            if (document.getElementById('brief-budget').value) filled++;
+            const strength = Math.min(100, Math.round((filled / 6) * 100));
+            document.getElementById('insight-bar').style.width = strength + '%';
+            const labels = ['Fill in more fields', 'Getting started...', 'Good detail', 'Strong brief', 'Great match criteria', 'Excellent — maximum precision', 'Excellent — maximum precision'];
+            document.getElementById('insight-bar-label').textContent = labels[filled] || labels[6];
+
+            // Query matching creators from DB
+            try {
+                let query = _supabase.from('creators').select('id, tea_niches, content_types, badges_earned', { count: 'exact' }).eq('profile_complete', true);
+                if (tea) query = query.contains('tea_niches', [tea]);
+
+                const { data: creators, count } = await query;
+                const matched = creators || [];
+                const matchCount = matched.length;
+
+                // Estimate reach — sum follower counts from social_tokens for matched creators
+                let totalReach = 0;
+                if (matchCount > 0) {
+                    const ids = matched.map(c => c.id);
+                    const { data: tokens } = await _supabase.from('social_tokens').select('follower_count').in('creator_id', ids).eq('is_valid', true);
+                    totalReach = (tokens || []).reduce((sum, t) => sum + (t.follower_count || 0), 0);
+                }
+
+                // Estimated engagement (industry avg 3.5% for tea/wellness niche)
+                const engRate = 0.035;
+                const estEngagement = Math.round(totalReach * engRate);
+
+                document.getElementById('insight-creators').textContent = matchCount || '0';
+                document.getElementById('insight-reach').textContent = totalReach > 0 ? formatNum(totalReach) : '—';
+                document.getElementById('insight-engagement').textContent = estEngagement > 0 ? formatNum(estEngagement) : '—';
+
+                // Contextual tips
+                const tips = [];
+                if (!tea) tips.push('Select a tea category to narrow matches.');
+                if (!platforms.length) tips.push('Choose target platforms for reach estimates.');
+                if (!badges.length) tips.push('Require badges to find specialist creators.');
+                if (matchCount === 0 && tea) tips.push('Try broadening your criteria — fewer filters = more matches.');
+                if (matchCount > 5) tips.push('Great pool size! Add budget to see escrow breakdown.');
+                document.getElementById('insight-tip').textContent = '💡 ' + (tips[0] || 'Your brief is well-targeted. Ready to post!');
+            } catch (e) {
+                // Silent fail — insight is a nice-to-have
+            }
+        }
+        function formatNum(n) {
+            if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+            return n.toString();
+        }
+        // Attach live-update listeners to all brief form inputs
+        document.addEventListener('DOMContentLoaded', () => {
+            const briefModal = document.getElementById('brief-modal');
+            if (briefModal) {
+                briefModal.addEventListener('input', scheduleInsightUpdate);
+                briefModal.addEventListener('change', scheduleInsightUpdate);
+            }
+        });
 
         function toggleEscrowButton() {
             const checked = document.getElementById('escrow-legal-consent').checked;

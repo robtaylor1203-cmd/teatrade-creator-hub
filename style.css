@@ -2,18 +2,22 @@
 
 /* ── TOKENS ── */
 :root {
-    --bg: #0D0F0E;
-    --panel: #111412;
+    --bg: #0A0C0B;
+    --panel: rgba(17, 20, 18, 0.6);
+    --panel-solid: #111412;
     --accent: #00FF85;
     --brand: #FF5E00;
-    --border: rgba(0, 255, 133, 0.12);
-    --brand-border: rgba(255, 94, 0, 0.15);
-    --glass: rgba(255, 255, 255, 0.02);
+    --border: rgba(0, 255, 133, 0.10);
+    --brand-border: rgba(255, 94, 0, 0.12);
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-blur: blur(16px);
     --text-dim: rgba(255, 255, 255, 0.45);
     --radius-sm: 10px;
     --radius-md: 16px;
     --radius-lg: 24px;
     --radius-pill: 100px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── RESET ── */
@@ -123,30 +127,43 @@ nav {
     letter-spacing: 1.5px;
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     font-size: 0.75rem;
     font-family: 'Inter', sans-serif;
     display: inline-block;
     text-decoration: none;
     line-height: 1;
+    position: relative;
+    overflow: hidden;
 }
+.btn-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.btn-pill:hover::before { opacity: 1; }
 .btn-pill:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,255,133,0.25);
+    box-shadow: 0 8px 32px rgba(0,255,133,0.25), 0 0 0 1px rgba(0,255,133,0.1);
 }
 .btn-pill:active { transform: translateY(0); }
 
 .btn-outline {
-    background: transparent !important;
+    background: rgba(255,255,255,0.03) !important;
     color: #fff !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
     padding: 10px 22px !important;
     font-size: 0.65rem !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
 }
 .btn-outline:hover {
-    border-color: rgba(255,255,255,0.5) !important;
-    background: rgba(255,255,255,0.04) !important;
-    box-shadow: none !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    background: rgba(255,255,255,0.06) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
 }
 
 .btn-brand-orange {
@@ -154,7 +171,7 @@ nav {
     color: #fff !important;
 }
 .btn-brand-orange:hover {
-    box-shadow: 0 8px 24px rgba(255,94,0,0.3) !important;
+    box-shadow: 0 8px 32px rgba(255,94,0,0.3), 0 0 0 1px rgba(255,94,0,0.15) !important;
 }
 
 /* ── BRAND PAGE OVERRIDES ── */
@@ -233,16 +250,20 @@ nav {
 .badge-card {
     flex: 0 0 280px;
     scroll-snap-align: start;
-    background: var(--panel);
-    border: 1px solid var(--border);
+    background: rgba(17, 20, 18, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 36px 28px;
     text-align: center;
-    transition: border-color 0.3s, transform 0.3s;
+    transition: var(--transition);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
 }
 .badge-card:hover {
-    border-color: rgba(0,255,133,0.3);
+    border-color: rgba(0,255,133,0.25);
     transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
 }
 .brand-page .badge-card:hover { border-color: rgba(255,94,0,0.35); }
 
@@ -651,8 +672,10 @@ nav {
 }
 
 .modal-card {
-    background: #0A0C0B;
-    border: 1px solid var(--border);
+    background: rgba(14, 16, 15, 0.85);
+    backdrop-filter: blur(40px) saturate(1.2);
+    -webkit-backdrop-filter: blur(40px) saturate(1.2);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 48px;
     position: relative;
@@ -661,6 +684,7 @@ nav {
     transform: translateY(12px) scale(0.98);
     opacity: 0;
     transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .brand-page .modal-card { border-color: var(--brand-border); }
 
@@ -672,6 +696,8 @@ nav {
     height: 36px;
     border-radius: 50%;
     background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.08);
     color: rgba(255,255,255,0.4);
     font-size: 1.2rem;
@@ -679,7 +705,7 @@ nav {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: 0.2s;
+    transition: var(--transition);
     line-height: 1;
 }
 .modal-close:hover {
@@ -696,14 +722,14 @@ textarea,
 .modal-input {
     width: 100%;
     padding: 16px 18px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-sm);
     color: #fff;
     font-size: 0.95rem;
     font-family: 'Inter', sans-serif;
     outline: none;
-    transition: 0.3s;
+    transition: var(--transition);
     margin-bottom: 16px;
     -webkit-appearance: none;
 }
@@ -726,6 +752,7 @@ textarea {
 input:focus, select:focus, textarea:focus {
     border-color: var(--accent);
     background: rgba(0,255,133,0.03);
+    box-shadow: 0 0 0 3px rgba(0,255,133,0.06);
 }
 .brand-page input:focus,
 .brand-page select:focus,
@@ -963,8 +990,10 @@ header {
 /* ── SIDEBAR ── */
 .sidebar {
     width: 260px;
-    background: var(--panel);
-    border-right: 1px solid var(--border);
+    background: rgba(13, 15, 14, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
     padding: 28px 24px;
@@ -983,7 +1012,7 @@ header {
     border-radius: var(--radius-sm);
     margin-bottom: 6px;
     display: block;
-    transition: 0.2s;
+    transition: var(--transition);
     border: 1px solid transparent;
 }
 .nav-item:hover { color: #fff; background: rgba(255,255,255,0.03); }
@@ -1099,14 +1128,22 @@ header {
 
 /* ── CAMPAIGN CARDS ── */
 .campaign-card {
-    background: var(--panel);
-    border: 1px solid rgba(255, 94, 0, 0.15);
+    background: rgba(17, 20, 18, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 94, 0, 0.1);
     border-radius: var(--radius-lg);
     padding: 24px 28px;
     margin-bottom: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: var(--transition);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+.campaign-card:hover {
+    border-color: rgba(255, 94, 0, 0.2);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
 }
 .tag-req {
     font-size: 0.6rem;
@@ -1717,11 +1754,19 @@ header {
 
 /* ── BRIEF CARD (creator + brand dashboards) ── */
 .brief-card {
-    background: var(--panel);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(17, 20, 18, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 28px;
     margin-bottom: 20px;
+    transition: var(--transition);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+.brief-card:hover {
+    border-color: rgba(255,255,255,0.1);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
 }
 .brief-card .brief-header {
     display: flex;
@@ -1920,4 +1965,6 @@ header {
     .addr-row { grid-template-columns: 1fr; }
     .brief-form-row, .brief-form-row.triple { grid-template-columns: 1fr; }
     .brief-check-grid { grid-template-columns: 1fr; }
+    #brief-modal .modal-card > div[style*="grid-template-columns"] { grid-template-columns: 1fr; }
+    #campaign-insight { position: static; }
 }
