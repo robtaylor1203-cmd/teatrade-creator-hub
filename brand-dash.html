@@ -19,8 +19,16 @@
 
     <div class="ambient-glow" style="top: -10%; left: 20%; background: radial-gradient(circle, rgba(255,94,0,0.03) 0%, transparent 70%);"></div>
 
+    <!-- Mobile overlay for sidebar -->
+    <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
     <aside class="sidebar">
-        <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--brand)">.</span></a>
+        <div class="sidebar-top">
+            <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--brand)">.</span></a>
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
         <div class="nav-menu">
             <a href="#" class="nav-item active" onclick="switchBrandSection('command', this)">Command Center</a>
             <a href="#" class="nav-item" onclick="switchBrandSection('brand-profile', this)">Brand Profile</a>
@@ -1195,6 +1203,14 @@
 
         async function logOut() { await _supabase.auth.signOut(); location.href='brands.html'; }
 
+        /* ── Mobile Menu Toggle ── */
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
         /* ── Video Carousel (infinite loop) ── */
         function slideCarousel(btn, dir) {
             const carousel = btn.closest('[data-carousel]');
@@ -1212,11 +1228,18 @@
         function switchBrandSection(section, el) {
             event.preventDefault();
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
+            if (el && el.classList.contains('nav-item')) el.classList.add('active');
             ['command','brand-profile','campaigns','escrow'].forEach(s => {
                 const div = document.getElementById('section-' + s);
                 if (div) div.style.display = s === section ? 'block' : 'none';
             });
+            // Close mobile sidebar if open
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+            }
         }
 
         /* ── Escrow Engine ── */
