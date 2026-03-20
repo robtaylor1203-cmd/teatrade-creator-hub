@@ -23,6 +23,7 @@
         <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--brand)">.</span></a>
         <div class="nav-menu">
             <a href="#" class="nav-item active" onclick="switchBrandSection('command', this)">Command Center</a>
+            <a href="#" class="nav-item" onclick="switchBrandSection('brand-profile', this)">Brand Profile</a>
             <a href="#" class="nav-item" onclick="openBriefModal()">Post a Brief</a>
             <a href="#" class="nav-item" onclick="switchBrandSection('campaigns', this)">Active Campaigns</a>
             <a href="#" class="nav-item" onclick="switchBrandSection('escrow', this)">Escrow Wallet</a>
@@ -236,6 +237,51 @@
 
         </div>
         </div><!-- /section-command -->
+
+        <!-- ── Section: Brand Profile ── -->
+        <div id="section-brand-profile" style="display:none;">
+            <div class="section-label" style="margin-bottom:16px;">Brand Profile</div>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:28px;">Complete your brand profile so creators know who they're working with. This information appears on contracts and campaign briefs.</p>
+
+            <div id="brand-profile-incomplete" style="display:none; background:linear-gradient(135deg, rgba(255,94,0,0.04), rgba(255,94,0,0.02)); border:1px solid rgba(255,94,0,0.15); border-radius:12px; padding:20px; margin-bottom:24px; text-align:center;">
+                <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--brand); margin-bottom:6px;">PROFILE INCOMPLETE</div>
+                <p style="opacity:0.4; font-size:0.82rem; margin:0;">Complete your profile to post campaigns and appear professionally to creators.</p>
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Company Name</label>
+                <input type="text" id="brand-company" placeholder="e.g. LeafHaus, TrueLeaf Tea Co.">
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Website</label>
+                <input type="url" id="brand-website" placeholder="https://www.yourbrand.com">
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Brand Description</label>
+                <textarea id="brand-bio" placeholder="Tell creators about your brand — your mission, product range, target audience, what makes you unique..." style="min-height:100px;"></textarea>
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Product Categories — select all that apply</label>
+                <div class="brief-check-grid">
+                    <label><input type="checkbox" class="brand-cat-check" value="Green Tea"> Green Tea</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Black Tea"> Black Tea</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Oolong"> Oolong</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Pu-erh"> Pu-erh</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="White Tea"> White Tea</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Matcha"> Matcha</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Herbal / Tisane"> Herbal / Tisane</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Chai / Spiced"> Chai / Spiced</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Wellness / Functional"> Wellness / Functional</label>
+                    <label><input type="checkbox" class="brand-cat-check" value="Teaware / Accessories"> Teaware / Accessories</label>
+                </div>
+            </div>
+
+            <button class="btn-pill" style="width:100%; padding:16px 0; font-size:0.65rem; margin-top:8px;" onclick="saveBrandProfile()">SAVE BRAND PROFILE</button>
+            <div id="brand-profile-saved" style="display:none; text-align:center; margin-top:12px; color:var(--brand); font-size:0.75rem; font-weight:700;">Profile saved successfully.</div>
+        </div>
 
         <!-- ── Section: Active Campaigns (full pipeline view) ── -->
         <div id="section-campaigns" style="display:none;">
@@ -483,6 +529,25 @@
                 </div>
             </div>
 
+            <!-- Product & Tea Category -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Product &amp; Tea Category</label>
+                <select id="brief-tea-category">
+                    <option value="" disabled selected>Select tea type</option>
+                    <option value="Green Tea">Green Tea</option>
+                    <option value="Black Tea">Black Tea</option>
+                    <option value="Oolong">Oolong</option>
+                    <option value="Pu-erh">Pu-erh</option>
+                    <option value="White Tea">White Tea</option>
+                    <option value="Matcha">Matcha</option>
+                    <option value="Herbal / Tisane">Herbal / Tisane</option>
+                    <option value="Chai / Spiced">Chai / Spiced</option>
+                    <option value="Wellness / Functional">Wellness / Functional</option>
+                    <option value="Teaware / Accessories">Teaware / Accessories</option>
+                    <option value="Mixed / Multi-product">Mixed / Multi-product</option>
+                </select>
+            </div>
+
             <!-- Mood & Style -->
             <div class="brief-form-group">
                 <label class="brief-form-label">Content Mood &amp; Style</label>
@@ -544,6 +609,33 @@
                         <option value="8">8%+ Engagement</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- Timeline & Capacity -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Campaign Timeline</label>
+                <div class="brief-form-row">
+                    <div>
+                        <label style="font-size:0.7rem; opacity:0.4; display:block; margin-bottom:4px;">Content Delivery Deadline</label>
+                        <input type="date" id="brief-deadline">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem; opacity:0.4; display:block; margin-bottom:4px;">Creators Needed</label>
+                        <select id="brief-creators-needed">
+                            <option value="1" selected>1 Creator</option>
+                            <option value="2">2 Creators</option>
+                            <option value="3">3 Creators</option>
+                            <option value="5">5 Creators</option>
+                            <option value="10">10 Creators</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Talking Points -->
+            <div class="brief-form-group">
+                <label class="brief-form-label">Key Talking Points <span style="opacity:0.3; font-weight:400;">(optional)</span></label>
+                <textarea id="brief-talking-points" placeholder="List any must-mention product features, key messages, or specific things the creator should highlight..." style="min-height:80px;"></textarea>
             </div>
 
             <!-- Budget -->
@@ -758,7 +850,7 @@
             activeBrandEmail = session.user.email;
             document.getElementById('brand-email-display').innerText = activeBrandEmail;
             document.getElementById('brand-avatar').innerText = activeBrandEmail.substring(0,2).toUpperCase();
-            loadCampaigns();
+            loadCampaigns(); loadBrandProfile(); loadTalentPool();
 
             if (escrowSuccess) notify('Escrow Locked', 'Payment confirmed. Your campaign budget is now held securely in escrow.', 'success');
             if (escrowCancelled) notify('Payment Cancelled', 'Escrow was not locked. You can retry from your campaign list.', 'info');
@@ -778,6 +870,10 @@
             const setting = document.getElementById('brief-setting').value;
             const minFollowers = document.getElementById('brief-min-followers').value;
             const minEngagement = document.getElementById('brief-min-engagement').value;
+            const teaCategory = document.getElementById('brief-tea-category').value;
+            const deadline = document.getElementById('brief-deadline').value;
+            const creatorsNeeded = document.getElementById('brief-creators-needed').value;
+            const talkingPoints = document.getElementById('brief-talking-points').value;
             const platforms = [...document.querySelectorAll('.platform-check:checked')].map(c => c.value);
             const badges = [...document.querySelectorAll('.badge-check:checked')].map(c => c.value);
 
@@ -805,6 +901,10 @@
                 required_badges: badges,
                 min_followers: parseInt(minFollowers) || null,
                 min_engagement: parseFloat(minEngagement) || null,
+                tea_category: teaCategory || null,
+                delivery_deadline: deadline || null,
+                creators_needed: parseInt(creatorsNeeded) || 1,
+                talking_points: talkingPoints || null,
                 status: 'active'
             };
 
@@ -942,7 +1042,7 @@
             event.preventDefault();
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            ['command','campaigns','escrow'].forEach(s => {
+            ['command','brand-profile','campaigns','escrow'].forEach(s => {
                 const div = document.getElementById('section-' + s);
                 if (div) div.style.display = s === section ? 'block' : 'none';
             });
@@ -1069,6 +1169,186 @@
             if (!carrier || !number) { notify('Required', 'Please enter carrier and tracking number.', 'error'); return; }
             closeShippingModal();
             notify('Dispatched', `Tracking ${number} (${carrier}) has been shared with the creator. They'll be notified to expect delivery.`, 'success');
+        }
+
+        /* ── Brand Profile Load/Save ── */
+        let activeBrandUserId = null;
+
+        async function loadBrandProfile() {
+            if (!activeBrandEmail) return;
+            const { data } = await _supabase.from('brand_profiles').select('*').eq('email', activeBrandEmail).single();
+            if (!data) {
+                document.getElementById('brand-profile-incomplete').style.display = 'block';
+                return;
+            }
+            if (data.company_name) {
+                document.getElementById('brand-company').value = data.company_name;
+                document.getElementById('brand-avatar').innerText = data.company_name.substring(0,2).toUpperCase();
+            }
+            if (data.website) document.getElementById('brand-website').value = data.website;
+            if (data.bio) document.getElementById('brand-bio').value = data.bio;
+            (data.product_categories || []).forEach(c => {
+                const cb = document.querySelector(`.brand-cat-check[value="${c}"]`);
+                if (cb) cb.checked = true;
+            });
+            document.getElementById('brand-profile-incomplete').style.display = data.profile_complete ? 'none' : 'block';
+        }
+
+        async function saveBrandProfile() {
+            const company = document.getElementById('brand-company').value.trim();
+            const website = document.getElementById('brand-website').value.trim();
+            const bio = document.getElementById('brand-bio').value.trim();
+            const cats = [...document.querySelectorAll('.brand-cat-check:checked')].map(c => c.value);
+
+            if (!company) { notify('Required', 'Company name is required.', 'error'); return; }
+            if (!bio || bio.length < 20) { notify('Required', 'Brand description must be at least 20 characters.', 'error'); return; }
+
+            const isComplete = company && bio.length >= 20 && cats.length > 0;
+
+            // Get auth user id
+            const { data: { session } } = await _supabase.auth.getSession();
+            const authId = session?.user?.id;
+
+            const profileData = {
+                auth_user_id: authId,
+                email: activeBrandEmail,
+                company_name: company,
+                website: website || null,
+                bio: bio,
+                product_categories: cats,
+                profile_complete: isComplete,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await _supabase.from('brand_profiles').upsert(profileData, { onConflict: 'email' });
+            if (error) { notify('Save Failed', error.message, 'error'); return; }
+
+            document.getElementById('brand-avatar').innerText = company.substring(0,2).toUpperCase();
+            document.getElementById('brand-profile-incomplete').style.display = isComplete ? 'none' : 'block';
+            const msg = document.getElementById('brand-profile-saved');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+        }
+
+        /* ── Dynamic Talent Pool (Matching Engine) ── */
+        async function loadTalentPool() {
+            const session = await _supabase.auth.getSession();
+            const token = session.data.session?.access_token;
+            if (!token) return;
+
+            try {
+                const res = await fetch(`${SUPABASE_URL}/functions/v1/match-creators`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                    body: JSON.stringify({ brand_email: activeBrandEmail }),
+                });
+                const result = await res.json();
+                if (result.error || !result.creators) return; // Silently keep demo cards if matching fails
+
+                const pool = document.getElementById('talent-pool');
+                if (result.creators.length === 0) {
+                    pool.innerHTML = '<p style="opacity:0.35; text-align:center; padding:40px; font-size:0.9rem;">No matched creators yet. Post a brief or wait for creators to complete their profiles.</p>';
+                    return;
+                }
+
+                pool.innerHTML = '';
+                result.creators.forEach(c => {
+                    const badgeTags = (c.badges || []).map(b => `<span class="tag-req">${b}</span>`).join('');
+                    const platform = c.platform || 'Instagram';
+                    const showcaseHtml = (c.showcase_links || []).slice(0, 5).map((link, i) => 
+                        `<div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Showcase ${i+1}</span></div></div>`
+                    ).join('');
+                    const nichesTags = (c.niches || []).slice(0, 3).map(n => `<span style="font-size:0.6rem; opacity:0.4; border:1px solid rgba(255,255,255,0.08); padding:2px 8px; border-radius:20px;">${n}</span>`).join(' ');
+                    
+                    const card = document.createElement('div');
+                    card.className = 'talent-card';
+                    card.innerHTML = `
+                        <div class="talent-header">
+                            <h3>${c.display_name || ('Creator #' + c.id.substring(0,4))}</h3>
+                            <span class="match">${c.match_score}% MATCH</span>
+                        </div>
+                        ${showcaseHtml ? `<div class="talent-video-carousel" data-carousel><div class="vid-track">${showcaseHtml}</div><button class="vid-arrow prev" onclick="slideCarousel(this,-1)">&#8249;</button><button class="vid-arrow next" onclick="slideCarousel(this,1)">&#8250;</button><span class="vid-counter">1 / ${(c.showcase_links || []).length || 1}</span></div>` : ''}
+                        <div class="talent-body">
+                            <div class="talent-api-source">
+                                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                ${platform} API &middot; <span class="api-live">LIVE</span>
+                            </div>
+                            <div class="talent-badges">${badgeTags}</div>
+                            ${nichesTags ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin:8px 0;">${nichesTags}</div>` : ''}
+                            ${c.bio ? `<p style="font-size:0.78rem; opacity:0.4; line-height:1.5; margin:8px 0;">${c.bio.substring(0, 120)}${c.bio.length > 120 ? '...' : ''}</p>` : ''}
+                            <div class="talent-kpis">
+                                <div class="kpi-block">
+                                    <div class="kpi-label">Followers</div>
+                                    <div class="kpi-val">${formatNum(c.followers)}</div>
+                                </div>
+                                <div class="kpi-block">
+                                    <div class="kpi-label">Eng. Rate</div>
+                                    <div class="kpi-val">${c.engagement_rate ? c.engagement_rate.toFixed(1) + '%' : '--'}</div>
+                                </div>
+                                <div class="kpi-block">
+                                    <div class="kpi-label">Avg. Views</div>
+                                    <div class="kpi-val">${formatNum(c.avg_views)}</div>
+                                </div>
+                            </div>
+                            <button class="btn-pill" style="width:100%; font-size:0.65rem; padding:10px 0;" onclick="inviteCreator('${c.id}')">INVITE TO BRIEF</button>
+                        </div>`;
+                    pool.appendChild(card);
+                });
+            } catch (err) {
+                // Keep demo cards on error
+                console.error('Talent pool load error:', err);
+            }
+        }
+
+        function formatNum(n) {
+            if (!n || n === 0) return '--';
+            if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+            if (n >= 1000) return (n/1000).toFixed(0) + 'K';
+            return n.toString();
+        }
+
+        /* ── Invite Creator to Brief ── */
+        async function inviteCreator(creatorId) {
+            // Get active campaigns to choose from
+            const { data: campaigns } = await _supabase.from('campaigns')
+                .select('id, brief_title, status')
+                .eq('brand_name', activeBrandEmail)
+                .in('status', ['active', 'escrow_locked'])
+                .order('created_at', { ascending: false });
+
+            if (!campaigns || campaigns.length === 0) {
+                notify('No Active Briefs', 'Post a campaign brief first, then invite creators from the talent pool.', 'info');
+                return;
+            }
+
+            // If only one campaign, invite directly
+            if (campaigns.length === 1) {
+                await sendInvite(campaigns[0].id, creatorId);
+                return;
+            }
+
+            // Multiple campaigns — show selection
+            const titles = campaigns.map((c, i) => `${i+1}. ${c.brief_title}`).join('\n');
+            const choice = prompt(`Which campaign?\n\n${titles}\n\nEnter number:`);
+            if (!choice) return;
+            const idx = parseInt(choice) - 1;
+            if (idx >= 0 && idx < campaigns.length) {
+                await sendInvite(campaigns[idx].id, creatorId);
+            }
+        }
+
+        async function sendInvite(campaignId, creatorId) {
+            const { error } = await _supabase.from('campaign_invites').upsert({
+                campaign_id: campaignId,
+                creator_id: creatorId,
+                status: 'pending'
+            }, { onConflict: 'campaign_id,creator_id' });
+
+            if (error) {
+                notify('Invite Failed', error.message, 'error');
+            } else {
+                notify('Creator Invited', 'Invitation sent. The creator will see this brief in their Campaign Briefs section.', 'success');
+            }
         }
 
         initDashboard();

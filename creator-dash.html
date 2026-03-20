@@ -23,6 +23,7 @@
         <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--accent)">.</span></a>
         <div class="nav-menu">
             <a href="#" class="nav-item active" onclick="switchSection('terminal', this)">Terminal</a>
+            <a href="#" class="nav-item" onclick="switchSection('profile', this)">My Profile</a>
             <a href="#" class="nav-item" onclick="switchSection('academy', this)">Pro Academy</a>
             <a href="#" class="nav-item" onclick="switchSection('briefs', this)">Campaign Briefs</a>
             <a href="#" class="nav-item" onclick="switchSection('wallet', this)">Escrow Wallet</a>
@@ -89,6 +90,76 @@
             </div>
         </div>
 
+        <!-- ── Section: Creator Profile ── -->
+        <div id="section-profile" style="display:none;">
+            <div class="section-label" style="margin-bottom:16px;">Creator Profile</div>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:28px;">Complete your profile to appear in brand search results. The more detail you provide, the better our algorithm matches you with relevant campaigns.</p>
+
+            <div id="profile-incomplete-banner" style="display:none; background:linear-gradient(135deg, rgba(255,94,0,0.04), rgba(0,255,133,0.04)); border:1px solid rgba(0,255,133,0.15); border-radius:12px; padding:20px; margin-bottom:24px; text-align:center;">
+                <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:6px;">PROFILE INCOMPLETE</div>
+                <p style="opacity:0.4; font-size:0.82rem; margin:0;">Fill in all fields below to unlock brand matching and appear in the talent pool.</p>
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Display Name</label>
+                <input type="text" id="profile-name" placeholder="Your name or creator alias (visible to brands)">
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Bio</label>
+                <textarea id="profile-bio" placeholder="Tell brands about yourself — your tea journey, content style, what makes you unique..." style="min-height:100px;"></textarea>
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Location</label>
+                <input type="text" id="profile-location" placeholder="e.g. London, UK">
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Tea Niches — select all that apply</label>
+                <div class="brief-check-grid">
+                    <label><input type="checkbox" class="niche-check" value="Green Tea"> Green Tea</label>
+                    <label><input type="checkbox" class="niche-check" value="Black Tea"> Black Tea</label>
+                    <label><input type="checkbox" class="niche-check" value="Oolong"> Oolong</label>
+                    <label><input type="checkbox" class="niche-check" value="Pu-erh"> Pu-erh</label>
+                    <label><input type="checkbox" class="niche-check" value="White Tea"> White Tea</label>
+                    <label><input type="checkbox" class="niche-check" value="Matcha"> Matcha</label>
+                    <label><input type="checkbox" class="niche-check" value="Herbal / Tisane"> Herbal / Tisane</label>
+                    <label><input type="checkbox" class="niche-check" value="Chai / Spiced"> Chai / Spiced</label>
+                    <label><input type="checkbox" class="niche-check" value="Ceremonial"> Ceremonial</label>
+                    <label><input type="checkbox" class="niche-check" value="Wellness / Functional"> Wellness / Functional</label>
+                    <label><input type="checkbox" class="niche-check" value="Sourcing / Direct Trade"> Sourcing / Direct Trade</label>
+                    <label><input type="checkbox" class="niche-check" value="Tea Education"> Tea Education</label>
+                </div>
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Content Types — what do you create?</label>
+                <div class="brief-check-grid">
+                    <label><input type="checkbox" class="ctype-check" value="Short-form Video"> Short-form Video (Reels / TikTok)</label>
+                    <label><input type="checkbox" class="ctype-check" value="Long-form Video"> Long-form Video (YouTube)</label>
+                    <label><input type="checkbox" class="ctype-check" value="Photography"> Photography</label>
+                    <label><input type="checkbox" class="ctype-check" value="Blog / Written"> Blog / Written Content</label>
+                    <label><input type="checkbox" class="ctype-check" value="Live Streaming"> Live Streaming</label>
+                    <label><input type="checkbox" class="ctype-check" value="ASMR / Sensory"> ASMR / Sensory</label>
+                    <label><input type="checkbox" class="ctype-check" value="Educational"> Educational / Tutorial</label>
+                    <label><input type="checkbox" class="ctype-check" value="Review / Tasting"> Review / Tasting Notes</label>
+                </div>
+            </div>
+
+            <div class="brief-form-group">
+                <label class="brief-form-label">Showcase Links — up to 5 (YouTube, TikTok, Instagram URLs)</label>
+                <input type="url" class="showcase-link" placeholder="https://...">
+                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
+                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
+                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
+                <input type="url" class="showcase-link" placeholder="https://..." style="margin-top:8px;">
+            </div>
+
+            <button class="btn-pill" style="width:100%; padding:16px 0; font-size:0.65rem; margin-top:8px;" onclick="saveCreatorProfile()">SAVE PROFILE</button>
+            <div id="profile-saved-msg" style="display:none; text-align:center; margin-top:12px; color:var(--accent); font-size:0.75rem; font-weight:700;">Profile saved successfully.</div>
+        </div>
+
         <!-- ── Section: Pro Academy ── -->
         <div id="section-academy">
             <div class="section-label" style="margin-bottom: 16px;">The Taxonomy Academy</div>
@@ -147,6 +218,9 @@
         <!-- ── Section: Campaign Briefs ── -->
         <div id="section-briefs" style="display:none;">
             <div class="section-label" style="margin-bottom: 16px;">Active Campaign Briefs</div>
+
+            <!-- Live invites from brands -->
+            <div id="live-invites-container"></div>
 
             <!-- Demo Brief: In-Progress Campaign -->
             <div class="brief-card" id="demo-brief-1">
@@ -520,7 +594,7 @@
             document.getElementById('avatar-initials').innerText = activeUserEmail.substring(0,2).toUpperCase();
             activeUserId = creator.id;
             document.getElementById('match-score-display').innerText = creator.quiz_score || "--";
-            loadSocialStats(); loadEarnedBadges(); loadWalletData();
+            loadSocialStats(); loadEarnedBadges(); loadWalletData(); loadCreatorProfile(); loadMyInvites();
 
             // ── Show OAuth result notification ──
             if (oauthSuccess) {
@@ -977,6 +1051,172 @@
             });
         }
 
+        /* ── Creator Profile ── */
+        async function loadCreatorProfile() {
+            const { data } = await _supabase.from('creators').select('display_name, bio, location, tea_niches, content_types, showcase_links, profile_complete').eq('id', activeUserId).single();
+            if (!data) return;
+            if (data.display_name) document.getElementById('profile-name').value = data.display_name;
+            if (data.bio) document.getElementById('profile-bio').value = data.bio;
+            if (data.location) document.getElementById('profile-location').value = data.location;
+            (data.tea_niches || []).forEach(n => {
+                const cb = document.querySelector(`.niche-check[value="${n}"]`);
+                if (cb) cb.checked = true;
+            });
+            (data.content_types || []).forEach(t => {
+                const cb = document.querySelector(`.ctype-check[value="${t}"]`);
+                if (cb) cb.checked = true;
+            });
+            const links = data.showcase_links || [];
+            document.querySelectorAll('.showcase-link').forEach((input, i) => {
+                if (links[i]) input.value = links[i];
+            });
+            if (data.display_name) {
+                document.getElementById('avatar-initials').innerText = data.display_name.substring(0,2).toUpperCase();
+            }
+            document.getElementById('profile-incomplete-banner').style.display = data.profile_complete ? 'none' : 'block';
+        }
+
+        async function saveCreatorProfile() {
+            const name = document.getElementById('profile-name').value.trim();
+            const bio = document.getElementById('profile-bio').value.trim();
+            const location = document.getElementById('profile-location').value.trim();
+            const niches = [...document.querySelectorAll('.niche-check:checked')].map(c => c.value);
+            const ctypes = [...document.querySelectorAll('.ctype-check:checked')].map(c => c.value);
+            const links = [...document.querySelectorAll('.showcase-link')].map(i => i.value.trim()).filter(Boolean);
+
+            if (!name) { notify('Required', 'Display name is required.', 'error'); return; }
+            if (!bio || bio.length < 20) { notify('Required', 'Bio must be at least 20 characters.', 'error'); return; }
+            if (niches.length === 0) { notify('Required', 'Select at least one tea niche.', 'error'); return; }
+            if (ctypes.length === 0) { notify('Required', 'Select at least one content type.', 'error'); return; }
+
+            const isComplete = name && bio.length >= 20 && niches.length > 0 && ctypes.length > 0;
+
+            const { error } = await _supabase.from('creators').update({
+                display_name: name,
+                bio: bio,
+                location: location || null,
+                tea_niches: niches,
+                content_types: ctypes,
+                showcase_links: links,
+                profile_complete: isComplete
+            }).eq('id', activeUserId);
+
+            if (error) { notify('Save Failed', error.message, 'error'); return; }
+
+            document.getElementById('avatar-initials').innerText = name.substring(0,2).toUpperCase();
+            document.getElementById('profile-incomplete-banner').style.display = isComplete ? 'none' : 'block';
+            const msg = document.getElementById('profile-saved-msg');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+        }
+
+        /* ── Invite / Accept / Decline Flow ── */
+        async function loadMyInvites() {
+            const box = document.getElementById('live-invites-container');
+            if (!box) return;
+            const { data, error } = await _supabase
+                .from('campaign_invites')
+                .select('id, status, match_score, campaigns(id, title, deliverables, budget, tea_category, delivery_deadline, talking_points, brand_id)')
+                .eq('creator_id', activeUserId)
+                .order('invited_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                box.innerHTML = '';
+                return;
+            }
+
+            const pending = data.filter(i => i.status === 'pending');
+            const responded = data.filter(i => i.status !== 'pending');
+
+            let html = '';
+            if (pending.length) {
+                html += '<div class="section-label" style="margin-bottom:10px;">Pending Invites</div>';
+                pending.forEach(inv => {
+                    const c = inv.campaigns;
+                    const deadline = c.delivery_deadline ? new Date(c.delivery_deadline).toLocaleDateString('en-GB') : 'TBC';
+                    html += `
+                    <div class="brief-card" style="border-left:4px solid var(--brand);margin-bottom:14px;">
+                        <div class="brief-header">
+                            <h3>${escapeHtml(c.title || 'Untitled Campaign')}</h3>
+                            <span class="brief-status" style="background:var(--brand);color:#fff;">INVITE</span>
+                        </div>
+                        <div class="brief-meta">
+                            ${c.tea_category ? 'Category: ' + escapeHtml(c.tea_category) + ' &nbsp;|&nbsp; ' : ''}
+                            Deliverables: ${escapeHtml(c.deliverables || 'N/A')} &nbsp;|&nbsp;
+                            Budget: £${Number(c.budget || 0).toLocaleString()} &nbsp;|&nbsp;
+                            Deadline: ${deadline}
+                            ${inv.match_score ? ' &nbsp;|&nbsp; Match: ' + inv.match_score + '%' : ''}
+                        </div>
+                        ${c.talking_points ? '<p style="margin:10px 0 0;font-size:13px;color:#ccc;">' + escapeHtml(c.talking_points) + '</p>' : ''}
+                        <div style="margin-top:14px;display:flex;gap:10px;">
+                            <button class="connect-btn" onclick="acceptInvite('${inv.id}','${c.id}')">Accept Brief</button>
+                            <button class="connect-btn" style="background:transparent;border:1px solid #555;color:#aaa;" onclick="declineInvite('${inv.id}')">Decline</button>
+                        </div>
+                    </div>`;
+                });
+            }
+
+            if (responded.length) {
+                html += '<div class="section-label" style="margin-bottom:10px;margin-top:18px;">Past Invites</div>';
+                responded.forEach(inv => {
+                    const c = inv.campaigns;
+                    const stLabel = inv.status === 'accepted' ? 'ACCEPTED' : 'DECLINED';
+                    const stColor = inv.status === 'accepted' ? 'var(--accent)' : '#666';
+                    html += `
+                    <div class="brief-card" style="opacity:0.6;margin-bottom:10px;">
+                        <div class="brief-header">
+                            <h3>${escapeHtml(c.title || 'Untitled Campaign')}</h3>
+                            <span class="brief-status" style="background:${stColor};color:#fff;">${stLabel}</span>
+                        </div>
+                        <div class="brief-meta">Budget: £${Number(c.budget || 0).toLocaleString()}</div>
+                    </div>`;
+                });
+            }
+
+            box.innerHTML = html;
+        }
+
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(str));
+            return d.innerHTML;
+        }
+
+        async function acceptInvite(inviteId, campaignId) {
+            const { error } = await _supabase
+                .from('campaign_invites')
+                .update({ status: 'accepted', responded_at: new Date().toISOString() })
+                .eq('id', inviteId)
+                .eq('creator_id', activeUserId);
+
+            if (error) { notify('Error', error.message, 'error'); return; }
+            notify('Brief Accepted', 'You have accepted the campaign. Contract will be generated shortly.', 'success');
+
+            // Trigger contract generation
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                await fetch(SUPABASE_URL + '/functions/v1/generate-contract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+                    body: JSON.stringify({ campaign_id: campaignId })
+                });
+            } catch (e) { console.warn('Contract generation:', e); }
+
+            loadMyInvites();
+        }
+
+        async function declineInvite(inviteId) {
+            const { error } = await _supabase
+                .from('campaign_invites')
+                .update({ status: 'declined', responded_at: new Date().toISOString() })
+                .eq('id', inviteId)
+                .eq('creator_id', activeUserId);
+
+            if (error) { notify('Error', error.message, 'error'); return; }
+            notify('Invite Declined', 'You have declined this campaign invite.', 'info');
+            loadMyInvites();
+        }
+
         const badgeKeyMap = {
             'Chemistry & Oxidation': 'chemistry',
             'Terroir Certified': 'terroir',
@@ -1069,7 +1309,7 @@
             event.preventDefault();
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            ['terminal','academy','briefs','wallet'].forEach(s => {
+            ['terminal','profile','academy','briefs','wallet'].forEach(s => {
                 const div = document.getElementById('section-' + s);
                 if (div) div.style.display = s === section ? 'block' : 'none';
             });
