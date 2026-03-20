@@ -16,15 +16,18 @@
 
     <nav>
         <div style="flex: 1;"><a href="#" class="logo">TeaTrade<span style="color:var(--accent)">.</span></a></div>
-        <div class="nav-links" style="flex: 2; justify-content: center;">
-            <a href="#badges">Pro Badges</a>
-            <a href="#protocol">The Engine</a>
-            <a href="#ecosystem">Ecosystem</a>
+        <div class="nav-links nav-links-center">
+            <a href="#badges" onclick="this.closest('nav').classList.remove('nav-open')">Pro Badges</a>
+            <a href="#protocol" onclick="this.closest('nav').classList.remove('nav-open')">The Engine</a>
+            <a href="#ecosystem" onclick="this.closest('nav').classList.remove('nav-open')">Ecosystem</a>
         </div>
-        <div style="flex: 1; display: flex; justify-content: flex-end; gap: 10px;">
+        <div class="nav-actions nav-actions-end">
             <button class="btn-pill btn-outline" onclick="openLogin()">Sign In</button>
             <button class="btn-pill btn-brand-orange" style="padding: 10px 22px; font-size: 0.65rem;" onclick="window.location.href='brands.html'">For Brands</button>
         </div>
+        <button class="nav-hamburger" onclick="document.querySelector('nav').classList.toggle('nav-open')" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
     </nav>
 
     <header class="reveal">

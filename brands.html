@@ -20,13 +20,18 @@
 
     <nav>
         <a href="index.html" class="logo">TeaTrade<span style="color:var(--brand)">.</span></a>
-        <div style="display:flex; gap:12px; align-items:center;">
-            <a href="#how-it-works" style="color:#fff; text-decoration:none; font-size:0.65rem; letter-spacing:1.5px; font-weight:700; opacity:0.5; text-transform:uppercase;">How It Works</a>
-            <a href="#pricing" style="color:#fff; text-decoration:none; font-size:0.65rem; letter-spacing:1.5px; font-weight:700; opacity:0.5; text-transform:uppercase;">Pricing</a>
-            <a href="index.html" style="color:#fff; text-decoration:none; font-size:0.65rem; letter-spacing:1.5px; font-weight:700; opacity:0.5; text-transform:uppercase;">For Creators</a>
+        <div class="nav-links">
+            <a href="#how-it-works" onclick="this.closest('nav').classList.remove('nav-open')">How It Works</a>
+            <a href="#pricing" onclick="this.closest('nav').classList.remove('nav-open')">Pricing</a>
+            <a href="index.html">For Creators</a>
+        </div>
+        <div class="nav-actions">
             <button class="btn-pill btn-outline" onclick="openLogin()">Sign In</button>
             <button class="btn-pill btn-brand-orange" style="padding:10px 22px; font-size:0.65rem;" onclick="openLogin()">Portal Access</button>
         </div>
+        <button class="nav-hamburger" onclick="document.querySelector('nav').classList.toggle('nav-open')" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
     </nav>
 
     <header class="reveal">

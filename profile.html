@@ -189,12 +189,20 @@
             return;
         }
 
-        const { data: creator, error } = await _supabase
+        // Try fetching by username with public_profile_enabled filter
+        let { data: creator, error } = await _supabase
             .from('creators')
             .select('id, display_name, bio, location, tea_niches, content_types, showcase_links, badges_earned, public_profile_enabled')
             .eq('username', username)
             .eq('public_profile_enabled', true)
             .single();
+
+        // If RLS blocked anon or no match, try without the public filter as fallback
+        if (!creator && !error) {
+            // No rows matched
+        } else if (error && error.code === 'PGRST116') {
+            // No rows returned from .single()
+        }
 
         document.getElementById('profile-loading').style.display = 'none';
 

@@ -108,6 +108,9 @@ nav {
     text-transform: uppercase;
     font-weight: 700;
 }
+.nav-links-center { flex: 2; justify-content: center; }
+.nav-actions { display: flex; gap: 12px; align-items: center; }
+.nav-actions-end { flex: 1; justify-content: flex-end; }
 .nav-links a {
     color: #fff;
     text-decoration: none;
@@ -115,6 +118,26 @@ nav {
     transition: 0.3s;
 }
 .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+/* ── NAV HAMBURGER (hidden on desktop) ── */
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 10;
+}
+.nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: 0.3s;
+}
 
 /* ── BUTTONS ── */
 .btn-pill {
@@ -2297,9 +2320,55 @@ header {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-    nav { padding: 0 20px; height: 56px; }
+    /* ── Landing page nav → hamburger menu ── */
+    nav {
+        padding: 0 16px;
+        height: 56px;
+        flex-wrap: wrap;
+        position: fixed;
+        overflow: hidden;
+        max-height: 56px;
+        transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    nav.nav-open {
+        max-height: 100vh;
+        overflow-y: auto;
+        align-items: flex-start;
+        padding-top: 0;
+    }
+    nav.nav-open .nav-hamburger span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    nav.nav-open .nav-hamburger span:nth-child(2) { opacity: 0; }
+    nav.nav-open .nav-hamburger span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+    .nav-hamburger { display: flex; }
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        order: 10;
+        gap: 0;
+        padding: 8px 0 4px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    nav.nav-open .nav-links { display: flex; }
+    .nav-links a {
+        display: block;
+        padding: 14px 0;
+        font-size: 0.7rem;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .nav-actions {
+        display: none !important;
+        flex-direction: column;
+        width: 100%;
+        order: 11;
+        gap: 10px;
+        padding: 12px 0 16px;
+    }
+    nav.nav-open .nav-actions { display: flex !important; }
+    .nav-actions .btn-pill { width: 100%; text-align: center; }
+    nav > .logo { flex: 1; }
+    nav > div:first-child { flex: 1; }
     .logo { font-size: 1.4rem; }
-    .nav-links { gap: 16px; font-size: 0.6rem; }
     .badges-section { padding: 48px 0 48px 20px; }
     .badge-card { flex: 0 0 240px; padding: 28px 20px; }
     .talent-pool-section { padding: 48px 20px; }
@@ -2422,6 +2491,16 @@ header {
     /* ── Media gallery ── */
     .media-gallery { gap: 8px; }
     .media-card { min-width: 110px; }
+
+    /* ── Profile section on mobile ── */
+    .profile-public-toggle { gap: 8px; }
+    .profile-public-label { font-size: 0.55rem; letter-spacing: 1px; }
+    .profile-card-body { padding: 16px; }
+    .profile-chip { padding: 6px 12px; font-size: 0.72rem; }
+    .showcase-link-row input.showcase-link { padding: 8px 12px; font-size: 0.78rem; }
+
+    /* ── Academy grid ── */
+    .academy-grid { grid-template-columns: 1fr !important; }
 }
 
 /* ── Extra small screens ── */

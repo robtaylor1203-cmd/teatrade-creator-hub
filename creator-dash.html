@@ -234,14 +234,10 @@
                     <span>Public URL</span>
                 </div>
                 <div class="profile-card-body">
-                    <div class="brief-form-group" style="margin-bottom:0;">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span style="font-size:0.78rem; opacity:0.3; white-space:nowrap;">creator.teatrade.co.uk/profile?u=</span>
-                            <input type="text" id="profile-username" placeholder="your-username" style="flex:1; margin-bottom:0;" pattern="[a-z0-9\-]+" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9\-]/g, '')">
-                        </div>
-                    </div>
-                    <div id="public-profile-link" style="display:none; margin-top:12px; text-align:center;">
-                        <a id="public-profile-url" href="#" target="_blank" style="color:var(--accent); font-size:0.78rem;">View your public profile →</a>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <span style="font-size:0.78rem; opacity:0.3; white-space:nowrap;">creator.teatrade.co.uk/profile?u=</span>
+                        <input type="text" id="profile-username" placeholder="your-username" style="flex:1; min-width:120px; margin-bottom:0;" pattern="[a-z0-9\-]+" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9\-]/g, '')">
+                        <a id="public-profile-url" href="#" target="_blank" class="btn-pill btn-outline" style="display:none; padding:10px 20px; font-size:0.6rem; white-space:nowrap; text-decoration:none;">VIEW PROFILE →</a>
                     </div>
                 </div>
             </div>
@@ -1448,9 +1444,9 @@
             if (data.username) {
                 document.getElementById('profile-username').value = data.username;
                 if (data.public_profile_enabled) {
-                    const linkEl = document.getElementById('public-profile-link');
-                    linkEl.style.display = 'block';
-                    document.getElementById('public-profile-url').href = 'profile.html?u=' + encodeURIComponent(data.username);
+                    const btn = document.getElementById('public-profile-url');
+                    btn.style.display = 'inline-block';
+                    btn.href = 'profile.html?u=' + encodeURIComponent(data.username);
                 }
             }
         }
@@ -1495,20 +1491,23 @@
         async function togglePublicProfile() {
             const toggle = document.getElementById('public-profile-toggle');
             const enabled = toggle.checked;
-            if (enabled) {
-                const uname = document.getElementById('profile-username').value.trim();
-                if (!uname) { notify('Username Required', 'Set a username before enabling your public profile.', 'error'); toggle.checked = false; return; }
+            const uname = document.getElementById('profile-username').value.trim();
+            if (enabled && !uname) {
+                notify('Username Required', 'Set a username before enabling your public profile.', 'error');
+                toggle.checked = false;
+                return;
             }
-            const { error } = await _supabase.from('creators').update({ public_profile_enabled: enabled }).eq('id', activeUserId);
+            const updateObj = { public_profile_enabled: enabled };
+            if (uname) updateObj.username = uname;
+            const { error } = await _supabase.from('creators').update(updateObj).eq('id', activeUserId);
             if (error) { notify('Error', error.message, 'error'); toggle.checked = !enabled; return; }
-            const linkEl = document.getElementById('public-profile-link');
+            const btn = document.getElementById('public-profile-url');
             if (enabled) {
-                const uname = document.getElementById('profile-username').value.trim();
-                linkEl.style.display = 'block';
-                document.getElementById('public-profile-url').href = 'profile.html?u=' + encodeURIComponent(uname);
+                btn.style.display = 'inline-block';
+                btn.href = 'profile.html?u=' + encodeURIComponent(uname);
                 notify('Public Profile Enabled', 'Your profile is now visible to anyone with the link.', 'success');
             } else {
-                linkEl.style.display = 'none';
+                btn.style.display = 'none';
                 notify('Profile Hidden', 'Your public profile is now hidden.', 'info');
             }
         }
