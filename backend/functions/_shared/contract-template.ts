@@ -134,11 +134,12 @@ ${data.briefDescription ? `<p>${esc(data.briefDescription)}</p>` : ''}
   <li>Raise any content disputes through the TeaTrade platform dispute resolution process.</li>
 </ol>
 
-<h2>7. Revisions &amp; Rejection</h2>
+<h2>7. Content Review &amp; Rejection</h2>
 <ol>
-  <li>The Brand may request <strong>one round of minor revisions</strong> (colour grading, text overlays, trim points) at no additional cost.</li>
-  <li>Substantive re-shoots or concept changes require mutual agreement and may incur additional fees.</li>
-  <li>The Brand may only reject content for: (a) factual inaccuracy, (b) offensive or harmful material, or (c) material misrepresentation of the brand. All rejections must include evidence and are subject to independent review by TeaTrade.</li>
+  <li>Content review operates on a <strong>pass/reject basis only</strong>. No revisions may be requested.</li>
+  <li>The Brand may only reject content for: (a) factual inaccuracy about the product or brand, (b) offensive or harmful material, or (c) material misrepresentation of the brand. Creative direction and the Creator&rsquo;s authentic voice are expressly <strong>not</strong> grounds for rejection.</li>
+  <li>All rejections must include written evidence and are subject to independent review by TeaTrade.</li>
+  <li>If the Brand takes no action within <strong>24 hours</strong> of content submission, payment shall auto-release to the Creator.</li>
 </ol>
 
 <h2>8. Cancellation &amp; Refund</h2>

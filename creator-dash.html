@@ -105,8 +105,8 @@
                     <div class="badge-icon">
                         <svg viewBox="0 0 24 24"><path d="M10 2v7.31l-2-1.12-2 1.12V2"/><path d="M4.214 14.357a2 2 0 0 0-.357 1.143v4a2 2 0 0 0 2 2h12.286a2 2 0 0 0 2-2v-4a2 2 0 0 0-.357-1.143L14 6H10L4.214 14.357z"/></svg>
                     </div>
-                    <h3>Chemistry & Oxidation</h3>
-                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Sha Qing mastery and polyphenol extraction.</p>
+                    <h3>Chemistry &amp; Oxidation</h3>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Mastery of fermentation spectrums &amp; oxidation curves.</p>
                     <button class="btn-pill" id="btn-chemistry" onclick="launchModule('Chemistry & Oxidation')" style="width:100%; padding:10px 0; font-size:0.65rem;">COMMENCE MODULE</button>
                 </div>
                 <div class="academy-card" id="card-terroir">
@@ -114,8 +114,32 @@
                         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <h3>Terroir Certified</h3>
-                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Geographical indicators and soil compositions.</p>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Verified elevation, climate &amp; soil knowledge.</p>
                     <button class="btn-pill" id="btn-terroir" onclick="launchModule('Terroir Certified')" style="width:100%; padding:10px 0; font-size:0.65rem;">COMMENCE MODULE</button>
+                </div>
+                <div class="academy-card" id="card-botanical">
+                    <div class="badge-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" fill="none"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    </div>
+                    <h3>Botanical Specialist</h3>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Expertise in functional tisanes &amp; herbalism.</p>
+                    <button class="btn-pill" id="btn-botanical" onclick="launchModule('Botanical Specialist')" style="width:100%; padding:10px 0; font-size:0.65rem;">COMMENCE MODULE</button>
+                </div>
+                <div class="academy-card" id="card-gongfu">
+                    <div class="badge-icon">
+                        <svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+                    </div>
+                    <h3>Gongfu Ceremony</h3>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Specialist in ritual brewing techniques.</p>
+                    <button class="btn-pill" id="btn-gongfu" onclick="launchModule('Gongfu Ceremony')" style="width:100%; padding:10px 0; font-size:0.65rem;">COMMENCE MODULE</button>
+                </div>
+                <div class="academy-card" id="card-sourcing">
+                    <div class="badge-icon">
+                        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-2"/></svg>
+                    </div>
+                    <h3>Sourcing &amp; Origin</h3>
+                    <p style="opacity:0.45; font-size:0.85rem; margin-bottom:20px;">Supply chain expertise &amp; ethical trade.</p>
+                    <button class="btn-pill" id="btn-sourcing" onclick="launchModule('Sourcing & Origin')" style="width:100%; padding:10px 0; font-size:0.65rem;">COMMENCE MODULE</button>
                 </div>
             </div>
         </div>
@@ -953,39 +977,89 @@
             });
         }
 
+        const badgeKeyMap = {
+            'Chemistry & Oxidation': 'chemistry',
+            'Terroir Certified': 'terroir',
+            'Botanical Specialist': 'botanical',
+            'Gongfu Ceremony': 'gongfu',
+            'Sourcing & Origin': 'sourcing'
+        };
+
         async function loadEarnedBadges() {
             const { data } = await _supabase.from('creator_badges').select('badges(badge_name)').eq('creator_id', activeUserId);
             data?.forEach(r => {
-                const b = r.badges.badge_name;
-                if(b.includes('Chemistry')) { document.getElementById('card-chemistry').classList.add('earned'); document.getElementById('btn-chemistry').innerText = 'ACQUIRED'; }
-                if(b.includes('Terroir')) { document.getElementById('card-terroir').classList.add('earned'); document.getElementById('btn-terroir').innerText = 'ACQUIRED'; }
+                const name = r.badges.badge_name;
+                const key = badgeKeyMap[name];
+                if (key) {
+                    const card = document.getElementById('card-' + key);
+                    const btn = document.getElementById('btn-' + key);
+                    if (card) card.classList.add('earned');
+                    if (btn) { btn.innerText = 'ACQUIRED'; btn.style.opacity = '0.4'; btn.style.pointerEvents = 'none'; }
+                }
             });
         }
 
         const quizBanks = {
-            'Chemistry & Oxidation': [{ q: "Which compound causes tea astringency?", a: ["L-theanine", "Catechins", "GABA"], c: 1 }],
-            'Terroir Certified': [{ q: "Which soil type is prized for Oolong?", a: ["Volcanic", "Clay", "Sandy"], c: 0 }]
+            'Chemistry & Oxidation': [
+                { q: "What is the primary enzyme responsible for initiating oxidation in tea leaves?", a: ["Polyphenol oxidase", "Amylase", "Lipase"], c: 0 },
+                { q: "Which process halts oxidation in green tea production?", a: ["Withering", "Rolling", "Kill-green (Sha Qing)"], c: 2 },
+                { q: "Theaflavins, which give black tea its briskness, are formed by the oxidation of which compounds?", a: ["Amino acids", "Catechins", "Caffeine molecules"], c: 1 },
+                { q: "What approximate oxidation level defines a traditional Dong Ding oolong?", a: ["5–10%", "30–50%", "90–100%"], c: 1 },
+                { q: "During microbial fermentation of Pu-erh (wo dui), which organism is most associated with flavour development?", a: ["Aspergillus niger", "Saccharomyces cerevisiae", "Lactobacillus"], c: 0 }
+            ],
+            'Terroir Certified': [
+                { q: "What does the Chinese term 'yan yun' (rock rhyme) refer to in Wuyi oolongs?", a: ["Shape of the dry leaf", "Mineral character from rocky terroir", "Roasting temperature"], c: 1 },
+                { q: "At what elevation range are most high-mountain Taiwanese oolongs grown?", a: ["200–500m", "1,000–2,600m", "3,000–4,000m"], c: 1 },
+                { q: "Which soil type in Uji, Japan is prized for producing umami-rich Gyokuro?", a: ["Sandy loam", "Heavy clay", "Ite (volcanic sedimentary clay)"], c: 2 },
+                { q: "Darjeeling's distinctive muscatel character is primarily influenced by which factor?", a: ["Altitude and Himalayan mist cycles", "Proximity to the ocean", "Irrigation with glacier water"], c: 0 },
+                { q: "What is a 'single origin' designation in speciality tea?", a: ["Tea from one country", "Tea from one specific garden or lot", "Tea sold without blending agents"], c: 1 }
+            ],
+            'Botanical Specialist': [
+                { q: "Which plant family does Camellia sinensis belong to?", a: ["Theaceae", "Rosaceae", "Asteraceae"], c: 0 },
+                { q: "Rooibos (Aspalathus linearis) is naturally caffeine-free. What process gives red rooibos its colour?", a: ["Roasting at high heat", "Oxidation after bruising", "Sun-bleaching"], c: 1 },
+                { q: "Which adaptogenic root is commonly paired with tea in functional wellness blends?", a: ["Ashwagandha", "Ginger", "Turmeric"], c: 0 },
+                { q: "Chrysanthemum tisane is traditionally consumed in Chinese medicine to address what?", a: ["Digestive discomfort", "Excess internal heat and eye strain", "Joint inflammation"], c: 1 },
+                { q: "What distinguishes a 'tisane' from a 'tea'?", a: ["Tisanes are always cold-brewed", "Tisanes contain no Camellia sinensis", "Tisanes must include dried fruit"], c: 1 }
+            ],
+            'Gongfu Ceremony': [
+                { q: "What is the purpose of the first infusion ('wash') in gongfu brewing?", a: ["To test water temperature", "To rinse and awaken the leaves", "To extract maximum caffeine"], c: 1 },
+                { q: "What is the ideal vessel for gongfu-style Oolong brewing?", a: ["Glass teapot", "Yixing zisha clay teapot or porcelain gaiwan", "Cast-iron tetsubin"], c: 1 },
+                { q: "In gongfu brewing, what is the typical leaf-to-water ratio?", a: ["1g per 100ml", "5–8g per 100ml", "2g per 250ml"], c: 1 },
+                { q: "What is a 'cha hai' (fairness pitcher) used for?", a: ["Storing dry tea leaves", "Evenly distributing brewed tea across cups", "Heating water to temperature"], c: 1 },
+                { q: "When brewing aged Sheng Pu-erh gongfu style, what water temperature is recommended?", a: ["70–80°C", "85–90°C", "Full rolling boil (100°C)"], c: 2 }
+            ],
+            'Sourcing & Origin': [
+                { q: "What does 'direct trade' mean in the context of tea sourcing?", a: ["Buying from a supermarket", "Purchasing directly from the farmer or cooperative", "Importing via a government broker"], c: 1 },
+                { q: "What international standard certifies organic tea production?", a: ["ISO 9001", "USDA Organic / EU Organic Regulation", "Fair Trade International only"], c: 1 },
+                { q: "Which documentation proves the specific garden and lot of a tea shipment?", a: ["Invoice grade sheet and lot number", "Brand marketing brochure", "Customs declaration only"], c: 0 },
+                { q: "Why is 'elevation labelling' important for sourcing transparency?", a: ["Higher elevation always means better tea", "It verifies growing conditions that affect flavour profile", "It is required by law in all countries"], c: 1 },
+                { q: "What is a common ethical concern in large-scale tea estate sourcing?", a: ["Over-roasting during processing", "Labour conditions and fair wages for estate workers", "Use of non-traditional cultivars"], c: 1 }
+            ]
         };
+
         let activeModule = "", currentMQ = 0, moduleScore = 0;
         function launchModule(m) { activeModule = m; currentMQ = 0; moduleScore = 0; document.getElementById('module-step-quiz').style.display='block'; document.getElementById('module-step-result').style.display='none'; document.getElementById('module-terminal').classList.add('active'); loadMQ(); }
         function loadMQ() {
-            const q = quizBanks[activeModule][currentMQ];
-            document.getElementById('module-question').innerText = q.q;
+            const bank = quizBanks[activeModule];
+            const q = bank[currentMQ];
+            document.getElementById('module-question').innerText = `(${currentMQ + 1}/${bank.length}) ${q.q}`;
             const g = document.getElementById('module-answers'); g.innerHTML = '';
             q.a.forEach((opt, i) => {
                 const b = document.createElement('button'); b.className = 'btn-pill'; b.style.width='100%'; b.style.marginBottom='15px'; b.innerText = opt;
-                b.onclick = () => { if(i===q.c) moduleScore++; currentMQ++; if(currentMQ < quizBanks[activeModule].length) loadMQ(); else finishModule(); };
+                b.onclick = () => { if(i===q.c) moduleScore++; currentMQ++; if(currentMQ < bank.length) loadMQ(); else finishModule(); };
                 g.appendChild(b);
             });
         }
         async function finishModule() {
             document.getElementById('module-step-quiz').style.display='none';
             const res = document.getElementById('module-step-result'); res.style.display='block';
-            if(moduleScore >= 1) {
-                res.innerHTML = `<h2 style="font-family:'Playfair Display'; font-size:3rem; color:var(--accent);">Module Passed.</h2><button class="btn-pill" onclick="location.reload()">UPDATE TERMINAL</button>`;
+            const total = quizBanks[activeModule].length;
+            const needed = Math.ceil(total * 0.8); // 80% pass = 4 out of 5
+            if(moduleScore >= needed) {
+                res.innerHTML = `<h2 style="font-family:'Playfair Display'; font-size:3rem; color:var(--accent);">Module Passed.</h2><p style="opacity:0.5;margin-bottom:20px;">${moduleScore}/${total} correct</p><button class="btn-pill" onclick="location.reload()">UPDATE TERMINAL</button>`;
                 const { data } = await _supabase.from('badges').select('id').eq('badge_name', activeModule).single();
-                await _supabase.from('creator_badges').insert({ creator_id: activeUserId, badge_id: data.id });
-            } else { res.innerHTML = `<h2 style="color:#ff3333;">Failed.</h2><button class="btn-pill" onclick="closeModule()">RETRY</button>`; }
+                await _supabase.from('creator_badges').insert({ creator_id: activeUserId, badge_id: data.id, score: moduleScore });
+            } else { res.innerHTML = `<h2 style="color:#ff3333;">Failed.</h2><p style="opacity:0.5;margin-bottom:20px;">${moduleScore}/${total} correct — ${needed} required to pass</p><button class="btn-pill" onclick="closeModule()">RETRY</button>`; }
         }
         function closeModule() { document.getElementById('module-terminal').classList.remove('active'); }
         async function logOut() { await _supabase.auth.signOut(); location.href = 'index.html'; }
@@ -1149,7 +1223,7 @@
             document.getElementById('countdown-creation').innerHTML = '<div style=\"text-align:center; padding:16px;\"><div style=\"font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:8px;\">CONTENT SUBMITTED</div><div style=\"font-size:0.9rem; opacity:0.5; line-height:1.6;\">Awaiting brand review (24-hour window). Brands can only reject for factual inaccuracies or policy violations — your creative voice is protected. If no action is taken, payment auto-releases to you.</div></div>';
             document.getElementById('upload-area').style.display = 'none';
             document.getElementById('btn-submit-content').style.display = 'none';
-            notify('Content Submitted', 'Your content has been submitted for review. The brand has 24 hours to approve or request revisions. If no action is taken, payment auto-releases.', 'success');
+            notify('Content Submitted', 'Your content has been submitted for review. The brand has 24 hours to approve or reject. If no action is taken, payment auto-releases.', 'success');
         }
 
         initDashboard();
