@@ -174,7 +174,8 @@
                 <p style="opacity:0.4; font-size:0.82rem; margin:0;">Fill in all fields below to unlock brand matching and appear in the talent pool.</p>
             </div>
 
-            <!-- Identity card -->
+            <!-- Identity + Location row -->
+            <div class="profile-card-row">
             <div class="profile-card">
                 <div class="profile-card-header">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -184,19 +185,6 @@
                     <div class="brief-form-group" style="margin-bottom:0;">
                         <label class="brief-form-label">Display Name</label>
                         <input type="text" id="profile-name" placeholder="Your name or creator alias (visible to brands)" style="margin-bottom:0;">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bio card -->
-            <div class="profile-card">
-                <div class="profile-card-header">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    <span>Bio</span>
-                </div>
-                <div class="profile-card-body">
-                    <div class="brief-form-group" style="margin-bottom:0;">
-                        <textarea id="profile-bio" placeholder="Tell brands about yourself — your tea journey, content style, what makes you unique..." style="min-height:120px; margin-bottom:0;"></textarea>
                     </div>
                 </div>
             </div>
@@ -220,7 +208,23 @@
                     </div>
                 </div>
             </div>
+            </div><!-- /profile-card-row -->
 
+            <!-- Bio card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    <span>Bio</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="brief-form-group" style="margin-bottom:0;">
+                        <textarea id="profile-bio" placeholder="Tell brands about yourself — your tea journey, content style, what makes you unique..." style="min-height:120px; margin-bottom:0;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tea Niches + Content Types row -->
+            <div class="profile-card-row">
             <!-- Tea Niches card -->
             <div class="profile-card">
                 <div class="profile-card-header">
@@ -264,6 +268,7 @@
                     </div>
                 </div>
             </div>
+            </div><!-- /profile-card-row -->
 
             <!-- Showcase Links card -->
             <div class="profile-card">

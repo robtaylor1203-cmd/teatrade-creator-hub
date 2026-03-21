@@ -911,6 +911,15 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
+.profile-card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+.profile-card-row > .profile-card {
+    margin-bottom: 0;
+}
 .profile-card {
     background: rgba(255,255,255,0.02);
     border: 1px solid rgba(255,255,255,0.06);
@@ -932,6 +941,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 @media (max-width: 768px) {
     .profile-card-grid { grid-template-columns: 1fr; }
+    .profile-card-row { grid-template-columns: 1fr; }
     .social-inputs-grid { grid-template-columns: 1fr; }
 }
 
