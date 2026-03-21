@@ -2312,6 +2312,108 @@ header {
     letter-spacing: 1px;
 }
 
+/* ── PORTFOLIO GALLERY ── */
+.portfolio-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.portfolio-item {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(0,0,0,0.3);
+    transition: var(--transition);
+    aspect-ratio: 9/16;
+}
+.portfolio-item:hover {
+    border-color: rgba(0,255,133,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.portfolio-item.uploading { pointer-events: none; }
+.portfolio-thumb {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.portfolio-thumb img,
+.portfolio-thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.portfolio-remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    border: none;
+    border-radius: 50%;
+    color: #ff4444;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.portfolio-item:hover .portfolio-remove { opacity: 1; }
+.portfolio-label {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    font-size: 0.5rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+.portfolio-upload-zone {
+    border: 2px dashed rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg);
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+}
+.portfolio-upload-zone:hover,
+.portfolio-upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(0,255,133,0.02);
+}
+.portfolio-upload-zone svg {
+    width: 28px;
+    height: 28px;
+    stroke: rgba(255,255,255,0.2);
+    fill: none;
+    stroke-width: 1.5;
+    margin-bottom: 8px;
+}
+.portfolio-upload-zone .uz-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    opacity: 0.4;
+    margin-bottom: 4px;
+}
+.portfolio-upload-zone .uz-hint {
+    font-size: 0.65rem;
+    opacity: 0.2;
+}
+
 /* ── Lightbox Overrides ── */
 #media-lightbox .lb-nav:hover {
     background: rgba(255,255,255,0.15);
@@ -2779,6 +2881,11 @@ header {
 
     /* ── Academy grid ── */
     .academy-grid { grid-template-columns: 1fr !important; }
+
+    /* ── Portfolio gallery responsive ── */
+    .portfolio-gallery { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .portfolio-upload-zone { padding: 24px 16px; }
+    .portfolio-remove { opacity: 1; }
 
     /* ── Analytics ROI responsive ── */
     #section-analytics .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }

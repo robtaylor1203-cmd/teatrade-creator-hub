@@ -282,6 +282,26 @@
                 </div>
             </div>
 
+            <!-- Portfolio Media card -->
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    <span>Portfolio Reel</span>
+                    <span style="margin-left:auto; font-size:0.55rem; opacity:0.3; font-weight:700; letter-spacing:1px;">MAX 5</span>
+                </div>
+                <div class="profile-card-body">
+                    <p style="font-size:0.78rem; opacity:0.35; margin-bottom:16px;">Upload your best content. Brands see this carousel when reviewing your profile in the talent pool.</p>
+                    <div class="portfolio-gallery" id="portfolio-gallery"></div>
+                    <div class="portfolio-upload-zone" id="portfolio-drop-zone"
+                         ondrop="handlePortfolioDrop(event)" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <div class="uz-label">Drop files or tap to upload</div>
+                        <div class="uz-hint">JPG, PNG, MP4, MOV, WebM -- max 100MB each</div>
+                        <input type="file" id="portfolio-file-input" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm" multiple style="display:none;" onchange="handlePortfolioSelect(event)">
+                    </div>
+                </div>
+            </div>
+
             <!-- Public URL card -->
             <div class="profile-card" id="public-url-card" style="border-color:rgba(0,255,133,0.12); background:rgba(0,255,133,0.02);">
                 <div class="profile-card-header" style="color:var(--accent); border-color:rgba(0,255,133,0.08);">
@@ -1010,7 +1030,7 @@
             document.getElementById('avatar-initials').innerText = activeUserEmail.substring(0,2).toUpperCase();
             activeUserId = creator.id;
             document.getElementById('match-score-display').innerText = creator.quiz_score || "--";
-            loadSocialStats(); loadEarnedBadges(); loadWalletData(); loadCreatorProfile(); loadMyInvites();
+            loadSocialStats(); loadEarnedBadges(); loadWalletData(); loadCreatorProfile(); loadMyInvites(); loadPortfolioMedia();
             subscribeToInvites(); // Real-time invite notifications
 
             // ── Show OAuth result notification ──
@@ -2317,6 +2337,175 @@
 
             // Show/hide nav arrows
             navs.forEach(n => n.style.display = files.length > 1 ? 'flex' : 'none');
+        }
+
+        /* ── Portfolio Media Upload System ── */
+        let portfolioMedia = []; // array of { id, url, type, name, size, storagePath }
+        const MAX_PORTFOLIO = 5;
+
+        function handlePortfolioDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            processPortfolioFiles(Array.from(e.dataTransfer.files));
+        }
+
+        function handlePortfolioSelect(e) {
+            processPortfolioFiles(Array.from(e.target.files));
+            e.target.value = '';
+        }
+
+        // Make drop zone clickable
+        document.addEventListener('click', function(e) {
+            const zone = e.target.closest('#portfolio-drop-zone');
+            if (zone && e.target.tagName !== 'INPUT') {
+                document.getElementById('portfolio-file-input').click();
+            }
+        });
+
+        async function processPortfolioFiles(files) {
+            for (const file of files) {
+                if (portfolioMedia.length >= MAX_PORTFOLIO) {
+                    showToast('Limit Reached', 'Maximum 5 portfolio items. Remove one first.', 'warning');
+                    return;
+                }
+                if (!ALLOWED_TYPES.includes(file.type)) {
+                    showToast('Invalid File', `"${file.name}" is not a supported format.`, 'warning');
+                    continue;
+                }
+                if (file.size > MAX_FILE_SIZE) {
+                    showToast('Too Large', `"${file.name}" exceeds 100MB limit.`, 'warning');
+                    continue;
+                }
+                await uploadPortfolioFile(file);
+            }
+            updatePortfolioDropZone();
+        }
+
+        async function uploadPortfolioFile(file) {
+            const gallery = document.getElementById('portfolio-gallery');
+            // Create placeholder
+            const placeholder = document.createElement('div');
+            placeholder.className = 'portfolio-item uploading';
+            const isVideo = file.type.startsWith('video/');
+            placeholder.innerHTML = `<div class="portfolio-thumb"><div class="upload-progress"><div class="upload-progress-ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/><circle class="progress-arc" cx="18" cy="18" r="16" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="100.5 100.5" stroke-dashoffset="100.5" stroke-linecap="round"/></svg></div><span class="upload-pct">0%</span></div></div>`;
+            gallery.appendChild(placeholder);
+
+            const ext = file.name.split('.').pop();
+            const safeName = crypto.randomUUID() + '.' + ext;
+            const storagePath = `${activeUserId}/${safeName}`;
+
+            // Fake progress
+            let fakeProgress = 0;
+            const arc = placeholder.querySelector('.progress-arc');
+            const pctEl = placeholder.querySelector('.upload-pct');
+            const circumference = 2 * Math.PI * 16;
+            const progressInterval = setInterval(() => {
+                fakeProgress = Math.min(fakeProgress + Math.random() * 15 + 5, 90);
+                const offset = circumference - (fakeProgress / 100) * circumference;
+                if (arc) arc.style.strokeDashoffset = offset;
+                if (pctEl) pctEl.textContent = Math.round(fakeProgress) + '%';
+            }, 200);
+
+            const { data, error } = await _supabase.storage
+                .from('portfolio-media')
+                .upload(storagePath, file, { contentType: file.type, upsert: false });
+
+            clearInterval(progressInterval);
+
+            if (error) {
+                placeholder.remove();
+                showToast('Upload Failed', error.message, 'warning');
+                return;
+            }
+
+            if (arc) arc.style.strokeDashoffset = '0';
+            if (pctEl) pctEl.textContent = '100%';
+
+            const { data: urlData } = _supabase.storage.from('portfolio-media').getPublicUrl(storagePath);
+            const publicUrl = urlData?.publicUrl || '';
+
+            const { data: rec } = await _supabase.from('portfolio_media').insert({
+                creator_id: activeUserId,
+                file_name: file.name,
+                file_type: file.type,
+                file_size: file.size,
+                storage_path: storagePath,
+                sort_order: portfolioMedia.length,
+            }).select('id').single();
+
+            const entry = { id: rec?.id, url: publicUrl, type: file.type, name: file.name, size: file.size, storagePath };
+            portfolioMedia.push(entry);
+
+            setTimeout(() => {
+                placeholder.classList.remove('uploading');
+                placeholder.innerHTML = buildPortfolioItem(entry, portfolioMedia.length - 1);
+            }, 400);
+
+            showToast('Portfolio Updated', `"${file.name}" added to your reel.`, 'success', 3000);
+        }
+
+        function buildPortfolioItem(entry, idx) {
+            const isVideo = entry.type.startsWith('video/');
+            return `
+                <div class="portfolio-thumb">
+                    ${isVideo
+                        ? `<video src="${entry.url}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></video>
+                           <div class="media-play-icon"><svg viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`
+                        : `<img src="${entry.url}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+                    }
+                </div>
+                <button class="portfolio-remove" onclick="event.stopPropagation(); removePortfolioItem(${idx})" title="Remove">&times;</button>
+                <div class="portfolio-label">${isVideo ? 'VIDEO' : 'PHOTO'}</div>`;
+        }
+
+        async function removePortfolioItem(idx) {
+            const item = portfolioMedia[idx];
+            if (!item) return;
+            // Delete from storage + DB
+            await _supabase.storage.from('portfolio-media').remove([item.storagePath]);
+            if (item.id) await _supabase.from('portfolio_media').delete().eq('id', item.id);
+            portfolioMedia.splice(idx, 1);
+            rebuildPortfolioGallery();
+            updatePortfolioDropZone();
+            showToast('Removed', 'Portfolio item removed.', 'info', 2000);
+        }
+
+        function rebuildPortfolioGallery() {
+            const gallery = document.getElementById('portfolio-gallery');
+            gallery.innerHTML = '';
+            portfolioMedia.forEach((entry, idx) => {
+                const div = document.createElement('div');
+                div.className = 'portfolio-item';
+                div.innerHTML = buildPortfolioItem(entry, idx);
+                gallery.appendChild(div);
+            });
+        }
+
+        function updatePortfolioDropZone() {
+            const zone = document.getElementById('portfolio-drop-zone');
+            if (zone) zone.style.display = portfolioMedia.length >= MAX_PORTFOLIO ? 'none' : '';
+        }
+
+        async function loadPortfolioMedia() {
+            if (!activeUserId) return;
+            const { data } = await _supabase.from('portfolio_media')
+                .select('id, file_name, file_type, file_size, storage_path, sort_order')
+                .eq('creator_id', activeUserId)
+                .order('sort_order', { ascending: true });
+            if (!data || data.length === 0) return;
+            portfolioMedia = data.map(item => {
+                const { data: urlData } = _supabase.storage.from('portfolio-media').getPublicUrl(item.storage_path);
+                return {
+                    id: item.id,
+                    url: urlData?.publicUrl || '',
+                    type: item.file_type,
+                    name: item.file_name,
+                    size: item.file_size,
+                    storagePath: item.storage_path,
+                };
+            });
+            rebuildPortfolioGallery();
+            updatePortfolioDropZone();
         }
 
         /* ── Submit Content for Review ── */

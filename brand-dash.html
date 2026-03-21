@@ -2078,13 +2078,47 @@
                     return;
                 }
 
+                // Fetch portfolio media for all matched creators
+                const creatorIds = result.creators.map(c => c.id);
+                const { data: allPortfolio } = await _supabase.from('portfolio_media')
+                    .select('creator_id, file_type, storage_path, sort_order')
+                    .in('creator_id', creatorIds)
+                    .order('sort_order', { ascending: true });
+                const portfolioByCreator = {};
+                (allPortfolio || []).forEach(p => {
+                    if (!portfolioByCreator[p.creator_id]) portfolioByCreator[p.creator_id] = [];
+                    const { data: urlData } = _supabase.storage.from('portfolio-media').getPublicUrl(p.storage_path);
+                    portfolioByCreator[p.creator_id].push({ url: urlData?.publicUrl || '', type: p.file_type });
+                });
+
                 pool.innerHTML = '';
                 result.creators.forEach(c => {
                     const badgeTags = (c.badges || []).map(b => `<span class="tag-req">${b}</span>`).join('');
                     const platform = c.platform || 'Instagram';
-                    const showcaseHtml = (c.showcase_links || []).slice(0, 5).map((link, i) => 
-                        `<div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Showcase ${i+1}</span></div></div>`
-                    ).join('');
+                    const portfolio = portfolioByCreator[c.id] || [];
+
+                    let carouselHtml = '';
+                    if (portfolio.length > 0) {
+                        const slidesHtml = portfolio.map(p => {
+                            const isVideo = p.type.startsWith('video/');
+                            return `<div class="vid-slide"><div class="vid-placeholder" style="padding:0;overflow:hidden;">
+                                ${isVideo
+                                    ? `<video src="${p.url}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video><div class="media-play-icon" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"><svg viewBox="0 0 24 24" fill="white" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>`
+                                    : `<img src="${p.url}" style="width:100%;height:100%;object-fit:cover;">`
+                                }
+                            </div></div>`;
+                        }).join('');
+                        carouselHtml = `<div class="talent-video-carousel" data-carousel data-idx="0"><div class="vid-track">${slidesHtml}</div><button class="vid-arrow prev" onclick="slideCarousel(this,-1)">&#8249;</button><button class="vid-arrow next" onclick="slideCarousel(this,1)">&#8250;</button><span class="vid-counter">1 / ${portfolio.length}</span></div>`;
+                    } else {
+                        // Fallback to showcase links as placeholders
+                        const showcaseHtml = (c.showcase_links || []).slice(0, 5).map((link, i) => 
+                            `<div class="vid-slide"><div class="vid-placeholder"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Showcase ${i+1}</span></div></div>`
+                        ).join('');
+                        if (showcaseHtml) {
+                            carouselHtml = `<div class="talent-video-carousel" data-carousel data-idx="0"><div class="vid-track">${showcaseHtml}</div><button class="vid-arrow prev" onclick="slideCarousel(this,-1)">&#8249;</button><button class="vid-arrow next" onclick="slideCarousel(this,1)">&#8250;</button><span class="vid-counter">1 / ${(c.showcase_links || []).length || 1}</span></div>`;
+                        }
+                    }
+
                     const nichesTags = (c.niches || []).slice(0, 3).map(n => `<span style="font-size:0.6rem; opacity:0.4; border:1px solid rgba(255,255,255,0.08); padding:2px 8px; border-radius:20px;">${n}</span>`).join(' ');
                     
                     const card = document.createElement('div');
@@ -2094,7 +2128,7 @@
                             <h3>${c.display_name || ('Creator #' + c.id.substring(0,4))}</h3>
                             <span class="match">${c.match_score}% MATCH</span>
                         </div>
-                        ${showcaseHtml ? `<div class="talent-video-carousel" data-carousel><div class="vid-track">${showcaseHtml}</div><button class="vid-arrow prev" onclick="slideCarousel(this,-1)">&#8249;</button><button class="vid-arrow next" onclick="slideCarousel(this,1)">&#8250;</button><span class="vid-counter">1 / ${(c.showcase_links || []).length || 1}</span></div>` : ''}
+                        ${carouselHtml}
                         <div class="talent-body">
                             <div class="talent-api-source">
                                 <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
