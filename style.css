@@ -1015,8 +1015,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 .profile-card-header svg { opacity: 0.6; stroke: var(--accent); }
+.profile-card .brief-form-label { color: var(--accent); }
 .brand-page .profile-card-header { color: var(--brand); }
 .brand-page .profile-card-header svg { stroke: var(--brand); }
+.brand-page .profile-card .brief-form-label { color: var(--brand); }
 .profile-card-body {
     padding: 20px;
 }
