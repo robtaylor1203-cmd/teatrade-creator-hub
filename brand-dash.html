@@ -887,6 +887,7 @@
             <p style="opacity:0.35; font-size:0.82rem; margin-bottom:24px;">Enter the tracking number once you've dispatched the product to the matched creator.</p>
             <input type="text" id="tracking-carrier" placeholder="Carrier (e.g. Royal Mail, DPD, Evri)">
             <input type="text" id="tracking-number" placeholder="Tracking Number">
+            <input type="hidden" id="tracking-campaign-id">
             <button class="btn-pill" style="width:100%;" onclick="submitTracking()">CONFIRM DISPATCH</button>
         </div>
     </div>
@@ -1412,6 +1413,10 @@
                     let actions = '';
                     if (c.status === 'pending_payment') {
                         actions = `<button class="btn-pill" style="font-size:0.6rem; padding:8px 18px;" onclick="retryEscrowPayment('${c.id}')">PAY NOW</button>`;
+                    } else if (c.status === 'escrow_locked' && !c.shipped_at) {
+                        actions = `<button class="btn-pill btn-outline" style="font-size:0.6rem; padding:8px 18px;" onclick="openShippingModal('${c.id}')">ADD TRACKING</button>`;
+                    } else if (c.status === 'escrow_locked' && c.shipped_at) {
+                        actions = `<span style="font-size:0.7rem; opacity:0.5;">${c.shipping_carrier || 'Shipped'}</span>`;
                     }
                     // Build detail line from stored brief data
                     const details = [];
@@ -1852,12 +1857,42 @@
         }
 
         function closeShippingModal() { document.getElementById('shipping-modal').classList.remove('active'); }
-        function submitTracking() {
-            const carrier = document.getElementById('tracking-carrier').value;
-            const number = document.getElementById('tracking-number').value;
+        function openShippingModal(campaignId) {
+            document.getElementById('tracking-campaign-id').value = campaignId;
+            document.getElementById('tracking-carrier').value = '';
+            document.getElementById('tracking-number').value = '';
+            document.getElementById('shipping-modal').classList.add('active');
+        }
+        async function submitTracking() {
+            const carrier = document.getElementById('tracking-carrier').value.trim();
+            const number = document.getElementById('tracking-number').value.trim();
+            const campaignId = document.getElementById('tracking-campaign-id').value;
             if (!carrier || !number) { notify('Required', 'Please enter carrier and tracking number.', 'error'); return; }
+            if (!campaignId) { notify('Error', 'No campaign selected.', 'error'); return; }
+
+            // Save to database
+            const { error } = await _supabase.from('campaigns').update({
+                shipping_carrier: carrier,
+                shipping_tracking: number,
+                shipped_at: new Date().toISOString()
+            }).eq('id', campaignId);
+
+            if (error) { notify('Save Failed', error.message, 'error'); return; }
+
             closeShippingModal();
-            notify('Dispatched', `Tracking ${number} (${carrier}) has been shared with the creator. They'll be notified to expect delivery.`, 'success');
+            notify('Dispatched', `Tracking ${number} (${carrier}) saved. The creator will be notified by email.`, 'success');
+            loadCampaigns();
+
+            // Send email notification to creator (fire-and-forget)
+            try {
+                const session = await _supabase.auth.getSession();
+                const token = session.data.session?.access_token;
+                fetch(`${SUPABASE_URL}/functions/v1/notify-creator-shipped`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': SUPABASE_KEY },
+                    body: JSON.stringify({ campaign_id: campaignId, carrier, tracking_number: number }),
+                }).catch(() => {});
+            } catch (e) { /* non-blocking */ }
         }
 
         /* ── Brand Profile Load/Save ── */
