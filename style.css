@@ -805,6 +805,37 @@ input:focus, select:focus, textarea:focus {
 .brief-form-row.triple {
     grid-template-columns: 1fr 1fr 1fr;
 }
+
+/* ── DATE INPUT DARK THEME ── */
+input[type="date"] {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg);
+    color: #fff;
+    padding: 14px 16px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+    transition: var(--transition);
+    -webkit-appearance: none;
+    appearance: none;
+}
+input[type="date"]:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 2px rgba(255,94,0,0.15);
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(0.7);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.9;
+}
+
 .brief-check-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -900,6 +931,7 @@ input:focus, select:focus, textarea:focus {
 }
 @media (max-width: 768px) {
     .profile-card-grid { grid-template-columns: 1fr; }
+    .social-inputs-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Showcase link rows ── */
@@ -979,6 +1011,32 @@ input:focus, select:focus, textarea:focus {
 .profile-card-body input[type="url"],
 .profile-card-body textarea {
     margin-bottom: 0;
+}
+
+/* ── Social Media Input Styling ── */
+.social-input-wrap {
+    position: relative;
+}
+.social-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.35;
+    font-size: 0.82rem;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+.social-input-wrap input:focus ~ .social-input-icon,
+.social-input-wrap:focus-within .social-input-icon {
+    opacity: 0.7;
+}
+.social-inputs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 0;
 }
 
 /* ── Public Portfolio Toggle (inline) ── */
@@ -1911,13 +1969,15 @@ header {
     margin-bottom: 16px;
 }
 .brief-card .brief-header h3 { margin: 0; font-size: 1.1rem; }
-.brief-card .brief-status {
+.brief-status {
     font-size: 0.58rem;
     font-weight: 900;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     padding: 4px 12px;
     border-radius: var(--radius-pill);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 .brief-status.st-active { color: var(--accent); background: rgba(0,255,133,0.08); border: 1px solid rgba(0,255,133,0.2); }
 .brief-status.st-shipping { color: #60a5fa; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.2); }
