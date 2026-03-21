@@ -739,6 +739,7 @@ nav {
 /* ── INPUTS ── */
 input[type="email"],
 input[type="text"],
+input[type="url"],
 input[type="number"],
 select,
 textarea,
