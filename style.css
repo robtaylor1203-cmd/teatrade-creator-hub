@@ -868,9 +868,38 @@ input:focus, select:focus, textarea:focus {
     color: #fff;
 }
 .profile-chip:has(input:checked) span::before {
-    content: '✓ ';
+    content: '\2713  ';
     color: var(--brand);
     font-weight: 700;
+}
+
+/* ── Profile Card Layout (brand profile) ── */
+.profile-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.profile-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-md);
+    padding: 24px;
+}
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+@media (max-width: 768px) {
+    .profile-card-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Showcase link rows ── */
@@ -2458,6 +2487,7 @@ header {
     .brief-form-row, .brief-form-row.triple { grid-template-columns: 1fr; }
     .brief-check-grid { grid-template-columns: 1fr; }
     #brief-modal .modal-card > div[style*="grid-template-columns"] { grid-template-columns: 1fr; }
+    #section-brief > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
     #campaign-insight { position: static; }
 
     /* ── Dashboard sidebar → slide-out drawer ── */
