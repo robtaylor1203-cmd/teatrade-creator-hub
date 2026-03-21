@@ -38,7 +38,25 @@
     <div class="ambient-glow" style="top: -10%; left: 20%; background: radial-gradient(circle, rgba(255,94,0,0.03) 0%, transparent 70%);"></div>
 
     <!-- Mobile overlay for sidebar -->
-    <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileDropdown()"></div>
+
+    <!-- Mobile Header Bar -->
+    <header class="mobile-header" id="mobile-header">
+        <a href="index.html" class="logo">TeaTrade<span style="color:var(--brand)">.</span></a>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileDropdown()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+    <div class="mobile-dropdown" id="mobile-dropdown">
+        <a href="#" class="mobile-dropdown-item active" data-section="command" onclick="switchBrandSection('command', this)">Command Center</a>
+        <a href="#" class="mobile-dropdown-item" data-section="brand-profile" onclick="switchBrandSection('brand-profile', this)">Brand Profile</a>
+        <a href="#" class="mobile-dropdown-item" data-section="brief" onclick="switchBrandSection('brief', this)">Post a Brief</a>
+        <a href="#" class="mobile-dropdown-item" data-section="campaigns" onclick="switchBrandSection('campaigns', this)">Active Campaigns</a>
+        <a href="#" class="mobile-dropdown-item" data-section="analytics" onclick="switchBrandSection('analytics', this)">ROI Analytics</a>
+        <a href="#" class="mobile-dropdown-item" data-section="escrow" onclick="switchBrandSection('escrow', this)">Escrow Wallet</a>
+        <div class="mobile-dropdown-divider"></div>
+        <a href="#" class="mobile-dropdown-item mobile-dropdown-logout" onclick="logOut()">Log Out</a>
+    </div>
     <div id="toast-container" style="position:fixed; bottom:24px; left:24px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <aside class="sidebar">
@@ -1548,11 +1566,21 @@
         async function logOut() { await _supabase.auth.signOut(); location.href='brands.html'; }
 
         /* ── Mobile Menu Toggle ── */
-        function toggleMobileMenu() {
-            const sidebar = document.querySelector('.sidebar');
+        function toggleMobileDropdown() {
+            const dropdown = document.getElementById('mobile-dropdown');
+            const btn = document.getElementById('mobile-menu-btn');
             const overlay = document.getElementById('mobile-overlay');
-            sidebar.classList.toggle('open');
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
             overlay.classList.toggle('active');
+        }
+        function closeMobileDropdown() {
+            const dropdown = document.getElementById('mobile-dropdown');
+            const btn = document.getElementById('mobile-menu-btn');
+            const overlay = document.getElementById('mobile-overlay');
+            if (dropdown) dropdown.classList.remove('open');
+            if (btn) btn.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
         }
 
         /* ── Video Carousel (infinite loop) ── */
@@ -1583,16 +1611,28 @@
             const h1 = document.querySelector('.dash-header h1');
             if (h1 && titles[section]) h1.textContent = titles[section];
 
+            // Mobile dropdown highlight
+            document.querySelectorAll('.mobile-dropdown-item').forEach(d => {
+                if (d.dataset.section) d.classList.toggle('active', d.dataset.section === section);
+            });
+
+            // Mobile tab bar highlight
+            document.querySelectorAll('.mobile-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.section === section);
+            });
+
             // Trigger insight update when switching to brief
             if (section === 'brief') updateCampaignInsight();
 
-            // Close mobile sidebar if open
+            // Close mobile dropdown + sidebar
+            closeMobileDropdown();
             const sidebar = document.querySelector('.sidebar');
-            const overlay = document.getElementById('mobile-overlay');
             if (sidebar && sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
-                if (overlay) overlay.classList.remove('active');
             }
+            // Scroll to top on section change
+            document.querySelector('.main-content').scrollTop = 0;
+            window.scrollTo(0, 0);
         }
 
         /* ── Escrow Engine ── */
@@ -2150,6 +2190,30 @@
 
         initDashboard();
     </script>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="mobile-tab-bar" id="mobile-tab-bar">
+        <button class="mobile-tab active" onclick="switchBrandSection('command', this)" data-section="command">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Home
+        </button>
+        <button class="mobile-tab" onclick="switchBrandSection('brand-profile', this)" data-section="brand-profile">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+        </button>
+        <button class="mobile-tab" onclick="switchBrandSection('brief', this)" data-section="brief">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Brief
+        </button>
+        <button class="mobile-tab" onclick="switchBrandSection('campaigns', this)" data-section="campaigns">
+            <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Campaigns
+        </button>
+        <button class="mobile-tab" onclick="switchBrandSection('escrow', this)" data-section="escrow">
+            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Wallet
+        </button>
+    </nav>
     <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
 </body>
 </html>

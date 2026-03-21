@@ -38,7 +38,24 @@
     <div class="ambient-glow" style="top: -10%; left: 20%;"></div>
 
     <!-- Mobile overlay for sidebar -->
-    <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileDropdown()"></div>
+
+    <!-- Mobile Header Bar -->
+    <header class="mobile-header" id="mobile-header">
+        <a href="index.html" class="logo">TeaTrade<span style="color:var(--accent)">.</span></a>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileDropdown()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+    <div class="mobile-dropdown" id="mobile-dropdown">
+        <a href="#" class="mobile-dropdown-item active" data-section="terminal" onclick="switchSection('terminal', this)">Terminal</a>
+        <a href="#" class="mobile-dropdown-item" data-section="profile" onclick="switchSection('profile', this)">My Profile</a>
+        <a href="#" class="mobile-dropdown-item" data-section="academy" onclick="switchSection('academy', this)">Pro Academy</a>
+        <a href="#" class="mobile-dropdown-item" data-section="briefs" onclick="switchSection('briefs', this)">Campaign Briefs</a>
+        <a href="#" class="mobile-dropdown-item" data-section="wallet" onclick="switchSection('wallet', this)">Escrow Wallet</a>
+        <div class="mobile-dropdown-divider"></div>
+        <a href="#" class="mobile-dropdown-item mobile-dropdown-logout" onclick="logOut()">Log Out</a>
+    </div>
 
     <!-- Toast Notification Container -->
     <div id="toast-container" style="position:fixed; bottom:24px; left:24px; z-index:9999; display:flex; flex-direction:column-reverse; gap:10px; pointer-events:none;"></div>
@@ -765,11 +782,21 @@
         }
 
         /* ── Mobile Menu Toggle ── */
-        function toggleMobileMenu() {
-            const sidebar = document.querySelector('.sidebar');
+        function toggleMobileDropdown() {
+            const dropdown = document.getElementById('mobile-dropdown');
+            const btn = document.getElementById('mobile-menu-btn');
             const overlay = document.getElementById('mobile-overlay');
-            sidebar.classList.toggle('open');
+            dropdown.classList.toggle('open');
+            btn.classList.toggle('open');
             overlay.classList.toggle('active');
+        }
+        function closeMobileDropdown() {
+            const dropdown = document.getElementById('mobile-dropdown');
+            const btn = document.getElementById('mobile-menu-btn');
+            const overlay = document.getElementById('mobile-overlay');
+            if (dropdown) dropdown.classList.remove('open');
+            if (btn) btn.classList.remove('open');
+            if (overlay) overlay.classList.remove('active');
         }
 
         /* ── Real-time invite subscription ── */
@@ -1909,18 +1936,24 @@
             document.querySelectorAll('.mobile-tab').forEach(t => {
                 t.classList.toggle('active', t.dataset.section === section);
             });
+            // Mobile dropdown highlight
+            document.querySelectorAll('.mobile-dropdown-item').forEach(d => {
+                if (d.dataset.section) d.classList.toggle('active', d.dataset.section === section);
+            });
             // Show section
             ['terminal','profile','academy','briefs','wallet'].forEach(s => {
                 const div = document.getElementById('section-' + s);
                 if (div) div.style.display = s === section ? 'block' : 'none';
             });
-            // Close mobile sidebar if open
+            // Close mobile dropdown + sidebar
+            closeMobileDropdown();
             const sidebar = document.querySelector('.sidebar');
-            const overlay = document.getElementById('mobile-overlay');
             if (sidebar && sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
-                if (overlay) overlay.classList.remove('active');
             }
+            // Scroll to top on section change
+            document.querySelector('.main-content').scrollTop = 0;
+            window.scrollTo(0, 0);
         }
 
         /* ── Contract System ── */
