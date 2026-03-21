@@ -2058,7 +2058,7 @@
                         <div class="talent-body">
                             <div class="talent-api-source">
                                 <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                ${platform} API &middot; <span class="api-live">LIVE</span>
+                                ${platform} ${c.is_verified ? 'API' : 'Stats'} &middot; <span class="${c.is_verified ? 'api-live' : 'api-self'}">${c.is_verified ? 'VERIFIED' : 'SELF-REPORTED'}</span>
                             </div>
                             <div class="talent-badges">${badgeTags}</div>
                             ${nichesTags ? `<div style="display:flex; flex-wrap:wrap; gap:4px; margin:8px 0;">${nichesTags}</div>` : ''}

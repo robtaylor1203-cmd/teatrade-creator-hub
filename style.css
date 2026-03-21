@@ -1623,6 +1623,7 @@ header {
 }
 .talent-api-source svg { width: 14px; height: 14px; stroke: var(--brand); fill: none; stroke-width: 2; }
 .talent-api-source .api-live { color: var(--accent); font-weight: 900; }
+.talent-api-source .api-self { color: var(--brand); font-weight: 900; }
 
 /* ── SECTION LABEL ── */
 .section-label {

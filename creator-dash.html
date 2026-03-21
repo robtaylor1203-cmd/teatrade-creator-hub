@@ -74,7 +74,7 @@
 
         <!-- ── Section: Terminal ── -->
         <div id="section-terminal">
-            <div class="section-label" style="margin-bottom: 16px; display:flex; align-items:center; gap:12px;">Verified Audience Metrics <span id="api-status-label" style="opacity:0.3; margin-left: 8px;">&#x1f512; API LOCKED</span><button onclick="refreshMetrics()" style="margin-left:auto; background:transparent; border:1px solid rgba(0,255,133,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,133,0.08)'" onmouseout="this.style.background='transparent'">↻ REFRESH</button></div>
+            <div class="section-label" style="margin-bottom: 16px; display:flex; align-items:center; gap:12px;">Audience Metrics <span id="api-status-label" style="opacity:0.3; margin-left: 8px;">&#x1f512; API LOCKED</span><button onclick="refreshMetrics()" style="margin-left:auto; background:transparent; border:1px solid rgba(0,255,133,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,133,0.08)'" onmouseout="this.style.background='transparent'">↻ REFRESH</button></div>
             <div class="stats-grid">
                 <div class="stat-card" id="ig-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -91,6 +91,16 @@
                         </div>
                     </div>
                     <button class="btn-pill" id="btn-ig" onclick="openOAuthFlow('instagram')" style="margin-top:16px; padding:10px 22px; font-size:0.65rem; width:100%;">CONNECT INSTAGRAM</button>
+                    <div id="ig-manual-toggle" style="text-align:center; margin-top:8px;"><button onclick="toggleManualEntry('instagram')" style="background:none; border:none; color:var(--text-dim); font-size:0.6rem; font-weight:700; letter-spacing:1.5px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">OR ENTER MANUALLY</button></div>
+                    <div id="ig-manual-form" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <input type="text" id="ig-manual-handle" placeholder="@username" style="font-size:0.75rem; padding:8px 12px;">
+                            <input type="number" id="ig-manual-followers" placeholder="Followers (e.g. 12500)" style="font-size:0.75rem; padding:8px 12px;">
+                            <input type="number" id="ig-manual-engagement" placeholder="Engagement Rate % (e.g. 4.2)" step="0.1" style="font-size:0.75rem; padding:8px 12px;">
+                            <input type="number" id="ig-manual-avgviews" placeholder="Avg. Views (e.g. 3200)" style="font-size:0.75rem; padding:8px 12px;">
+                        </div>
+                        <button class="btn-pill" onclick="saveManualStats('instagram')" style="margin-top:10px; padding:8px 18px; font-size:0.6rem; width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">SAVE STATS</button>
+                    </div>
                 </div>
                 <div class="stat-card" id="tk-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -107,6 +117,16 @@
                         </div>
                     </div>
                     <button class="btn-pill" id="btn-tk" onclick="openOAuthFlow('tiktok')" style="margin-top:16px; padding:10px 22px; font-size:0.65rem; width:100%;">CONNECT TIKTOK</button>
+                    <div id="tk-manual-toggle" style="text-align:center; margin-top:8px;"><button onclick="toggleManualEntry('tiktok')" style="background:none; border:none; color:var(--text-dim); font-size:0.6rem; font-weight:700; letter-spacing:1.5px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">OR ENTER MANUALLY</button></div>
+                    <div id="tk-manual-form" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <input type="text" id="tk-manual-handle" placeholder="@username" style="font-size:0.75rem; padding:8px 12px;">
+                            <input type="number" id="tk-manual-followers" placeholder="Followers (e.g. 52000)" style="font-size:0.75rem; padding:8px 12px;">
+                            <input type="number" id="tk-manual-engagement" placeholder="Engagement Rate % (e.g. 6.1)" step="0.1" style="font-size:0.75rem; padding:8px 12px;">
+                            <input type="number" id="tk-manual-avgviews" placeholder="Avg. Views (e.g. 15000)" style="font-size:0.75rem; padding:8px 12px;">
+                        </div>
+                        <button class="btn-pill" onclick="saveManualStats('tiktok')" style="margin-top:10px; padding:8px 18px; font-size:0.6rem; width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">SAVE STATS</button>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -998,13 +1018,62 @@
                     avgViews: s.avg_views || Math.floor(s.follower_count * 0.25),
                     secondary: s.secondary_metric || (Math.random() * 5 + 4).toFixed(1),
                     handle: s.handle || '@connected',
-                    lastSynced: s.last_synced_at
+                    lastSynced: s.last_synced_at,
+                    isVerified: s.is_verified
                 };
                 updateSocialCard(s.platform, metrics);
             });
         }
 
         /* ── OAuth Flow ── */
+        function toggleManualEntry(platform) {
+            const pre = platform === 'instagram' ? 'ig' : 'tk';
+            const form = document.getElementById(`${pre}-manual-form`);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function saveManualStats(platform) {
+            const pre = platform === 'instagram' ? 'ig' : 'tk';
+            const handle = document.getElementById(`${pre}-manual-handle`).value.trim();
+            const followers = parseInt(document.getElementById(`${pre}-manual-followers`).value) || 0;
+            const engagement = parseFloat(document.getElementById(`${pre}-manual-engagement`).value) || 0;
+            const avgViews = parseInt(document.getElementById(`${pre}-manual-avgviews`).value) || 0;
+
+            if (!handle || followers <= 0) {
+                notify('Required', 'Handle and follower count are required.', 'error');
+                return;
+            }
+
+            const row = {
+                creator_id: activeUserId,
+                platform: platform,
+                handle: handle.startsWith('@') ? handle : '@' + handle,
+                follower_count: followers,
+                engagement_rate: engagement,
+                avg_views: avgViews,
+                secondary_metric: 0,
+                is_verified: false,
+                last_synced_at: new Date().toISOString()
+            };
+
+            // Upsert: try update first, then insert
+            const { data: existing } = await _supabase.from('creator_socials')
+                .select('id').eq('creator_id', activeUserId).eq('platform', platform).single();
+
+            let error;
+            if (existing) {
+                ({ error } = await _supabase.from('creator_socials').update(row).eq('id', existing.id));
+            } else {
+                ({ error } = await _supabase.from('creator_socials').insert(row));
+            }
+
+            if (error) { notify('Save Failed', error.message, 'error'); return; }
+
+            const metrics = { followers, engagement, avgViews, secondary: 0, handle: row.handle, isVerified: false };
+            updateSocialCard(platform, metrics);
+            notify('Stats Saved', `Your ${platform === 'instagram' ? 'Instagram' : 'TikTok'} stats have been saved. These will be upgraded to API-verified once you connect your account.`, 'success');
+        }
+
         const platformConfig = {
             instagram: {
                 name: 'Instagram',
@@ -1175,6 +1244,7 @@
 
         function updateSocialCard(platform, metrics) {
             const pre = platform === 'instagram' ? 'ig' : 'tk';
+            const isVerified = metrics.isVerified !== false; // default true for backward compat with OAuth flow
             // Update follower count
             document.getElementById(`${pre}-followers`).innerText = metrics.followers.toLocaleString();
             // Update engagement
@@ -1193,19 +1263,32 @@
             } else {
                 document.getElementById('tk-completion').innerText = metrics.secondary + '%';
             }
-            // Update API badge
+            // Update API badge — differentiate verified vs self-reported
             const badge = document.getElementById(`${pre}-api-badge`);
-            badge.textContent = 'API LIVE';
-            badge.style.color = 'var(--accent)';
-            badge.style.background = 'rgba(0,255,133,0.06)';
-            badge.style.borderColor = 'rgba(0,255,133,0.15)';
-            // Hide connect button, show unlink
+            if (isVerified) {
+                badge.textContent = 'API LIVE';
+                badge.style.color = 'var(--accent)';
+                badge.style.background = 'rgba(0,255,133,0.06)';
+                badge.style.borderColor = 'rgba(0,255,133,0.15)';
+            } else {
+                badge.textContent = 'SELF-REPORTED';
+                badge.style.color = 'var(--brand)';
+                badge.style.background = 'rgba(255,94,0,0.06)';
+                badge.style.borderColor = 'rgba(255,94,0,0.15)';
+            }
+            // Hide connect button + manual toggle, show unlink/edit
             const btn = document.getElementById(`btn-${pre}`);
-            btn.textContent = 'UNLINK ACCOUNT';
-            btn.onclick = () => unlinkAccount(platform);
+            btn.textContent = isVerified ? 'UNLINK ACCOUNT' : 'EDIT STATS';
+            btn.onclick = isVerified ? () => unlinkAccount(platform) : () => toggleManualEntry(platform);
             btn.style.background = 'transparent';
-            btn.style.border = '1px solid rgba(255,68,68,0.2)';
-            btn.style.color = '#ff4444';
+            btn.style.border = isVerified ? '1px solid rgba(255,68,68,0.2)' : '1px solid rgba(255,94,0,0.2)';
+            btn.style.color = isVerified ? '#ff4444' : 'var(--brand)';
+            // Hide manual toggle when stats loaded
+            const manualToggle = document.getElementById(`${pre}-manual-toggle`);
+            if (manualToggle) manualToggle.style.display = 'none';
+            // Hide manual form
+            const manualForm = document.getElementById(`${pre}-manual-form`);
+            if (manualForm) manualForm.style.display = 'none';
             // Update header status
             updateApiStatusLabel();
         }
@@ -1257,14 +1340,22 @@
         }
 
         function updateApiStatusLabel() {
-            const igLinked = document.getElementById('ig-api-badge').textContent === 'API LIVE';
-            const tkLinked = document.getElementById('tk-api-badge').textContent === 'API LIVE';
+            const igBadge = document.getElementById('ig-api-badge').textContent;
+            const tkBadge = document.getElementById('tk-api-badge').textContent;
+            const igLinked = igBadge === 'API LIVE';
+            const tkLinked = tkBadge === 'API LIVE';
+            const igManual = igBadge === 'SELF-REPORTED';
+            const tkManual = tkBadge === 'SELF-REPORTED';
             const label = document.getElementById('api-status-label');
             if (igLinked && tkLinked) {
-                label.innerHTML = '<span style="color:var(--accent);">✓ ALL APIS CONNECTED</span>';
+                label.innerHTML = '<span style="color:var(--accent);">ALL APIS CONNECTED</span>';
                 label.style.opacity = '1';
             } else if (igLinked || tkLinked) {
-                label.innerHTML = '<span style="color:var(--brand);">⚠ 1 OF 2 CONNECTED</span>';
+                label.innerHTML = '<span style="color:var(--brand);">1 OF 2 API CONNECTED</span>';
+                label.style.opacity = '1';
+            } else if (igManual || tkManual) {
+                const count = (igManual ? 1 : 0) + (tkManual ? 1 : 0);
+                label.innerHTML = `<span style="color:var(--brand);">${count} SELF-REPORTED</span>`;
                 label.style.opacity = '1';
             } else {
                 label.innerHTML = '&#x1f512; API LOCKED';

@@ -89,7 +89,7 @@ serve(async (req: Request) => {
 
     const { data: allSocials } = await sb
       .from('creator_socials')
-      .select('creator_id, platform, follower_count, engagement_rate, avg_views')
+      .select('creator_id, platform, follower_count, engagement_rate, avg_views, is_verified')
       .in('creator_id', creatorIds);
 
     // Build lookup maps
@@ -204,6 +204,7 @@ serve(async (req: Request) => {
         engagement_rate: social.engagement_rate || 0,
         avg_views: social.avg_views || 0,
         platform: social.platform || null,
+        is_verified: social.is_verified ?? false,
         match_score: Math.min(score, 100),
       };
     });
