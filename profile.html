@@ -153,7 +153,7 @@
     </div>
 
     <div id="profile-not-found" class="profile-not-found" style="display:none;">
-        <div style="font-size:2rem; margin-bottom:12px;">🍵</div>
+        <div style="margin-bottom:12px;"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity:0.3;"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></div>
         <div>This creator profile doesn't exist or isn't public.</div>
         <a href="index.html" style="color:var(--accent); font-size:0.85rem; margin-top:16px; display:inline-block;">← Back to TeaTrade</a>
     </div>
@@ -214,20 +214,13 @@
             return;
         }
 
-        // Try fetching by username with public_profile_enabled filter
+        // Fetch public profile by username
         let { data: creator, error } = await _supabase
             .from('creators')
-            .select('id, display_name, bio, location, tea_niches, content_types, showcase_links, badges_earned, public_profile_enabled')
+            .select('id, display_name, bio, location, tea_niches, content_types, showcase_links, public_profile_enabled')
             .eq('username', username)
             .eq('public_profile_enabled', true)
             .single();
-
-        // If RLS blocked anon or no match, try without the public filter as fallback
-        if (!creator && !error) {
-            // No rows matched
-        } else if (error && error.code === 'PGRST116') {
-            // No rows returned from .single()
-        }
 
         document.getElementById('profile-loading').style.display = 'none';
 
@@ -245,14 +238,20 @@
 
         document.title = (creator.display_name || 'Creator') + ' | TeaTrade';
 
-        // Badges
-        const badges = creator.badges_earned || [];
-        if (badges.length > 0) {
-            document.getElementById('pub-badges-section').style.display = 'block';
-            document.getElementById('pub-badges').innerHTML = badges.map(b =>
-                `<div class="profile-badge-pill"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${b}</div>`
-            ).join('');
-        }
+        // Badges (from creator_badges junction table)
+        try {
+            const { data: badgeRows } = await _supabase
+                .from('creator_badges')
+                .select('badges(badge_name)')
+                .eq('creator_id', creator.id);
+            const badgeNames = (badgeRows || []).map(r => r.badges?.badge_name).filter(Boolean);
+            if (badgeNames.length > 0) {
+                document.getElementById('pub-badges-section').style.display = 'block';
+                document.getElementById('pub-badges').innerHTML = badgeNames.map(b =>
+                    `<div class="profile-badge-pill"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${b}</div>`
+                ).join('');
+            }
+        } catch (e) { /* badges optional */ }
 
         // Niches
         const niches = creator.tea_niches || [];
