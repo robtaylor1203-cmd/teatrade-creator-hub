@@ -1007,14 +1007,16 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     align-items: center;
     gap: 10px;
     padding: 14px 20px;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--brand);
+    color: var(--accent);
     border-bottom: 1px solid rgba(255,255,255,0.04);
 }
-.profile-card-header svg { opacity: 0.6; }
+.profile-card-header svg { opacity: 0.6; stroke: var(--accent); }
+.brand-page .profile-card-header { color: var(--brand); }
+.brand-page .profile-card-header svg { stroke: var(--brand); }
 .profile-card-body {
     padding: 20px;
 }
