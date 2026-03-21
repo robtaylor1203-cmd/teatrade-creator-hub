@@ -328,7 +328,7 @@
         // ── PIN Protection ──
         // SHA-256 hash of your PIN — change this by running:
         // crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_PIN')).then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
-        const PIN_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'; // default: 1234
+        const PIN_HASH = '4091f2c5c45d0cb95c6b43919f9f07f62f7f6c6fb46ca207264b2aee4ee6e4f9'; // PIN: 1517
 
         async function hashPin(pin) {
             const data = new TextEncoder().encode(pin);
