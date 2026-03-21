@@ -1849,6 +1849,54 @@
         /* ── Brand Profile Load/Save ── */
         let activeBrandUserId = null;
 
+        function socialHandleToUrl(platform, handle) {
+            if (!handle) return null;
+            const h = handle.replace(/^@/, '');
+            const map = {
+                instagram: 'https://instagram.com/' + encodeURIComponent(h),
+                tiktok: 'https://tiktok.com/@' + encodeURIComponent(h),
+                twitter: 'https://x.com/' + encodeURIComponent(h),
+                youtube: handle.startsWith('http') ? handle : 'https://youtube.com/@' + encodeURIComponent(h)
+            };
+            return map[platform] || null;
+        }
+
+        function renderProfileLinks() {
+            const fields = [
+                { id: 'brand-website', platform: null },
+                { id: 'brand-social-instagram', platform: 'instagram' },
+                { id: 'brand-social-tiktok', platform: 'tiktok' },
+                { id: 'brand-social-twitter', platform: 'twitter' },
+                { id: 'brand-social-youtube', platform: 'youtube' }
+            ];
+            fields.forEach(f => {
+                const input = document.getElementById(f.id);
+                if (!input) return;
+                const wrap = input.closest('.social-input-wrap');
+                if (!wrap) return;
+                // Remove any existing link display
+                const existing = wrap.parentElement.querySelector('.saved-link-row');
+                if (existing) existing.remove();
+
+                const val = input.value.trim();
+                if (!val) { wrap.style.display = ''; return; }
+
+                const href = f.platform ? socialHandleToUrl(f.platform, val) : (val.startsWith('http') ? val : 'https://' + val);
+                const display = f.platform ? val : val.replace(/^https?:\/\//, '');
+
+                const row = document.createElement('div');
+                row.className = 'saved-link-row';
+                row.innerHTML = `<a href="${href}" target="_blank" rel="noopener noreferrer" class="saved-link">${display}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a><button type="button" class="saved-link-edit" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
+                wrap.style.display = 'none';
+                wrap.parentElement.appendChild(row);
+                row.querySelector('.saved-link-edit').addEventListener('click', () => {
+                    row.remove();
+                    wrap.style.display = '';
+                    input.focus();
+                });
+            });
+        }
+
         async function loadBrandProfile() {
             if (!activeBrandEmail) return;
             const { data } = await _supabase.from('brand_profiles').select('*').eq('email', activeBrandEmail).single();
@@ -1873,6 +1921,7 @@
                 if (cb) cb.checked = true;
             });
             document.getElementById('brand-profile-incomplete').style.display = data.profile_complete ? 'none' : 'block';
+            renderProfileLinks();
         }
 
         async function saveBrandProfile() {
@@ -1916,6 +1965,7 @@
             const msg = document.getElementById('brand-profile-saved');
             msg.style.display = 'block';
             setTimeout(() => msg.style.display = 'none', 3000);
+            renderProfileLinks();
         }
 
         /* ── Dynamic Talent Pool (Matching Engine) ── */
