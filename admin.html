@@ -365,18 +365,21 @@
         }
 
         async function init() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            const email = session.user.email;
-            document.getElementById('user-email-display').textContent = email;
-            document.getElementById('avatar-initials').textContent = email.substring(0, 2).toUpperCase();
             document.body.classList.add('auth-cleared');
 
-            await loadAdminStats();
+            // Wait for Supabase to restore session from localStorage
+            const { data: { subscription } } = _supabase.auth.onAuthStateChange(async (event, session) => {
+                subscription.unsubscribe();
+                if (!session) {
+                    document.getElementById('user-email-display').textContent = 'Not logged in';
+                    showToast('No Session', 'Log in on the main site first, then come back here.', 'error', 8000);
+                    return;
+                }
+                const email = session.user.email;
+                document.getElementById('user-email-display').textContent = email;
+                document.getElementById('avatar-initials').textContent = email.substring(0, 2).toUpperCase();
+                await loadAdminStats();
+            });
         }
 
         const sectionTitles = {
