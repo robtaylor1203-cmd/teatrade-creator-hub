@@ -15,11 +15,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        .admin-gate { display:flex; align-items:center; justify-content:center; min-height:100vh; }
-        .admin-gate p { font-size:1.1rem; color:var(--text-dim); }
+        body { display: flex; height: 100vh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
+        body.auth-cleared { opacity: 1; }
 
+        /* ── PIN Gate ── */
+        .pin-gate { position:fixed; inset:0; z-index:10000; background:var(--bg); display:flex; align-items:center; justify-content:center; }
+        .pin-box { background:var(--panel); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-lg); padding:48px 40px; text-align:center; max-width:340px; width:100%; }
+        .pin-box h2 { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; margin-bottom:6px; }
+        .pin-box p { font-size:0.75rem; color:var(--text-dim); margin-bottom:24px; }
+        .pin-input { width:100%; padding:14px 18px; font-size:1.2rem; letter-spacing:8px; text-align:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-lg); color:#fff; outline:none; font-family:'Inter',sans-serif; font-weight:700; }
+        .pin-input:focus { border-color:var(--accent); }
+        .pin-input::placeholder { letter-spacing:4px; font-size:0.8rem; opacity:0.3; }
+        .pin-error { color:#ff4444; font-size:0.7rem; margin-top:10px; display:none; }
+        .pin-submit { margin-top:16px; width:100%; padding:12px; font-size:0.65rem; font-weight:800; letter-spacing:2px; }
+
+        /* ── Admin KPI Cards ── */
         .admin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
-        .admin-kpi { background:var(--panel); border:1px solid rgba(255,255,255,0.05); border-radius:var(--radius-lg); padding:24px; }
+        .admin-kpi { background:var(--panel); border:1px solid rgba(255,255,255,0.05); border-radius:var(--radius-lg); padding:24px; transition:border-color 0.2s; }
+        .admin-kpi:hover { border-color:rgba(255,255,255,0.1); }
         .admin-kpi .kpi-label { font-size:0.6rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
         .admin-kpi .kpi-value { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#fff; }
         .admin-kpi .kpi-sub { font-size:0.7rem; color:var(--text-dim); margin-top:4px; }
@@ -27,50 +40,67 @@
         .admin-kpi.brand .kpi-value { color:var(--brand); }
         .admin-kpi.gold .kpi-value { color:#FFD700; }
 
-        .admin-section { margin-bottom:40px; }
         .admin-section-title { font-size:0.65rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06); }
 
-        .admin-table { width:100%; border-collapse:collapse; }
-        .admin-table th { font-size:0.6rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-dim); text-align:left; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.06); }
-        .admin-table td { font-size:0.8rem; color:#fff; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.03); }
-        .admin-table tr:hover td { background:rgba(255,255,255,0.02); }
-
-        .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
-        .status-dot.green { background:var(--accent); }
-        .status-dot.orange { background:var(--brand); }
-        .status-dot.red { background:#ff4444; }
-        .status-dot.dim { background:rgba(255,255,255,0.15); }
-
-        .admin-refresh-btn { background:transparent; border:1px solid rgba(0,255,133,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s; }
-        .admin-refresh-btn:hover { background:rgba(0,255,133,0.08); }
-
-        .admin-bar { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
-        .admin-bar-fill { height:6px; border-radius:3px; transition:width 0.5s ease; }
-        .admin-bar-label { font-size:0.6rem; color:var(--text-dim); min-width:50px; text-align:right; }
-
-        #admin-content { display:none; }
-        #admin-loading { text-align:center; padding:60px 0; }
-        #admin-loading p { color:var(--text-dim); font-size:0.8rem; }
+        @media (max-width:768px) {
+            .admin-grid { grid-template-columns:1fr 1fr; gap:10px; }
+            .admin-kpi .kpi-value { font-size:1.4rem; }
+            .admin-kpi { padding:16px; }
+        }
+        @media (max-width:480px) {
+            .admin-grid { grid-template-columns:1fr; }
+        }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="brand-logo">
-            <img src="creator-hub-logo.jpg" style="width:40px; height:40px; border-radius:10px; object-fit:cover;">
-            <div style="display:flex; flex-direction:column; gap:0;">
-                <span>TeaTrade</span>
-                <span style="font-size:0.5rem; letter-spacing:3px; opacity:0.3; font-weight:700;">ADMIN CONSOLE</span>
-            </div>
+
+    <div class="ambient-glow" style="top: -10%; left: 20%;"></div>
+
+    <!-- PIN Protection Gate -->
+    <div class="pin-gate" id="pin-gate">
+        <div class="pin-box">
+            <h2>Admin Console</h2>
+            <p>Enter your admin PIN to continue</p>
+            <input type="password" class="pin-input" id="pin-input" placeholder="PIN" maxlength="6" autocomplete="off">
+            <div class="pin-error" id="pin-error">Incorrect PIN. Try again.</div>
+            <button class="btn-pill pin-submit" id="pin-submit" onclick="verifyPin()">UNLOCK</button>
         </div>
-        <nav>
-            <a href="#" class="nav-item active" onclick="scrollToSection('overview')">Overview</a>
-            <a href="#" class="nav-item" onclick="scrollToSection('users')">Users</a>
-            <a href="#" class="nav-item" onclick="scrollToSection('campaigns-section')">Campaigns</a>
-            <a href="#" class="nav-item" onclick="scrollToSection('financials')">Financials</a>
-            <a href="#" class="nav-item" onclick="scrollToSection('content-section')">Content</a>
-            <a href="#" class="nav-item" onclick="scrollToSection('engagement-section')">Engagement</a>
-        </nav>
-        <div class="profile-mini" style="margin-top:auto;">
+    </div>
+
+    <!-- Mobile overlay for sidebar -->
+    <div id="mobile-overlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" style="position:fixed; bottom:24px; left:24px; z-index:9999; display:flex; flex-direction:column-reverse; gap:10px; pointer-events:none;"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-top">
+            <a href="index.html" class="logo" style="font-size: 1.6rem;">TeaTrade<span style="color:var(--accent)">.</span></a>
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div class="nav-menu">
+            <a href="#" class="nav-item active" onclick="switchAdminSection('overview', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Overview
+            </a>
+            <a href="#" class="nav-item" onclick="switchAdminSection('users', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Users
+            </a>
+            <a href="#" class="nav-item" onclick="switchAdminSection('campaigns', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Campaigns
+            </a>
+            <a href="#" class="nav-item" onclick="switchAdminSection('financials', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Financials
+            </a>
+            <a href="#" class="nav-item" onclick="switchAdminSection('content', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Content
+            </a>
+            <a href="#" class="nav-item" onclick="switchAdminSection('engagement', this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:6px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Engagement
+            </a>
+        </div>
+        <div class="profile-mini">
             <div class="avatar" id="avatar-initials">--</div>
             <div style="overflow: hidden;">
                 <div id="user-email-display" style="font-size: 0.75rem; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Loading...</div>
@@ -80,229 +110,211 @@
     </aside>
 
     <main class="main-content">
-        <!-- Gate: Not authorized -->
-        <div id="admin-gate" class="admin-gate">
-            <div style="text-align:center;">
-                <p>Verifying admin access...</p>
+        <div class="dash-header">
+            <p class="section-label" id="section-label-text">ADMIN CONSOLE</p>
+            <h1 id="dash-title">Platform Overview.</h1>
+            <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+                <span id="last-refresh" style="font-size:0.6rem; color:var(--text-dim);"></span>
+                <button onclick="loadAdminStats()" style="background:transparent; border:1px solid rgba(0,255,133,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,133,0.08)'" onmouseout="this.style.background='transparent'">REFRESH</button>
             </div>
         </div>
 
-        <!-- Loading -->
-        <div id="admin-loading" style="display:none;">
-            <div class="loader"></div>
-            <p>Loading platform metrics...</p>
+        <!-- ── Section: Overview ── -->
+        <div id="section-overview">
+            <div class="section-label" style="margin-bottom:16px;">Key Performance Indicators</div>
+            <div class="admin-grid">
+                <div class="admin-kpi accent">
+                    <div class="kpi-label">Total Users</div>
+                    <div class="kpi-value" id="kpi-total-users">0</div>
+                    <div class="kpi-sub" id="kpi-users-breakdown">0 creators + 0 brands</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Creators Signed Up</div>
+                    <div class="kpi-value" id="kpi-creators">0</div>
+                    <div class="kpi-sub" id="kpi-creators-sub">0 paid, 0 profiles complete</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Brands Signed Up</div>
+                    <div class="kpi-value" id="kpi-brands">0</div>
+                    <div class="kpi-sub" id="kpi-brands-sub">0 profiles complete</div>
+                </div>
+                <div class="admin-kpi brand">
+                    <div class="kpi-label">Total Campaigns</div>
+                    <div class="kpi-value" id="kpi-campaigns">0</div>
+                    <div class="kpi-sub" id="kpi-campaigns-sub">0 with content submitted</div>
+                </div>
+                <div class="admin-kpi gold">
+                    <div class="kpi-label">Brand Spend</div>
+                    <div class="kpi-value" id="kpi-brand-spend">&pound;0</div>
+                    <div class="kpi-sub">Total escrow locked</div>
+                </div>
+                <div class="admin-kpi accent">
+                    <div class="kpi-label">TeaTrade Commission</div>
+                    <div class="kpi-value" id="kpi-commission">&pound;0</div>
+                    <div class="kpi-sub">Platform fees earned</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Creator Payouts</div>
+                    <div class="kpi-value" id="kpi-payouts">&pound;0</div>
+                    <div class="kpi-sub">Released to creators</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Invite Acceptance Rate</div>
+                    <div class="kpi-value" id="kpi-acceptance">0%</div>
+                    <div class="kpi-sub" id="kpi-acceptance-sub">0 of 0 invites accepted</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Main Admin Content -->
-        <div id="admin-content">
-            <div class="dash-header">
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <div>
-                        <p class="section-label">ADMIN CONSOLE</p>
-                        <h1>Platform Overview.</h1>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span id="last-refresh" style="font-size:0.6rem; color:var(--text-dim);"></span>
-                        <button class="admin-refresh-btn" onclick="loadAdminStats()">REFRESH</button>
-                    </div>
+        <!-- ── Section: Users ── -->
+        <div id="section-users" style="display:none;">
+            <div class="section-label" style="margin-bottom:16px;">User Breakdown</div>
+            <div class="admin-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+                <div class="admin-kpi">
+                    <div class="kpi-label">Paid Creators (Founding)</div>
+                    <div class="kpi-value" id="kpi-paid-creators">0</div>
+                    <div class="kpi-sub" id="kpi-paid-pct">0% of all creators</div>
                 </div>
-            </div>
-
-            <!-- ── Overview KPIs ── -->
-            <div id="overview" class="admin-section">
-                <div class="admin-section-title">Key Performance Indicators</div>
-                <div class="admin-grid">
-                    <div class="admin-kpi accent">
-                        <div class="kpi-label">Total Users</div>
-                        <div class="kpi-value" id="kpi-total-users">--</div>
-                        <div class="kpi-sub" id="kpi-users-breakdown"></div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Creators Signed Up</div>
-                        <div class="kpi-value" id="kpi-creators">--</div>
-                        <div class="kpi-sub" id="kpi-creators-sub"></div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Brands Signed Up</div>
-                        <div class="kpi-value" id="kpi-brands">--</div>
-                        <div class="kpi-sub" id="kpi-brands-sub"></div>
-                    </div>
-                    <div class="admin-kpi brand">
-                        <div class="kpi-label">Total Campaigns</div>
-                        <div class="kpi-value" id="kpi-campaigns">--</div>
-                        <div class="kpi-sub" id="kpi-campaigns-sub"></div>
-                    </div>
-                    <div class="admin-kpi gold">
-                        <div class="kpi-label">Brand Spend</div>
-                        <div class="kpi-value" id="kpi-brand-spend">--</div>
-                        <div class="kpi-sub">Total escrow locked</div>
-                    </div>
-                    <div class="admin-kpi accent">
-                        <div class="kpi-label">TeaTrade Commission</div>
-                        <div class="kpi-value" id="kpi-commission">--</div>
-                        <div class="kpi-sub">Platform fees earned</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Creator Payouts</div>
-                        <div class="kpi-value" id="kpi-payouts">--</div>
-                        <div class="kpi-sub">Released to creators</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Acceptance Rate</div>
-                        <div class="kpi-value" id="kpi-acceptance">--</div>
-                        <div class="kpi-sub" id="kpi-acceptance-sub"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── Users Section ── -->
-            <div id="users" class="admin-section">
-                <div class="admin-section-title">User Breakdown</div>
-                <div class="admin-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Paid Creators (Founding)</div>
-                        <div class="kpi-value" id="kpi-paid-creators">--</div>
-                        <div class="kpi-sub" id="kpi-paid-pct"></div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Profiles Complete</div>
-                        <div class="kpi-value" id="kpi-profiles-complete">--</div>
-                        <div class="admin-bar" style="margin-top:8px;">
-                            <div style="flex:1; background:rgba(255,255,255,0.06); border-radius:3px; height:6px; overflow:hidden;">
-                                <div class="admin-bar-fill" id="bar-profiles" style="width:0%; background:var(--accent);"></div>
-                            </div>
-                            <div class="admin-bar-label" id="bar-profiles-pct">0%</div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Profiles Complete</div>
+                    <div class="kpi-value" id="kpi-profiles-complete">0</div>
+                    <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+                        <div style="flex:1; background:rgba(255,255,255,0.06); border-radius:3px; height:6px; overflow:hidden;">
+                            <div id="bar-profiles" style="width:0%; height:100%; background:var(--accent); border-radius:3px; transition:width 0.5s ease;"></div>
                         </div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Stripe Connected</div>
-                        <div class="kpi-value" id="kpi-stripe-connected">--</div>
-                        <div class="kpi-sub" id="kpi-stripe-sub"></div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Brands with Profile</div>
-                        <div class="kpi-value" id="kpi-brands-complete">--</div>
+                        <span id="bar-profiles-pct" style="font-size:0.6rem; color:var(--text-dim); min-width:30px; text-align:right;">0%</span>
                     </div>
                 </div>
-            </div>
-
-            <!-- ── Campaigns Section ── -->
-            <div id="campaigns-section" class="admin-section">
-                <div class="admin-section-title">Campaign Pipeline</div>
-                <div class="admin-grid">
-                    <div class="admin-kpi" id="kpi-status-container">
-                        <div class="kpi-label">Campaign Statuses</div>
-                        <div id="campaign-status-bars" style="margin-top:12px;"></div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Invites Sent</div>
-                        <div class="kpi-value" id="kpi-invites-total">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Invites Accepted</div>
-                        <div class="kpi-value accent" id="kpi-invites-accepted" style="color:var(--accent);">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Invites Declined</div>
-                        <div class="kpi-value" id="kpi-invites-declined" style="color:#ff4444;">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Invites Pending</div>
-                        <div class="kpi-value" id="kpi-invites-pending" style="color:var(--brand);">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Content Submitted</div>
-                        <div class="kpi-value" id="kpi-content-submitted">--</div>
-                    </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Stripe Connected</div>
+                    <div class="kpi-value" id="kpi-stripe-connected">0</div>
+                    <div class="kpi-sub" id="kpi-stripe-sub">0 with payouts enabled</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Brands with Profile</div>
+                    <div class="kpi-value" id="kpi-brands-complete">0</div>
                 </div>
             </div>
+        </div>
 
-            <!-- ── Financials Section ── -->
-            <div id="financials" class="admin-section">
-                <div class="admin-section-title">Financial Overview</div>
-                <div class="admin-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
-                    <div class="admin-kpi gold">
-                        <div class="kpi-label">Total Brand Spend</div>
-                        <div class="kpi-value" id="kpi-fin-spend">--</div>
-                        <div class="kpi-sub">Escrow amounts locked</div>
-                    </div>
-                    <div class="admin-kpi accent">
-                        <div class="kpi-label">Platform Fees (12%)</div>
-                        <div class="kpi-value" id="kpi-fin-fees">--</div>
-                        <div class="kpi-sub">TeaTrade commission</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Creator Payouts</div>
-                        <div class="kpi-value" id="kpi-fin-payouts">--</div>
-                        <div class="kpi-sub">Released to creators</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Entry Fees Collected</div>
-                        <div class="kpi-value" id="kpi-entry-fees">--</div>
-                        <div class="kpi-sub">Founding memberships</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Currently in Escrow</div>
-                        <div class="kpi-value" id="kpi-in-escrow">--</div>
-                        <div class="kpi-sub">Locked, not yet released</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Total Refunded</div>
-                        <div class="kpi-value" id="kpi-refunded" style="color:#ff4444;">--</div>
+        <!-- ── Section: Campaigns ── -->
+        <div id="section-campaigns" style="display:none;">
+            <div class="section-label" style="margin-bottom:16px;">Campaign Pipeline</div>
+            <div class="admin-grid">
+                <div class="admin-kpi">
+                    <div class="kpi-label">Campaign Statuses</div>
+                    <div id="campaign-status-bars" style="margin-top:12px;">
+                        <div style="font-size:0.75rem; color:var(--text-dim); opacity:0.4;">No campaigns yet</div>
                     </div>
                 </div>
-            </div>
-
-            <!-- ── Content Section ── -->
-            <div id="content-section" class="admin-section">
-                <div class="admin-section-title">Content & Uploads</div>
-                <div class="admin-grid">
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Total Uploads</div>
-                        <div class="kpi-value" id="kpi-uploads-total">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Videos Uploaded</div>
-                        <div class="kpi-value" id="kpi-uploads-video">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Photos Uploaded</div>
-                        <div class="kpi-value" id="kpi-uploads-photo">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Storage Used</div>
-                        <div class="kpi-value" id="kpi-storage">--</div>
-                    </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Invites Sent</div>
+                    <div class="kpi-value" id="kpi-invites-total">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Invites Accepted</div>
+                    <div class="kpi-value" id="kpi-invites-accepted" style="color:var(--accent);">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Invites Declined</div>
+                    <div class="kpi-value" id="kpi-invites-declined" style="color:#ff4444;">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Invites Pending</div>
+                    <div class="kpi-value" id="kpi-invites-pending" style="color:var(--brand);">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Content Submitted</div>
+                    <div class="kpi-value" id="kpi-content-submitted">0</div>
                 </div>
             </div>
+        </div>
 
-            <!-- ── Engagement Section ── -->
-            <div id="engagement-section" class="admin-section">
-                <div class="admin-section-title">Platform Engagement</div>
-                <div class="admin-grid">
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Badges Earned</div>
-                        <div class="kpi-value" id="kpi-badges">--</div>
-                        <div class="kpi-sub">Pro Academy completions</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Contracts Created</div>
-                        <div class="kpi-value" id="kpi-contracts">--</div>
-                        <div class="kpi-sub" id="kpi-contracts-sub"></div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Open Disputes</div>
-                        <div class="kpi-value" id="kpi-disputes" style="color:#ff4444;">--</div>
-                        <div class="kpi-sub" id="kpi-disputes-sub"></div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">API Verified Socials</div>
-                        <div class="kpi-value" id="kpi-api-verified" style="color:var(--accent);">--</div>
-                    </div>
-                    <div class="admin-kpi">
-                        <div class="kpi-label">Self-Reported Socials</div>
-                        <div class="kpi-value" id="kpi-self-reported" style="color:var(--brand);">--</div>
-                    </div>
+        <!-- ── Section: Financials ── -->
+        <div id="section-financials" style="display:none;">
+            <div class="section-label" style="margin-bottom:16px;">Financial Overview</div>
+            <div class="admin-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+                <div class="admin-kpi gold">
+                    <div class="kpi-label">Total Brand Spend</div>
+                    <div class="kpi-value" id="kpi-fin-spend">&pound;0</div>
+                    <div class="kpi-sub">Escrow amounts locked</div>
+                </div>
+                <div class="admin-kpi accent">
+                    <div class="kpi-label">Platform Fees (12%)</div>
+                    <div class="kpi-value" id="kpi-fin-fees">&pound;0</div>
+                    <div class="kpi-sub">TeaTrade commission</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Creator Payouts</div>
+                    <div class="kpi-value" id="kpi-fin-payouts">&pound;0</div>
+                    <div class="kpi-sub">Released to creators</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Entry Fees Collected</div>
+                    <div class="kpi-value" id="kpi-entry-fees">&pound;0</div>
+                    <div class="kpi-sub">Founding memberships</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Currently in Escrow</div>
+                    <div class="kpi-value" id="kpi-in-escrow">&pound;0</div>
+                    <div class="kpi-sub">Locked, not yet released</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Total Refunded</div>
+                    <div class="kpi-value" id="kpi-refunded" style="color:#ff4444;">&pound;0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section: Content ── -->
+        <div id="section-content" style="display:none;">
+            <div class="section-label" style="margin-bottom:16px;">Content &amp; Uploads</div>
+            <div class="admin-grid">
+                <div class="admin-kpi">
+                    <div class="kpi-label">Total Uploads</div>
+                    <div class="kpi-value" id="kpi-uploads-total">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Videos Uploaded</div>
+                    <div class="kpi-value" id="kpi-uploads-video">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Photos Uploaded</div>
+                    <div class="kpi-value" id="kpi-uploads-photo">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Storage Used</div>
+                    <div class="kpi-value" id="kpi-storage">0 MB</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Section: Engagement ── -->
+        <div id="section-engagement" style="display:none;">
+            <div class="section-label" style="margin-bottom:16px;">Platform Engagement</div>
+            <div class="admin-grid">
+                <div class="admin-kpi">
+                    <div class="kpi-label">Badges Earned</div>
+                    <div class="kpi-value" id="kpi-badges">0</div>
+                    <div class="kpi-sub">Pro Academy completions</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Contracts Created</div>
+                    <div class="kpi-value" id="kpi-contracts">0</div>
+                    <div class="kpi-sub" id="kpi-contracts-sub">0 fully executed</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Open Disputes</div>
+                    <div class="kpi-value" id="kpi-disputes" style="color:#ff4444;">0</div>
+                    <div class="kpi-sub" id="kpi-disputes-sub">0 total disputes</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">API Verified Socials</div>
+                    <div class="kpi-value" id="kpi-api-verified" style="color:var(--accent);">0</div>
+                </div>
+                <div class="admin-kpi">
+                    <div class="kpi-label">Self-Reported Socials</div>
+                    <div class="kpi-value" id="kpi-self-reported" style="color:var(--brand);">0</div>
                 </div>
             </div>
         </div>
@@ -312,6 +324,45 @@
         const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ── PIN Protection ──
+        // SHA-256 hash of your PIN — change this by running:
+        // crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_PIN')).then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+        const PIN_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'; // default: 1234
+
+        async function hashPin(pin) {
+            const data = new TextEncoder().encode(pin);
+            const buf = await crypto.subtle.digest('SHA-256', data);
+            return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function verifyPin() {
+            const pin = document.getElementById('pin-input').value;
+            const hash = await hashPin(pin);
+            if (hash === PIN_HASH) {
+                sessionStorage.setItem('tt_admin_pin', 'verified');
+                document.getElementById('pin-gate').style.display = 'none';
+                init();
+            } else {
+                document.getElementById('pin-error').style.display = 'block';
+                document.getElementById('pin-input').value = '';
+                document.getElementById('pin-input').focus();
+            }
+        }
+
+        // Enter key on PIN input
+        document.getElementById('pin-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') verifyPin();
+        });
+
+        // Check if already verified this session
+        if (sessionStorage.getItem('tt_admin_pin') === 'verified') {
+            document.getElementById('pin-gate').style.display = 'none';
+            init();
+        } else {
+            document.body.classList.add('auth-cleared');
+            document.getElementById('pin-input').focus();
+        }
 
         async function init() {
             const { data: { session } } = await _supabase.auth.getSession();
@@ -323,18 +374,51 @@
             const email = session.user.email;
             document.getElementById('user-email-display').textContent = email;
             document.getElementById('avatar-initials').textContent = email.substring(0, 2).toUpperCase();
-
-            // Show loading, hide gate
-            document.getElementById('admin-gate').style.display = 'none';
-            document.getElementById('admin-loading').style.display = 'block';
+            document.body.classList.add('auth-cleared');
 
             await loadAdminStats();
+        }
+
+        const sectionTitles = {
+            overview: 'Platform Overview.',
+            users: 'User Breakdown.',
+            campaigns: 'Campaign Pipeline.',
+            financials: 'Financial Overview.',
+            content: 'Content & Uploads.',
+            engagement: 'Engagement Metrics.'
+        };
+
+        function switchAdminSection(section, el) {
+            event.preventDefault();
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if (el) el.classList.add('active');
+            ['overview','users','campaigns','financials','content','engagement'].forEach(s => {
+                const div = document.getElementById('section-' + s);
+                if (div) div.style.display = s === section ? 'block' : 'none';
+            });
+            document.getElementById('dash-title').textContent = sectionTitles[section] || 'Admin Console.';
+            // Close mobile sidebar
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
         }
 
         async function loadAdminStats() {
             try {
                 const session = await _supabase.auth.getSession();
                 const token = session.data.session?.access_token;
+                if (!token) { window.location.href = 'index.html'; return; }
+
                 const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-stats`, {
                     method: 'POST',
                     headers: {
@@ -347,104 +431,103 @@
                 const data = await res.json();
 
                 if (data.error) {
-                    document.getElementById('admin-loading').style.display = 'none';
-                    document.getElementById('admin-gate').style.display = 'flex';
-                    document.getElementById('admin-gate').innerHTML = `<div style="text-align:center;"><p style="color:#ff4444;">${data.error === 'Forbidden' ? 'Access denied. Admin privileges required.' : data.error}</p></div>`;
+                    showToast('Access Denied', data.error === 'Forbidden' ? 'Admin privileges required.' : data.error, 'error');
                     return;
                 }
 
                 renderStats(data);
-
-                document.getElementById('admin-loading').style.display = 'none';
-                document.getElementById('admin-content').style.display = 'block';
-                document.getElementById('last-refresh').textContent = 'Last refresh: ' + new Date().toLocaleTimeString();
+                document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
             } catch (err) {
-                document.getElementById('admin-loading').innerHTML = `<p style="color:#ff4444;">Failed to load stats: ${err.message}</p>`;
+                showToast('Load Failed', err.message, 'error');
             }
         }
 
         function renderStats(d) {
-            const u = d.users, c = d.campaigns, inv = d.invites, f = d.financials, ct = d.content, s = d.stripe, e = d.engagement;
+            const u = d.users || {}, c = d.campaigns || {}, inv = d.invites || {}, f = d.financials || {}, ct = d.content || {}, s = d.stripe || {}, e = d.engagement || {};
 
-            // ── Overview KPIs ──
-            setText('kpi-total-users', u.totalUsers);
-            setText('kpi-users-breakdown', `${u.totalCreators} creators + ${u.totalBrands} brands`);
-            setText('kpi-creators', u.totalCreators);
-            setText('kpi-creators-sub', `${u.paidCreators} paid, ${u.profileComplete} profiles complete`);
-            setText('kpi-brands', u.totalBrands);
-            setText('kpi-brands-sub', `${u.brandsComplete} profiles complete`);
-            setText('kpi-campaigns', c.total);
-            setText('kpi-campaigns-sub', `${c.contentSubmitted} with content submitted`);
+            // ── Overview ──
+            setText('kpi-total-users', u.totalUsers || 0);
+            setText('kpi-users-breakdown', `${u.totalCreators || 0} creators + ${u.totalBrands || 0} brands`);
+            setText('kpi-creators', u.totalCreators || 0);
+            setText('kpi-creators-sub', `${u.paidCreators || 0} paid, ${u.profileComplete || 0} profiles complete`);
+            setText('kpi-brands', u.totalBrands || 0);
+            setText('kpi-brands-sub', `${u.brandsComplete || 0} profiles complete`);
+            setText('kpi-campaigns', c.total || 0);
+            setText('kpi-campaigns-sub', `${c.contentSubmitted || 0} with content submitted`);
             setText('kpi-brand-spend', formatMoney(f.totalBrandSpend));
             setText('kpi-commission', formatMoney(f.totalPlatformFees));
             setText('kpi-payouts', formatMoney(f.totalCreatorPayouts));
-            setText('kpi-acceptance', inv.acceptanceRate + '%');
-            setText('kpi-acceptance-sub', `${inv.accepted} of ${inv.total} invites accepted`);
+            setText('kpi-acceptance', (inv.acceptanceRate || '0') + '%');
+            setText('kpi-acceptance-sub', `${inv.accepted || 0} of ${inv.total || 0} invites accepted`);
 
             // ── Users ──
-            setText('kpi-paid-creators', u.paidCreators);
-            const paidPct = u.totalCreators > 0 ? ((u.paidCreators / u.totalCreators) * 100).toFixed(0) : 0;
+            setText('kpi-paid-creators', u.paidCreators || 0);
+            const paidPct = (u.totalCreators || 0) > 0 ? (((u.paidCreators || 0) / u.totalCreators) * 100).toFixed(0) : 0;
             setText('kpi-paid-pct', `${paidPct}% of all creators`);
-            setText('kpi-profiles-complete', u.profileComplete);
-            const profilePct = u.totalCreators > 0 ? ((u.profileComplete / u.totalCreators) * 100).toFixed(0) : 0;
+            setText('kpi-profiles-complete', u.profileComplete || 0);
+            const profilePct = (u.totalCreators || 0) > 0 ? (((u.profileComplete || 0) / u.totalCreators) * 100).toFixed(0) : 0;
             document.getElementById('bar-profiles').style.width = profilePct + '%';
             setText('bar-profiles-pct', profilePct + '%');
-            setText('kpi-stripe-connected', s.connectedAccounts);
-            setText('kpi-stripe-sub', `${s.payoutsEnabled} with payouts enabled`);
-            setText('kpi-brands-complete', u.brandsComplete);
+            setText('kpi-stripe-connected', s.connectedAccounts || 0);
+            setText('kpi-stripe-sub', `${s.payoutsEnabled || 0} with payouts enabled`);
+            setText('kpi-brands-complete', u.brandsComplete || 0);
 
             // ── Campaigns ──
             const statusContainer = document.getElementById('campaign-status-bars');
-            statusContainer.innerHTML = '';
-            const statusColors = {
-                pending: 'rgba(255,255,255,0.15)', active: 'var(--brand)', escrow_locked: '#FFD700',
-                paid: 'var(--accent)', completed: 'var(--accent)', cancelled: '#ff4444',
-                content_review: '#9b59b6', shipped: '#3498db'
-            };
-            const maxStatus = Math.max(...Object.values(c.statusCounts || {}), 1);
-            Object.entries(c.statusCounts || {}).forEach(([status, count]) => {
-                const pct = (count / maxStatus * 100).toFixed(0);
-                statusContainer.innerHTML += `
-                    <div style="margin-bottom:8px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-                            <span style="font-size:0.6rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim);">${status.replace(/_/g, ' ')}</span>
-                            <span style="font-size:0.7rem; font-weight:900; color:#fff;">${count}</span>
-                        </div>
-                        <div style="background:rgba(255,255,255,0.06); border-radius:3px; height:6px; overflow:hidden;">
-                            <div style="width:${pct}%; height:100%; background:${statusColors[status] || 'var(--text-dim)'}; border-radius:3px; transition:width 0.5s ease;"></div>
-                        </div>
-                    </div>`;
-            });
-
-            setText('kpi-invites-total', inv.total);
-            setText('kpi-invites-accepted', inv.accepted);
-            setText('kpi-invites-declined', inv.declined);
-            setText('kpi-invites-pending', inv.pending);
-            setText('kpi-content-submitted', c.contentSubmitted);
+            const counts = c.statusCounts || {};
+            if (Object.keys(counts).length === 0) {
+                statusContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-dim); opacity:0.4;">No campaigns yet</div>';
+            } else {
+                statusContainer.innerHTML = '';
+                const statusColors = {
+                    pending: 'rgba(255,255,255,0.15)', active: 'var(--brand)', escrow_locked: '#FFD700',
+                    paid: 'var(--accent)', completed: 'var(--accent)', cancelled: '#ff4444',
+                    content_review: '#9b59b6', shipped: '#3498db', pending_payment: 'rgba(255,255,255,0.3)'
+                };
+                const maxStatus = Math.max(...Object.values(counts), 1);
+                Object.entries(counts).forEach(([status, count]) => {
+                    const pct = (count / maxStatus * 100).toFixed(0);
+                    statusContainer.innerHTML += `
+                        <div style="margin-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+                                <span style="font-size:0.6rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim);">${status.replace(/_/g, ' ')}</span>
+                                <span style="font-size:0.7rem; font-weight:900; color:#fff;">${count}</span>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.06); border-radius:3px; height:6px; overflow:hidden;">
+                                <div style="width:${pct}%; height:100%; background:${statusColors[status] || 'var(--text-dim)'}; border-radius:3px; transition:width 0.5s ease;"></div>
+                            </div>
+                        </div>`;
+                });
+            }
+            setText('kpi-invites-total', inv.total || 0);
+            setText('kpi-invites-accepted', inv.accepted || 0);
+            setText('kpi-invites-declined', inv.declined || 0);
+            setText('kpi-invites-pending', inv.pending || 0);
+            setText('kpi-content-submitted', c.contentSubmitted || 0);
 
             // ── Financials ──
             setText('kpi-fin-spend', formatMoney(f.totalBrandSpend));
             setText('kpi-fin-fees', formatMoney(f.totalPlatformFees));
             setText('kpi-fin-payouts', formatMoney(f.totalCreatorPayouts));
             setText('kpi-entry-fees', formatMoney(f.entryFees));
-            const inEscrow = f.totalEscrowLocked - f.totalReleased - f.totalRefunded;
+            const inEscrow = (f.totalEscrowLocked || 0) - (f.totalReleased || 0) - (f.totalRefunded || 0);
             setText('kpi-in-escrow', formatMoney(Math.max(inEscrow, 0)));
             setText('kpi-refunded', formatMoney(f.totalRefunded));
 
             // ── Content ──
-            setText('kpi-uploads-total', ct.totalUploads);
-            setText('kpi-uploads-video', ct.videoUploads);
-            setText('kpi-uploads-photo', ct.photoUploads);
-            setText('kpi-storage', ct.totalStorageMB + ' MB');
+            setText('kpi-uploads-total', ct.totalUploads || 0);
+            setText('kpi-uploads-video', ct.videoUploads || 0);
+            setText('kpi-uploads-photo', ct.photoUploads || 0);
+            setText('kpi-storage', (ct.totalStorageMB || '0') + ' MB');
 
             // ── Engagement ──
-            setText('kpi-badges', e.totalBadgesEarned);
-            setText('kpi-contracts', e.totalContracts);
-            setText('kpi-contracts-sub', `${e.executedContracts} fully executed`);
-            setText('kpi-disputes', e.openDisputes);
-            setText('kpi-disputes-sub', `${e.totalDisputes} total disputes`);
-            setText('kpi-api-verified', e.apiVerified);
-            setText('kpi-self-reported', e.selfReported);
+            setText('kpi-badges', e.totalBadgesEarned || 0);
+            setText('kpi-contracts', e.totalContracts || 0);
+            setText('kpi-contracts-sub', `${e.executedContracts || 0} fully executed`);
+            setText('kpi-disputes', e.openDisputes || 0);
+            setText('kpi-disputes-sub', `${e.totalDisputes || 0} total disputes`);
+            setText('kpi-api-verified', e.apiVerified || 0);
+            setText('kpi-self-reported', e.selfReported || 0);
         }
 
         function setText(id, val) {
@@ -453,21 +536,29 @@
         }
 
         function formatMoney(amount) {
-            if (!amount || amount === 0) return '\u00A30';
+            if (!amount || amount === 0) return '\u00A30.00';
             return '\u00A3' + Number(amount).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        function scrollToSection(id) {
-            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.target.classList.add('active');
+        function showToast(title, message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.pointerEvents = 'auto';
+            toast.innerHTML = `
+                <div class="toast-icon ${type}">${type === 'error' ? '!' : type === 'success' ? 'OK' : 'i'}</div>
+                <div class="toast-body">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            container.appendChild(toast);
+            if (duration > 0) setTimeout(() => { toast.classList.add('removing'); setTimeout(() => toast.remove(), 300); }, duration);
         }
 
-        function logOut() {
-            _supabase.auth.signOut().then(() => window.location.href = 'index.html');
-        }
-
-        init();
+        async function logOut() { await _supabase.auth.signOut(); sessionStorage.removeItem('tt_admin_pin'); location.href = 'index.html'; }
     </script>
 </body>
 </html>

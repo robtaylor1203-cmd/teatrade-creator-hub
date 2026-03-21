@@ -2,10 +2,10 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { corsHeaders, handleCors } from '../_shared/cors.ts';
 import { getServiceClient, getAuthUser } from '../_shared/supabase.ts';
 
-const ADMIN_EMAILS = [
-  // Add your admin email(s) here
-  // The edge function checks the authenticated user's email against this list
-];
+function getAdminEmails(): string[] {
+  const raw = Deno.env.get('ADMIN_EMAILS') || '';
+  return raw.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+}
 
 serve(async (req: Request) => {
   const cors = handleCors(req);
@@ -20,8 +20,9 @@ serve(async (req: Request) => {
       });
     }
 
-    // Admin gate: if ADMIN_EMAILS is configured, enforce it
-    if (ADMIN_EMAILS.length > 0 && !ADMIN_EMAILS.includes(user.email || '')) {
+    // Admin gate: verify email against ADMIN_EMAILS env variable
+    const adminEmails = getAdminEmails();
+    if (adminEmails.length > 0 && !adminEmails.includes((user.email || '').toLowerCase())) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
