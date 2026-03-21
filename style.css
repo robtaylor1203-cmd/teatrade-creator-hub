@@ -894,15 +894,23 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     display: none;
 }
 .profile-chip:has(input:checked) {
-    border-color: var(--brand);
-    background: rgba(255,94,0,0.08);
+    border-color: var(--accent);
+    background: var(--accent);
     opacity: 1;
-    color: #fff;
+    color: #000;
 }
 .profile-chip:has(input:checked) span::before {
     content: '\2713  ';
-    color: var(--brand);
+    color: #000;
     font-weight: 700;
+}
+.brand-page .profile-chip:has(input:checked) {
+    border-color: var(--brand);
+    background: var(--brand);
+    color: #000;
+}
+.brand-page .profile-chip:has(input:checked) span::before {
+    color: #000;
 }
 
 /* ── Profile Card Layout (brand profile) ── */
