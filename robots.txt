@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /brand-dash.html
+Disallow: /creator-dash.html
+Disallow: /test-contracts.html
+
+Sitemap: https://creator.teatrade.co.uk/sitemap.xml
