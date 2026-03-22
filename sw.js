@@ -1,11 +1,11 @@
-const CACHE_NAME = 'teatrade-v3';
+const CACHE_NAME = 'teatrade-v4';
 const CORE_ASSETS = [
   '/',
   '/index.html',
   '/creator-dash.html',
   '/brand-dash.html',
   '/brands.html',
-  '/style.css?v=2',
+  '/style.css?v=3',
 ];
 
 // Install — cache core assets

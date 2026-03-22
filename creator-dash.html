@@ -26,11 +26,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
     <style>
         /* Dashboard body layout */
         body { display: flex; height: 100vh; height: 100dvh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
         body.auth-cleared { opacity: 1; }
+        /* Critical mobile fixes — inline to avoid CSS cache issues */
+        @media (max-width: 768px) {
+            .ambient-glow { display: none !important; }
+            .main-content { margin-left: 0; width: 100%; background: #080A09; }
+            .modal-overlay:not(.active) { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; display: none !important; }
+        }
     </style>
 </head>
 <body>
