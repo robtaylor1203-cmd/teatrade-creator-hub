@@ -60,7 +60,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -434,6 +434,13 @@
         function reveal() { document.querySelectorAll(".reveal").forEach(el => { if(el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add("active"); }); }
         window.addEventListener("scroll", reveal); reveal();
     </script>
-    <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
+    <script>
+    if('serviceWorker' in navigator){
+        navigator.serviceWorker.getRegistrations().then(function(regs){
+            regs.forEach(function(r){r.unregister();});
+        });
+        navigator.serviceWorker.register('/sw.js');
+    }
+    </script>
 </body>
 </html>
