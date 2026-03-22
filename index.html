@@ -426,9 +426,15 @@
         async function finishExam() {
             const passed = score >= 2;
             await _supabase.from('creators').upsert([{ email: userEmail, quiz_score: score, is_verified: passed }]);
-            if (passed) notify("Success", "Account created. Sign in to enter.");
-            else notify("Failed", "Vetting failed.");
             closeTerminal();
+            if (passed) {
+                // Auto-open login with email pre-filled and send OTP immediately
+                document.getElementById('login-email').value = userEmail;
+                document.getElementById('login-modal').classList.add('active');
+                sendOtp();
+            } else {
+                notify("Failed", "You didn't pass this time. Review your tea knowledge and try again.");
+            }
         }
 
         function reveal() { document.querySelectorAll(".reveal").forEach(el => { if(el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add("active"); }); }
