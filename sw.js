@@ -1,4 +1,4 @@
-const CACHE_NAME = 'teatrade-v1';
+const CACHE_NAME = 'teatrade-v2';
 const CORE_ASSETS = [
   '/',
   '/index.html',

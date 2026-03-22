@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="style.css">
     <style>
         /* Dashboard body layout */
-        body { display: flex; height: 100vh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
+        body { display: flex; height: 100vh; height: 100dvh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
         body.auth-cleared { opacity: 1; }
     </style>
 </head>
@@ -2222,7 +2222,18 @@
             }
         }
 
-        initDashboard();
+        const _authTimer = setTimeout(() => {
+            if (!document.body.classList.contains('auth-cleared')) {
+                document.body.classList.add('auth-cleared');
+                document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Playfair Display,serif;margin-bottom:16px;">Connection Lost.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to reach the server. Please check your connection and try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
+            }
+        }, 6000);
+
+        initDashboard().catch(() => {
+            clearTimeout(_authTimer);
+            document.body.classList.add('auth-cleared');
+            document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Playfair Display,serif;margin-bottom:16px;">Something went wrong.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to load your dashboard. Please try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
+        });
     </script>
 
     <!-- Mobile Bottom Tab Bar -->
