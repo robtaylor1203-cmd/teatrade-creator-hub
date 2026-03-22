@@ -1935,6 +1935,8 @@ header {
     background: rgba(255,255,255,0.015);
     border: 1px solid rgba(255,255,255,0.04);
     border-radius: var(--radius-sm);
+    overflow-x: auto;
+    max-width: 100%;
 }
 .etb-step {
     display: flex;
@@ -2034,6 +2036,8 @@ header {
     margin-bottom: 20px;
     transition: var(--transition);
     box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    overflow: hidden;
+    max-width: 100%;
 }
 .brief-card:hover {
     border-color: rgba(255,255,255,0.1);
@@ -2797,7 +2801,7 @@ header {
     .protocol-timeline { padding-left: 40px; }
     .protocol-timeline::before { left: 14px; }
     .pt-dot { left: -40px; width: 32px; height: 32px; font-size: 0.6rem; }
-    .pipeline-tracker { gap: 0; }
+    .pipeline-tracker { gap: 0; overflow-x: auto; max-width: 100%; }
     .pipeline-stage { min-width: 70px; padding: 12px 4px; }
     .addr-row { grid-template-columns: 1fr; }
     .brief-form-row, .brief-form-row.triple { grid-template-columns: 1fr; }
@@ -2809,7 +2813,8 @@ header {
     /* ── Dashboard sidebar → slide-out drawer ── */
     .hamburger { display: none; }
     .mobile-header { display: flex; }
-    .mobile-dropdown { display: block; }
+    .mobile-dropdown { display: none; }
+    .mobile-dropdown.open { display: block; }
     .sidebar {
         position: fixed;
         top: 0; left: 0; bottom: 0;
@@ -2825,12 +2830,15 @@ header {
     /* ── Main content takes full width ── */
     .main-content {
         margin-left: 0;
-        padding: 80px 20px 88px;
+        padding: 72px 20px 96px;
         width: 100%;
-        height: 100vh;
-        height: 100dvh;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: visible;
         -webkit-overflow-scrolling: touch;
         background: #080A09;
+        box-sizing: border-box;
     }
 
     /* ── Dashboard header smaller on mobile ── */
@@ -2842,20 +2850,24 @@ header {
         display: flex;
         position: fixed;
         bottom: 0; left: 0; right: 0;
-        background: rgba(13, 15, 14, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        width: 100%;
+        height: 64px;
+        background: #080A09;
         border-top: 1px solid var(--glass-border);
-        z-index: 95;
+        z-index: 9998;
         padding: 6px 0 env(safe-area-inset-bottom, 6px);
         justify-content: space-around;
+        box-sizing: border-box;
+        overflow: visible;
     }
     .mobile-tab {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 3px;
-        padding: 6px 8px;
+        padding: 6px 4px;
+        min-width: 0;
+        flex: 1 1 0;
         color: var(--text-dim);
         font-size: 0.55rem;
         font-weight: 700;

@@ -28,16 +28,77 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=3">
     <style>
-        /* Dashboard body layout */
-        body { display: flex; height: 100vh; height: 100dvh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
+        /* Dashboard body: flex row for desktop sidebar + content */
+        body {
+            display: flex;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.4s;
+            background: #080A09;
+        }
         body.auth-cleared { opacity: 1; }
-        /* Critical mobile fixes — inline to guarantee render */
+
+        /* Mobile: completely reset to simple scrollable page */
         @media (max-width: 768px) {
-            body { display: block !important; height: auto !important; overflow-y: auto !important; }
+            body, body.auth-cleared {
+                display: block !important;
+                height: auto !important;
+                min-height: 100vh !important;
+                min-height: 100dvh !important;
+                overflow-x: hidden !important;
+                overflow-y: scroll !important;
+                opacity: 1 !important;
+            }
+            .sidebar {
+                position: fixed !important;
+                left: 0 !important; top: 0 !important; bottom: 0 !important;
+                transform: translateX(-100%) !important;
+                z-index: 100 !important;
+            }
+            .sidebar.open { transform: translateX(0) !important; }
+            .main-content {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 100vh !important;
+                min-height: 100dvh !important;
+                margin: 0 !important;
+                padding: 72px 20px 96px !important;
+                overflow: visible !important;
+                background: #080A09 !important;
+                box-sizing: border-box !important;
+            }
             .ambient-glow { display: none !important; }
-            .main-content { display: block !important; margin-left: 0 !important; width: 100% !important; height: auto !important; min-height: 100vh !important; min-height: 100dvh !important; padding: 80px 20px 88px !important; overflow-y: visible !important; background: #080A09 !important; position: relative !important; z-index: 1 !important; }
-            .sidebar { position: fixed !important; transform: translateX(-100%) !important; }
-            .modal-overlay:not(.active) { display: none !important; }
+            .mobile-dropdown { display: none !important; }
+            .mobile-dropdown.open { display: block !important; }
+            .mobile-overlay { display: none !important; }
+            .mobile-overlay.active { display: block !important; }
+            .modal-overlay { display: none !important; }
+            .modal-overlay.active { display: flex !important; }
+            .mobile-header {
+                display: none !important;
+            }
+            .mobile-tab-bar {
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                max-height: none !important;
+                height: 56px !important;
+                min-height: 56px !important;
+                overflow: visible !important;
+                position: fixed !important;
+                top: 0 !important;
+                bottom: auto !important;
+                left: 0 !important;
+                right: 0 !important;
+                padding: 6px 0 !important;
+                justify-content: space-around !important;
+                background: #080A09 !important;
+                z-index: 9998 !important;
+                border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+                border-top: none !important;
+            }
         }
     </style>
 </head>
@@ -393,7 +454,7 @@
         </div>
 
         <!-- ── Section: Campaign Briefs ── -->
-        <div id="section-briefs" style="display:none;">
+        <div id="section-briefs" style="display:none; overflow:hidden; max-width:100%;">
             <div class="section-label" style="margin-bottom: 16px;">Active Campaign Briefs</div>
 
             <!-- Status Filter Tabs -->
