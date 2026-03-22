@@ -1451,6 +1451,9 @@ header {
     border-color: var(--brand);
     background: rgba(255,94,0,0.03);
 }
+.brand-page .otp-digits input {
+    caret-color: var(--brand);
+}
 .otp-digits input::placeholder {
     color: rgba(255,255,255,0.12);
 }
