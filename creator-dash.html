@@ -31,11 +31,13 @@
         /* Dashboard body layout */
         body { display: flex; height: 100vh; height: 100dvh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
         body.auth-cleared { opacity: 1; }
-        /* Critical mobile fixes — inline to avoid CSS cache issues */
+        /* Critical mobile fixes — inline to guarantee render */
         @media (max-width: 768px) {
+            body { display: block !important; height: auto !important; overflow-y: auto !important; }
             .ambient-glow { display: none !important; }
-            .main-content { margin-left: 0; width: 100%; background: #080A09; }
-            .modal-overlay:not(.active) { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; display: none !important; }
+            .main-content { display: block !important; margin-left: 0 !important; width: 100% !important; height: auto !important; min-height: 100vh !important; min-height: 100dvh !important; padding: 80px 20px 88px !important; overflow-y: visible !important; background: #080A09 !important; position: relative !important; z-index: 1 !important; }
+            .sidebar { position: fixed !important; transform: translateX(-100%) !important; }
+            .modal-overlay:not(.active) { display: none !important; }
         }
     </style>
 </head>
