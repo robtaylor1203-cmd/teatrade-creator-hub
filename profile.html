@@ -25,12 +25,12 @@
     <meta name="twitter:image" content="https://creator.teatrade.co.uk/social-sharing.jpg">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/jpeg" href="/creator-hub-logo.jpg">
-    <link rel="apple-touch-icon" href="/creator-hub-logo.jpg">
-    <meta name="theme-color" content="#080A09">
+    <link rel="icon" type="image/png"  href="icons/favicon-nb.png">
+    <link rel="apple-touch-icon" href="icons/favicon-nb.png">
+    <meta name="theme-color" content="#f8f9fa">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
         .profile-hero { max-width: 720px; margin: 0 auto; padding: 60px 24px 40px; }
@@ -51,22 +51,22 @@
         .profile-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
         .profile-tag {
             padding: 6px 14px; border-radius: var(--radius-pill);
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            background: var(--bg); border: 1px solid var(--border);
             font-size: 0.75rem; font-weight: 600; opacity: 0.65;
         }
-        .profile-tag.niche { border-color: rgba(0,255,133,0.15); color: var(--accent); opacity: 1; }
+        .profile-tag.niche { border-color: rgba(26,115,232,0.2); color: var(--accent); opacity: 1; }
         .profile-tag.ctype { border-color: rgba(255,94,0,0.15); color: var(--brand); opacity: 1; }
         .profile-links { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
         .profile-link-item {
             display: flex; align-items: center; gap: 12px;
             padding: 14px 18px; border-radius: var(--radius-sm);
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-            text-decoration: none; color: #fff; font-size: 0.85rem; transition: all 0.2s;
+            background: var(--bg); border: 1px solid var(--border);
+            text-decoration: none; color: var(--text-main); font-size: 0.85rem; transition: all 0.2s;
         }
-        .profile-link-item:hover { border-color: var(--accent); background: rgba(0,255,133,0.03); }
+        .profile-link-item:hover { border-color: var(--accent); background: rgba(26,115,232,0.04); }
         .profile-link-num {
             width: 28px; height: 28px; border-radius: 50%;
-            background: rgba(255,255,255,0.06); display: flex;
+            background: var(--panel); display: flex;
             align-items: center; justify-content: center;
             font-size: 0.7rem; font-weight: 800; opacity: 0.4; flex-shrink: 0;
         }
@@ -74,7 +74,7 @@
         .profile-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
         .profile-badge-pill {
             padding: 8px 16px; border-radius: var(--radius-pill);
-            background: rgba(0,255,133,0.06); border: 1px solid rgba(0,255,133,0.15);
+            background: rgba(26,115,232,0.08); border: 1px solid rgba(26,115,232,0.2);
             font-size: 0.72rem; font-weight: 700; color: var(--accent);
             display: flex; align-items: center; gap: 6px;
         }
@@ -85,16 +85,16 @@
         }
         .profile-back {
             display: inline-block; margin-bottom: 20px; font-size: 0.75rem;
-            opacity: 0.35; text-decoration: none; color: #fff; transition: opacity 0.2s;
+            opacity: 0.35; text-decoration: none; color: var(--text-dim); transition: opacity 0.2s;
         }
         .profile-back:hover { opacity: 0.7; }
 
         /* Verified Metrics */
         .verified-metrics {
-            background: rgba(255,255,255,0.02);
+            background: var(--bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(0,255,133,0.08);
+            border: 1px solid rgba(26,115,232,0.08);
             border-radius: var(--radius-md);
             padding: 24px;
             margin-bottom: 32px;
@@ -106,7 +106,7 @@
         .vm-badge {
             display: inline-flex; align-items: center; gap: 6px;
             padding: 5px 12px; border-radius: var(--radius-pill);
-            background: rgba(0,255,133,0.06); border: 1px solid rgba(0,255,133,0.15);
+            background: rgba(26,115,232,0.08); border: 1px solid rgba(26,115,232,0.2);
             font-size: 0.62rem; font-weight: 800; color: var(--accent);
             letter-spacing: 1px; text-transform: uppercase; cursor: help;
             position: relative;
@@ -116,7 +116,7 @@
             display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
             transform: translateX(-50%); width: 240px; padding: 12px 14px;
             background: rgba(10,12,11,0.95); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+            border: 1px solid var(--border); border-radius: 10px;
             font-size: 0.7rem; font-weight: 400; color: rgba(255,255,255,0.7);
             letter-spacing: 0; text-transform: none; line-height: 1.5;
             text-align: center; z-index: 10; pointer-events: none;
@@ -131,11 +131,11 @@
         .vm-platforms { display: flex; flex-wrap: wrap; gap: 12px; }
         .vm-platform {
             flex: 1; min-width: 140px;
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+            background: var(--bg); border: 1px solid var(--border);
             border-radius: var(--radius-sm); padding: 16px; text-align: center;
         }
         .vm-platform-name { font-size: 0.6rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.4; margin-bottom: 6px; }
-        .vm-follower-count { font-size: 1.4rem; font-weight: 900; color: #fff; }
+        .vm-follower-count { font-size: 1.4rem; font-weight: 900; color: var(--text-main); }
         .vm-platform-src { font-size: 0.6rem; opacity: 0.25; margin-top: 3px; }
     </style>
 </head>

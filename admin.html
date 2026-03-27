@@ -7,23 +7,23 @@
     <meta name="robots" content="noindex, nofollow">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/jpeg" href="/creator-hub-logo.jpg">
-    <link rel="apple-touch-icon" href="/creator-hub-logo.jpg">
-    <meta name="theme-color" content="#080A09">
+    <link rel="icon" type="image/png"  href="icons/favicon-nb.png">
+    <link rel="apple-touch-icon" href="icons/favicon-nb.png">
+    <meta name="theme-color" content="#f8f9fa">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { display: flex; height: 100vh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: #080A09; }
+        body { display: flex; height: 100vh; overflow: hidden; opacity: 0; transition: opacity 0.4s; background: var(--bg); }
         body.auth-cleared { opacity: 1; }
 
         /* ── PIN Gate ── */
         .pin-gate { position:fixed; inset:0; z-index:10000; background:var(--bg); display:flex; align-items:center; justify-content:center; }
-        .pin-box { background:var(--panel); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-lg); padding:48px 40px; text-align:center; max-width:340px; width:100%; }
-        .pin-box h2 { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; margin-bottom:6px; }
+        .pin-box { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg); padding:48px 40px; text-align:center; max-width:340px; width:100%; }
+        .pin-box h2 { font-family:'Roboto',sans-serif; font-size:1.4rem; font-weight:900; margin-bottom:6px; }
         .pin-box p { font-size:0.75rem; color:var(--text-dim); margin-bottom:24px; }
-        .pin-input { width:100%; padding:14px 18px; font-size:1.2rem; letter-spacing:8px; text-align:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-lg); color:#fff; outline:none; font-family:'Inter',sans-serif; font-weight:700; }
+        .pin-input { width:100%; padding:14px 18px; font-size:1.2rem; letter-spacing:8px; text-align:center; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-lg); color: var(--text-main); outline:none; font-family:'Roboto',sans-serif; font-weight:700; }
         .pin-input:focus { border-color:var(--accent); }
         .pin-input::placeholder { letter-spacing:4px; font-size:0.8rem; opacity:0.3; }
         .pin-error { color:#ff4444; font-size:0.7rem; margin-top:10px; display:none; }
@@ -31,16 +31,16 @@
 
         /* ── Admin KPI Cards ── */
         .admin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:32px; }
-        .admin-kpi { background:var(--panel); border:1px solid rgba(255,255,255,0.05); border-radius:var(--radius-lg); padding:24px; transition:border-color 0.2s; }
-        .admin-kpi:hover { border-color:rgba(255,255,255,0.1); }
+        .admin-kpi { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; transition:border-color 0.2s; }
+        .admin-kpi:hover { border-color:var(--accent); }
         .admin-kpi .kpi-label { font-size:0.6rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
-        .admin-kpi .kpi-value { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#fff; }
+        .admin-kpi .kpi-value { font-family:'Roboto',sans-serif; font-size:2rem; font-weight:900; color: var(--text-main); }
         .admin-kpi .kpi-sub { font-size:0.7rem; color:var(--text-dim); margin-top:4px; }
         .admin-kpi.accent .kpi-value { color:var(--accent); }
         .admin-kpi.brand .kpi-value { color:var(--brand); }
         .admin-kpi.gold .kpi-value { color:#FFD700; }
 
-        .admin-section-title { font-size:0.65rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .admin-section-title { font-size:0.65rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
 
         @media (max-width:768px) {
             .admin-grid { grid-template-columns:1fr 1fr; gap:10px; }
@@ -53,8 +53,6 @@
     </style>
 </head>
 <body>
-
-    <div class="ambient-glow" style="top: -10%; left: 20%;"></div>
 
     <!-- PIN Protection Gate -->
     <div class="pin-gate" id="pin-gate">
@@ -115,7 +113,7 @@
             <h1 id="dash-title">Platform Overview.</h1>
             <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
                 <span id="last-refresh" style="font-size:0.6rem; color:var(--text-dim);"></span>
-                <button onclick="loadAdminStats()" style="background:transparent; border:1px solid rgba(0,255,133,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,133,0.08)'" onmouseout="this.style.background='transparent'">REFRESH</button>
+                <button onclick="loadAdminStats()" style="background:transparent; border:1px solid rgba(26,115,232,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(26,115,232,0.08)'" onmouseout="this.style.background='transparent'">REFRESH</button>
             </div>
         </div>
 
@@ -179,7 +177,7 @@
                     <div class="kpi-label">Profiles Complete</div>
                     <div class="kpi-value" id="kpi-profiles-complete">0</div>
                     <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
-                        <div style="flex:1; background:rgba(255,255,255,0.06); border-radius:3px; height:6px; overflow:hidden;">
+                        <div style="flex:1; background:var(--panel); border-radius:3px; height:6px; overflow:hidden;">
                             <div id="bar-profiles" style="width:0%; height:100%; background:var(--accent); border-radius:3px; transition:width 0.5s ease;"></div>
                         </div>
                         <span id="bar-profiles-pct" style="font-size:0.6rem; color:var(--text-dim); min-width:30px; text-align:right;">0%</span>
@@ -494,9 +492,9 @@
                         <div style="margin-bottom:8px;">
                             <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
                                 <span style="font-size:0.6rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim);">${status.replace(/_/g, ' ')}</span>
-                                <span style="font-size:0.7rem; font-weight:900; color:#fff;">${count}</span>
+                                <span style="font-size:0.7rem; font-weight:900; color:var(--text-main);">${count}</span>
                             </div>
-                            <div style="background:rgba(255,255,255,0.06); border-radius:3px; height:6px; overflow:hidden;">
+                            <div style="background:var(--panel); border-radius:3px; height:6px; overflow:hidden;">
                                 <div style="width:${pct}%; height:100%; background:${statusColors[status] || 'var(--text-dim)'}; border-radius:3px; transition:width 0.5s ease;"></div>
                             </div>
                         </div>`;

@@ -16,16 +16,16 @@
     <meta property="og:site_name" content="TeaTrade Creator Hub">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/jpeg" href="/creator-hub-logo.jpg">
-    <link rel="apple-touch-icon" href="/creator-hub-logo.jpg">
+    <link rel="icon" type="image/png"  href="icons/favicon-nb.png">
+    <link rel="apple-touch-icon" href="icons/favicon-nb.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#080A09">
+    <meta name="theme-color" content="#f8f9fa">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TeaTrade">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=3">
     <style>
         /* Dashboard body: flex row for desktop sidebar + content */
@@ -36,7 +36,7 @@
             overflow: hidden;
             opacity: 0;
             transition: opacity 0.4s;
-            background: #080A09;
+            background: var(--bg);
         }
         body.auth-cleared { opacity: 1; }
 
@@ -67,7 +67,7 @@
                 margin: 0 !important;
                 padding: 72px 20px 96px !important;
                 overflow: visible !important;
-                background: #080A09 !important;
+                background: var(--bg) !important;
                 box-sizing: border-box !important;
             }
             .ambient-glow { display: none !important; }
@@ -94,17 +94,15 @@
                 right: 0 !important;
                 padding: 6px 0 !important;
                 justify-content: space-around !important;
-                background: #080A09 !important;
+                background: var(--bg) !important;
                 z-index: 9998 !important;
-                border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+                border-bottom: 1px solid var(--border) !important;
                 border-top: none !important;
             }
         }
     </style>
 </head>
 <body>
-
-    <div class="ambient-glow" style="top: -10%; left: 20%;"></div>
 
     <!-- Mobile overlay for sidebar -->
     <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileDropdown()"></div>
@@ -160,17 +158,17 @@
 
         <!-- ── Section: Terminal ── -->
         <div id="section-terminal">
-            <div class="section-label" style="margin-bottom: 16px; display:flex; align-items:center; gap:12px;">Audience Metrics <span id="api-status-label" style="opacity:0.3; margin-left: 8px;">&#x1f512; API LOCKED</span><button onclick="refreshMetrics()" style="margin-left:auto; background:transparent; border:1px solid rgba(0,255,133,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,255,133,0.08)'" onmouseout="this.style.background='transparent'">↻ REFRESH</button></div>
+            <div class="section-label" style="margin-bottom: 16px; display:flex; align-items:center; gap:12px;">Audience Metrics <span id="api-status-label" style="opacity:0.3; margin-left: 8px;">&#x1f512; API LOCKED</span><button onclick="refreshMetrics()" style="margin-left:auto; background:transparent; border:1px solid rgba(26,115,232,0.15); color:var(--accent); font-size:0.55rem; font-weight:800; letter-spacing:2px; padding:6px 14px; border-radius:var(--radius-pill); cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(26,115,232,0.08)'" onmouseout="this.style.background='transparent'">↻ REFRESH</button></div>
             <div class="stats-grid">
                 <div class="stat-card" id="ig-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h4 style="margin:0;">Instagram</h4>
-                        <span id="ig-api-badge" style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">NOT LINKED</span>
+                        <span id="ig-api-badge" style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--text-dim); background:var(--bg); border:1px solid var(--border);">NOT LINKED</span>
                     </div>
                     <p class="val" id="ig-followers">--</p>
                     <div id="ig-handle" style="font-size:0.75rem; color:var(--text-dim); margin-top:4px; display:none;"></div>
                     <div id="ig-engagement" style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">Awaiting API Connection</div>
-                    <div id="ig-extra-metrics" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div id="ig-extra-metrics" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                             <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">AVG. VIEWS</div><div id="ig-avg-views" style="font-size:0.9rem; font-weight:800;">--</div></div>
                             <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">SAVES/SHARE</div><div id="ig-saves" style="font-size:0.9rem; font-weight:800;">--</div></div>
@@ -178,25 +176,25 @@
                     </div>
                     <button class="btn-pill" id="btn-ig" onclick="openOAuthFlow('instagram')" style="margin-top:16px; padding:10px 22px; font-size:0.65rem; width:100%;">CONNECT INSTAGRAM</button>
                     <div id="ig-manual-toggle" style="text-align:center; margin-top:8px;"><button onclick="toggleManualEntry('instagram')" style="background:none; border:none; color:var(--text-dim); font-size:0.6rem; font-weight:700; letter-spacing:1.5px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">OR ENTER MANUALLY</button></div>
-                    <div id="ig-manual-form" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div id="ig-manual-form" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
                         <div style="display:flex; flex-direction:column; gap:8px;">
                             <input type="text" id="ig-manual-handle" placeholder="@username" style="font-size:0.75rem; padding:8px 12px;">
                             <input type="number" id="ig-manual-followers" placeholder="Followers (e.g. 12500)" style="font-size:0.75rem; padding:8px 12px;">
                             <input type="number" id="ig-manual-engagement" placeholder="Engagement Rate % (e.g. 4.2)" step="0.1" style="font-size:0.75rem; padding:8px 12px;">
                             <input type="number" id="ig-manual-avgviews" placeholder="Avg. Views (e.g. 3200)" style="font-size:0.75rem; padding:8px 12px;">
                         </div>
-                        <button class="btn-pill" onclick="saveManualStats('instagram')" style="margin-top:10px; padding:8px 18px; font-size:0.6rem; width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">SAVE STATS</button>
+                        <button class="btn-pill" onclick="saveManualStats('instagram')" style="margin-top:10px; padding:8px 18px; font-size:0.6rem; width:100%; background:var(--panel); border:1px solid var(--border); color:var(--accent);">SAVE STATS</button>
                     </div>
                 </div>
                 <div class="stat-card" id="tk-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h4 style="margin:0;">TikTok</h4>
-                        <span id="tk-api-badge" style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">NOT LINKED</span>
+                        <span id="tk-api-badge" style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--text-dim); background:var(--bg); border:1px solid var(--border);">NOT LINKED</span>
                     </div>
                     <p class="val" id="tk-followers">--</p>
                     <div id="tk-handle" style="font-size:0.75rem; color:var(--text-dim); margin-top:4px; display:none;"></div>
                     <div id="tk-engagement" style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">Awaiting API Connection</div>
-                    <div id="tk-extra-metrics" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div id="tk-extra-metrics" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                             <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">AVG. VIEWS</div><div id="tk-avg-views" style="font-size:0.9rem; font-weight:800;">--</div></div>
                             <div><div style="font-size:0.6rem; opacity:0.3; font-weight:700;">COMPLETION</div><div id="tk-completion" style="font-size:0.9rem; font-weight:800;">--</div></div>
@@ -204,20 +202,20 @@
                     </div>
                     <button class="btn-pill" id="btn-tk" onclick="openOAuthFlow('tiktok')" style="margin-top:16px; padding:10px 22px; font-size:0.65rem; width:100%;">CONNECT TIKTOK</button>
                     <div id="tk-manual-toggle" style="text-align:center; margin-top:8px;"><button onclick="toggleManualEntry('tiktok')" style="background:none; border:none; color:var(--text-dim); font-size:0.6rem; font-weight:700; letter-spacing:1.5px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;">OR ENTER MANUALLY</button></div>
-                    <div id="tk-manual-form" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div id="tk-manual-form" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
                         <div style="display:flex; flex-direction:column; gap:8px;">
                             <input type="text" id="tk-manual-handle" placeholder="@username" style="font-size:0.75rem; padding:8px 12px;">
                             <input type="number" id="tk-manual-followers" placeholder="Followers (e.g. 52000)" style="font-size:0.75rem; padding:8px 12px;">
                             <input type="number" id="tk-manual-engagement" placeholder="Engagement Rate % (e.g. 6.1)" step="0.1" style="font-size:0.75rem; padding:8px 12px;">
                             <input type="number" id="tk-manual-avgviews" placeholder="Avg. Views (e.g. 15000)" style="font-size:0.75rem; padding:8px 12px;">
                         </div>
-                        <button class="btn-pill" onclick="saveManualStats('tiktok')" style="margin-top:10px; padding:8px 18px; font-size:0.6rem; width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">SAVE STATS</button>
+                        <button class="btn-pill" onclick="saveManualStats('tiktok')" style="margin-top:10px; padding:8px 18px; font-size:0.6rem; width:100%; background:var(--panel); border:1px solid var(--border); color:var(--accent);">SAVE STATS</button>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <h4 style="margin:0;">Network Match Score</h4>
-                        <span style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--accent); background:rgba(0,255,133,0.06); border:1px solid rgba(0,255,133,0.15);">EXAM</span>
+                        <span style="font-size:0.55rem; font-weight:800; letter-spacing:1px; padding:3px 10px; border-radius:var(--radius-pill); color:var(--accent); background:rgba(26,115,232,0.06); border:1px solid rgba(26,115,232,0.15);">EXAM</span>
                     </div>
                     <p class="val" id="match-score-display">--</p>
                     <div style="font-size:0.8rem; color:var(--accent); margin-top:10px;">Entry Exam Performance</div>
@@ -238,7 +236,7 @@
             </div>
             <p style="opacity:0.35; font-size:0.82rem; margin-bottom:36px;">Complete your profile to appear in brand search results. The more detail you provide, the better our algorithm matches you with relevant campaigns.</p>
 
-            <div id="profile-incomplete-banner" style="display:none; background:linear-gradient(135deg, rgba(255,94,0,0.04), rgba(0,255,133,0.04)); border:1px solid rgba(0,255,133,0.15); border-radius:12px; padding:20px; margin-bottom:32px; text-align:center;">
+            <div id="profile-incomplete-banner" style="display:none; background:linear-gradient(135deg, rgba(255,94,0,0.04), rgba(26,115,232,0.04)); border:1px solid rgba(26,115,232,0.15); border-radius:12px; padding:20px; margin-bottom:32px; text-align:center;">
                 <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--accent); margin-bottom:6px;">PROFILE INCOMPLETE</div>
                 <p style="opacity:0.4; font-size:0.82rem; margin:0;">Fill in all fields below to unlock brand matching and appear in the talent pool.</p>
             </div>
@@ -378,8 +376,8 @@
             </div>
 
             <!-- Public URL card -->
-            <div class="profile-card" id="public-url-card" style="border-color:rgba(0,255,133,0.12); background:rgba(0,255,133,0.02);">
-                <div class="profile-card-header" style="color:var(--accent); border-color:rgba(0,255,133,0.08);">
+            <div class="profile-card" id="public-url-card" style="border-color:rgba(26,115,232,0.12); background:rgba(26,115,232,0.02);">
+                <div class="profile-card-header" style="color:var(--accent); border-color:rgba(26,115,232,0.08);">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     <span>Public URL</span>
                 </div>
@@ -611,25 +609,25 @@
 
             <!-- Stripe Connect onboarding banner (hidden when connected) -->
             <div id="stripe-onboard-banner" style="display:none; margin-bottom:28px;">
-                <div style="background:linear-gradient(135deg, rgba(0,255,133,0.03), rgba(255,94,0,0.03)); border:1px solid rgba(0,255,133,0.12); border-radius:16px; padding:36px 32px; text-align:center;">
-                    <div style="width:56px; height:56px; border-radius:50%; background:rgba(0,255,133,0.08); border:1px solid rgba(0,255,133,0.2); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                <div style="background:linear-gradient(135deg, rgba(26,115,232,0.03), rgba(255,94,0,0.03)); border:1px solid rgba(26,115,232,0.12); border-radius:16px; padding:36px 32px; text-align:center;">
+                    <div style="width:56px; height:56px; border-radius:50%; background:rgba(26,115,232,0.08); border:1px solid rgba(26,115,232,0.2); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                     </div>
                     <div style="font-size:0.6rem; font-weight:800; letter-spacing:3px; color:var(--accent); margin-bottom:8px;">SET UP PAYOUTS</div>
-                    <h3 style="font-family:'Playfair Display'; font-size:1.6rem; margin:0 0 12px;">Connect Your Bank</h3>
+                    <h3 style="font-family:'Roboto'; font-size:1.6rem; margin:0 0 12px;">Connect Your Bank</h3>
                     <p style="opacity:0.4; font-size:0.85rem; line-height:1.7; max-width:400px; margin:0 auto 24px;">Link your bank account securely via Stripe to receive campaign payments. It takes under 2 minutes and your details are never stored on our servers.</p>
 
                     <div style="display:flex; justify-content:center; gap:32px; margin-bottom:28px;">
                         <div style="text-align:center;">
-                            <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">1</div>
+                            <div style="width:36px; height:36px; border-radius:50%; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">1</div>
                             <div style="font-size:0.7rem; opacity:0.4;">Verify identity</div>
                         </div>
                         <div style="text-align:center;">
-                            <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">2</div>
+                            <div style="width:36px; height:36px; border-radius:50%; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">2</div>
                             <div style="font-size:0.7rem; opacity:0.4;">Add bank details</div>
                         </div>
                         <div style="text-align:center;">
-                            <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">3</div>
+                            <div style="width:36px; height:36px; border-radius:50%; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:0.7rem; font-weight:700; color:var(--accent);">3</div>
                             <div style="font-size:0.7rem; opacity:0.4;">Start earning</div>
                         </div>
                     </div>
@@ -696,11 +694,11 @@
                 <div id="oauth-platform-icon" style="width:56px; height:56px; border-radius:50%; margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:1.5rem;"></div>
                 <span style="color:var(--accent); letter-spacing:3px; font-size:0.65rem; font-weight:800; text-transform:uppercase;">SECURE API CONNECTION</span>
                 <h2 id="oauth-title" style="margin: 12px 0;">Connect Account</h2>
-                <p style="opacity:0.35; font-size:0.82rem; margin-bottom:24px; line-height:1.6;">We use read-only API access to verify your audience metrics. We <strong style="color:#fff; opacity:1;">never</strong> post, follow, or modify your account in any way.</p>
+                <p style="opacity:0.35; font-size:0.82rem; margin-bottom:24px; line-height:1.6;">We use read-only API access to verify your audience metrics. We <strong style="color:var(--text-main);">never</strong> post, follow, or modify your account in any way.</p>
                 <input type="text" id="oauth-handle" placeholder="@yourusername" style="text-align:center; font-size:1.1rem; padding:18px;">
                 <div id="oauth-handle-error" style="color:#ff3333; font-size:0.78rem; margin:-10px 0 14px 0; display:none;"></div>
                 <button class="btn-pill" style="width:100%; padding:16px 0;" onclick="startOAuthConnection()">CONNECT &amp; VERIFY</button>
-                <div style="margin-top:20px; padding:16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm);">
+                <div style="margin-top:20px; padding:16px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);">
                     <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; opacity:0.3; margin-bottom:8px;">SECURITY</div>
                     <div style="font-size:0.75rem; opacity:0.35; line-height:1.6;">Read-only OAuth 2.0 &middot; AES-256 encrypted tokens &middot; No password stored &middot; Revoke any time from your social account settings</div>
                 </div>
@@ -708,20 +706,20 @@
 
             <!-- Step 2: Connecting animation -->
             <div id="oauth-step-connecting" style="display:none; padding:40px 0;">
-                <div style="width:64px; height:64px; border:3px solid rgba(0,255,133,0.15); border-top-color:var(--accent); border-radius:50%; margin:0 auto 24px; animation:spin 1s linear infinite;"></div>
+                <div style="width:64px; height:64px; border:3px solid rgba(26,115,232,0.15); border-top-color:var(--accent); border-radius:50%; margin:0 auto 24px; animation:spin 1s linear infinite;"></div>
                 <h3 id="oauth-connecting-status" style="margin-bottom:8px;">Connecting to API...</h3>
                 <p id="oauth-connecting-detail" style="opacity:0.35; font-size:0.82rem;">Establishing secure connection</p>
             </div>
 
             <!-- Step 3: Success with metrics -->
             <div id="oauth-step-success" style="display:none;">
-                <div style="width:56px; height:56px; border-radius:50%; background:rgba(0,255,133,0.1); border:2px solid var(--accent); margin:0 auto 16px; display:flex; align-items:center; justify-content:center;">
+                <div style="width:56px; height:56px; border-radius:50%; background:rgba(26,115,232,0.1); border:2px solid var(--accent); margin:0 auto 16px; display:flex; align-items:center; justify-content:center;">
                     <svg viewBox="0 0 24 24" style="width:28px; height:28px; stroke:var(--accent); fill:none; stroke-width:2.5;"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <span style="color:var(--accent); letter-spacing:3px; font-size:0.65rem; font-weight:800;">VERIFIED</span>
                 <h2 style="margin:12px 0 8px 0;">Account Linked.</h2>
                 <p id="oauth-success-handle" style="opacity:0.5; font-size:0.9rem; margin-bottom:20px;"></p>
-                <div id="oauth-metrics-preview" style="background:rgba(0,255,133,0.03); border:1px solid rgba(0,255,133,0.1); border-radius:var(--radius-md); padding:20px; margin-bottom:24px; text-align:left;"></div>
+                <div id="oauth-metrics-preview" style="background:rgba(26,115,232,0.03); border:1px solid rgba(26,115,232,0.1); border-radius:var(--radius-md); padding:20px; margin-bottom:24px; text-align:left;"></div>
                 <button class="btn-pill" style="width:100%;" onclick="closeOAuthModal()">DONE</button>
             </div>
         </div>
@@ -789,9 +787,9 @@
     <!-- Media Lightbox / Viewer -->
     <div id="media-lightbox" class="modal-overlay" onclick="if(event.target===this)closeLightbox()">
         <div style="position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; padding:24px;">
-            <button onclick="closeLightbox()" style="position:absolute; top:20px; right:24px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:1.4rem; cursor:pointer; z-index:10; backdrop-filter:blur(8px);">&times;</button>
-            <button class="lb-nav lb-prev" onclick="event.stopPropagation(); lightboxNav(-1)" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8249;</button>
-            <button class="lb-nav lb-next" onclick="event.stopPropagation(); lightboxNav(1)" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8250;</button>
+            <button onclick="closeLightbox()" style="position:absolute; top:20px; right:24px; background:var(--panel); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:1.4rem; cursor:pointer; z-index:10; backdrop-filter:blur(8px);">&times;</button>
+            <button class="lb-nav lb-prev" onclick="event.stopPropagation(); lightboxNav(-1)" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); background:var(--panel); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8249;</button>
+            <button class="lb-nav lb-next" onclick="event.stopPropagation(); lightboxNav(1)" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); background:var(--panel); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8250;</button>
             <div id="lightbox-viewer" style="display:flex; align-items:center; justify-content:center;"></div>
             <div style="margin-top:16px; text-align:center;">
                 <div id="lightbox-filename" style="font-size:0.8rem; font-weight:700; opacity:0.7;"></div>
@@ -1040,7 +1038,7 @@
             activeUserEmail = session.user.email;
             const { data: creator } = await _supabase.from('creators').select('*').eq('email', activeUserEmail).single();
             if (!creator || !creator.is_verified) {
-                document.body.innerHTML = `<div style="height:100vh; width:100vw; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; padding: 40px;"><h1 style="color:#ff3333; font-family:'Playfair Display'; font-size:4rem;">Access Denied.</h1><p style="opacity:0.6; font-size:1.2rem; margin:20px 0 40px 0;">You must pass the vetting exam to unlock the terminal.</p><button class="btn-pill" onclick="location.href='index.html'">RETURN TO GATE</button></div>`;
+                document.body.innerHTML = `<div style="height:100vh; width:100vw; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; padding: 40px;"><h1 style="color:#ff3333; font-family:'Roboto'; font-size:4rem;">Access Denied.</h1><p style="opacity:0.6; font-size:1.2rem; margin:20px 0 40px 0;">You must pass the vetting exam to unlock the terminal.</p><button class="btn-pill" onclick="location.href='index.html'">RETURN TO GATE</button></div>`;
                 document.body.classList.add('auth-cleared'); return;
             }
 
@@ -1057,12 +1055,12 @@
                         document.body.innerHTML = `<div style="height:100vh; width:100vw; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; padding: 40px;">
                             <div style="max-width: 480px;">
                                 <span style="color:var(--accent); letter-spacing:4px; font-size:0.6rem; font-weight:900; text-transform:uppercase;">FOUNDING MEMBER #${claimData.spot_number}</span>
-                                <h1 style="font-family:'Playfair Display'; font-size:3rem; margin: 16px 0;">You're In.</h1>
+                                <h1 style="font-family:'Roboto'; font-size:3rem; margin: 16px 0;">You're In.</h1>
                                 <p style="opacity:0.5; font-size:1rem; line-height:1.8; margin-bottom:32px;">As one of our first 100 creators, your £49 entry fee has been waived. Welcome to the TeaTrade network.</p>
-                                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:32px; margin-bottom:32px;">
-                                    <div style="font-family:'Playfair Display'; font-size:2rem; font-weight:900; color:var(--accent);">£0</div>
+                                <div style="background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:32px; margin-bottom:32px;">
+                                    <div style="font-family:'Roboto'; font-size:2rem; font-weight:900; color:var(--accent);">£0</div>
                                     <div style="opacity:0.4; font-size:0.85rem; margin-top:8px;">Founding member · Lifetime access</div>
-                                    <hr style="border:none; border-top:1px solid rgba(255,255,255,0.06); margin:20px 0;">
+                                    <hr style="border:none; border-top:1px solid var(--border); margin:20px 0;">
                                     <div style="opacity:0.5; font-size:0.8rem;">${claimData.spots_remaining} founding spot${claimData.spots_remaining === 1 ? '' : 's'} remaining</div>
                                 </div>
                                 <button class="btn-pill" style="width:100%; padding:16px 0; font-size:0.75rem;" onclick="window.location.href='creator-dash.html?entry_success=true'">ENTER DASHBOARD</button>
@@ -1076,12 +1074,12 @@
                 document.body.innerHTML = `<div style="height:100vh; width:100vw; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#000; text-align:center; padding: 40px;">
                     <div style="max-width: 480px;">
                         <span style="color:var(--accent); letter-spacing:4px; font-size:0.6rem; font-weight:900; text-transform:uppercase;">EXAM PASSED</span>
-                        <h1 style="font-family:'Playfair Display'; font-size:3rem; margin: 16px 0;">Welcome to the Network.</h1>
+                        <h1 style="font-family:'Roboto'; font-size:3rem; margin: 16px 0;">Welcome to the Network.</h1>
                         <p style="opacity:0.5; font-size:1rem; line-height:1.8; margin-bottom:32px;">You've passed the TeaTrade vetting exam. To activate your creator profile and start receiving brand briefs, complete the one-time network entry fee.</p>
-                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:32px; margin-bottom:32px;">
-                            <div style="font-family:'Playfair Display'; font-size:3rem; font-weight:900; color:var(--accent);">£49</div>
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:32px; margin-bottom:32px;">
+                            <div style="font-family:'Roboto'; font-size:3rem; font-weight:900; color:var(--accent);">£49</div>
                             <div style="opacity:0.4; font-size:0.85rem; margin-top:8px;">One-time entry fee · Lifetime access</div>
-                            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.06); margin:20px 0;">
+                            <hr style="border:none; border-top:1px solid var(--border); margin:20px 0;">
                             <ul style="text-align:left; list-style:none; padding:0; margin:0; font-size:0.85rem; opacity:0.6; line-height:2.2;">
                                 <li style="padding-left:20px; position:relative;"><span style="color:var(--accent); position:absolute; left:0;">✓</span> Full dashboard access</li>
                                 <li style="padding-left:20px; position:relative;"><span style="color:var(--accent); position:absolute; left:0;">✓</span> Brand brief matching</li>
@@ -1326,7 +1324,7 @@
                     <div><div style="font-size:0.55rem; font-weight:800; letter-spacing:1px; opacity:0.3;">AVG. VIEWS</div><div style="font-size:1.3rem; font-weight:900;">${metrics.avgViews.toLocaleString()}</div></div>
                     <div><div style="font-size:0.55rem; font-weight:800; letter-spacing:1px; opacity:0.3;">${currentOAuthPlatform === 'tiktok' ? 'COMPLETION' : 'SAVES/SHARE'}</div><div style="font-size:1.3rem; font-weight:900;">${metrics.secondary}%</div></div>
                 </div>
-                <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(0,255,133,0.1); font-size:0.7rem; opacity:0.3;">Data pulled via ${cfg.name} API &middot; Read-only access &middot; Auto-refreshes every 24h</div>
+                <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(26,115,232,0.1); font-size:0.7rem; opacity:0.3;">Data pulled via ${cfg.name} API &middot; Read-only access &middot; Auto-refreshes every 24h</div>
             `;
             document.getElementById('oauth-metrics-preview').innerHTML = previewHTML;
 
@@ -1390,8 +1388,8 @@
             if (isVerified) {
                 badge.textContent = 'API LIVE';
                 badge.style.color = 'var(--accent)';
-                badge.style.background = 'rgba(0,255,133,0.06)';
-                badge.style.borderColor = 'rgba(0,255,133,0.15)';
+                badge.style.background = 'rgba(26,115,232,0.06)';
+                badge.style.borderColor = 'rgba(26,115,232,0.15)';
             } else {
                 badge.textContent = 'SELF-REPORTED';
                 badge.style.color = 'var(--brand)';
@@ -1830,7 +1828,7 @@
                     <div class="brief-card" data-status="${isPaid ? 'paid' : 'accepted'}" style="margin-bottom:10px;${isPaid ? 'opacity:0.5;' : ''}">
                         <div class="brief-header">
                             <h3>${escapeHtml(c.title || 'Untitled Campaign')}</h3>
-                            <span class="brief-status" style="background:${isPaid ? 'var(--accent)' : 'rgba(0,255,133,0.15)'};color:${isPaid ? '#000' : 'var(--accent)'};">${isPaid ? 'PAID' : 'ACTIVE'}</span>
+                            <span class="brief-status" style="background:${isPaid ? 'var(--accent)' : 'rgba(26,115,232,0.15)'};color:${isPaid ? '#000' : 'var(--accent)'};">${isPaid ? 'PAID' : 'ACTIVE'}</span>
                         </div>
                         <div class="brief-meta">
                             Budget: £${Number(c.budget || 0).toLocaleString()} &nbsp;|&nbsp;
@@ -2012,7 +2010,7 @@
             const total = quizBanks[activeModule].length;
             const needed = Math.ceil(total * 0.8); // 80% pass = 4 out of 5
             if(moduleScore >= needed) {
-                res.innerHTML = `<h2 style="font-family:'Playfair Display'; font-size:3rem; color:var(--accent);">Module Passed.</h2><p style="opacity:0.5;margin-bottom:20px;">${moduleScore}/${total} correct</p><button class="btn-pill" onclick="location.reload()">UPDATE TERMINAL</button>`;
+                res.innerHTML = `<h2 style="font-family:'Roboto'; font-size:3rem; color:var(--accent);">Module Passed.</h2><p style="opacity:0.5;margin-bottom:20px;">${moduleScore}/${total} correct</p><button class="btn-pill" onclick="location.reload()">UPDATE TERMINAL</button>`;
                 const { data } = await _supabase.from('badges').select('id').eq('badge_name', activeModule).single();
                 await _supabase.from('creator_badges').insert({ creator_id: activeUserId, badge_id: data.id, score: moduleScore });
             } else { res.innerHTML = `<h2 style="color:#ff3333;">Failed.</h2><p style="opacity:0.5;margin-bottom:20px;">${moduleScore}/${total} correct — ${needed} required to pass</p><button class="btn-pill" onclick="closeModule()">RETRY</button>`; }
@@ -2625,14 +2623,14 @@
         const _authTimer = setTimeout(() => {
             if (!document.body.classList.contains('auth-cleared')) {
                 document.body.classList.add('auth-cleared');
-                document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Playfair Display,serif;margin-bottom:16px;">Connection Lost.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to reach the server. Please check your connection and try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
+                document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Roboto,serif;margin-bottom:16px;">Connection Lost.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to reach the server. Please check your connection and try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
             }
         }, 6000);
 
         initDashboard().catch(() => {
             clearTimeout(_authTimer);
             document.body.classList.add('auth-cleared');
-            document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Playfair Display,serif;margin-bottom:16px;">Something went wrong.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to load your dashboard. Please try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
+            document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Roboto,serif;margin-bottom:16px;">Something went wrong.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to load your dashboard. Please try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
         });
     </script>
 

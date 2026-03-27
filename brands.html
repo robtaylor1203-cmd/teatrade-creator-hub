@@ -27,12 +27,12 @@
     <meta name="twitter:image" content="https://creator.teatrade.co.uk/social-sharing.jpg">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/jpeg" href="/creator-hub-logo.jpg">
-    <link rel="apple-touch-icon" href="/creator-hub-logo.jpg">
-    <meta name="theme-color" content="#080A09">
+    <link rel="icon" type="image/png" href="icons/favicon-nb.png">
+    <link rel="apple-touch-icon" href="icons/favicon-nb.png">
+    <meta name="theme-color" content="#f8f9fa">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
         /* Brand-specific local overrides only */
@@ -40,8 +40,6 @@
     </style>
 </head>
 <body class="brand-page">
-
-    <div class="ambient-glow" style="top: 5%; left: 5%; background: radial-gradient(circle, rgba(255,94,0,0.03) 0%, transparent 70%);"></div>
 
     <nav>
         <a href="index.html" class="logo">TeaTrade<span style="color:var(--brand)">.</span></a>
@@ -62,6 +60,7 @@
     <header class="reveal">
         <span class="hero-sub">The Brand Portal</span>
         <h1>Stop Wasting<br><span style="color:var(--brand)">Marketing Budget.</span></h1>
+        <div style="width: 64px; height: 3px; background: var(--brand); border-radius: 999px; margin: 28px auto 0; opacity: 0.7;"></div>
         <p class="hero-p">Hire vetted, technically certified influencers in the prestige tea and wellness space. Set your budget, choose your creator, pay only when you approve.</p>
         <button class="btn-pill btn-brand-orange" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Post a Brief</button>
     </header>
@@ -73,11 +72,11 @@
         </div>
     </div>
 
-    <section id="how-it-works" class="talent-pool-section reveal">
+    <section id="how-it-works" class="talent-pool-section reveal" style="background: var(--bg);">
         <div class="tp-header">
-            <span style="color:var(--brand); letter-spacing: 5px; font-size: 0.65rem; font-weight: 900;">THE TALENT POOL</span>
+            <span class="section-label" style="color:var(--brand);">The Talent Pool</span>
             <h2 style="margin-top: 10px;">Hire by Expertise.</h2>
-            <p style="opacity: 0.45; font-size: 0.95rem; max-width: 600px;">Anonymized talent selection based on technical proficiency and API-verified engagement metrics. No guesswork — every step is data-driven.</p>
+            <p style="opacity: 0.55; font-size: 1rem; max-width: 600px;">Anonymized talent selection based on technical proficiency and API-verified engagement metrics. No guesswork — every step is data-driven.</p>
         </div>
 
         <!-- STEP 1: Post Your Brief -->
@@ -248,8 +247,8 @@
     </section>
 
     <!-- TRUST PROOF -->
-    <section class="trust-section reveal">
-        <span style="color:var(--brand); letter-spacing:5px; font-size:0.6rem; font-weight:900;">THE NETWORK IN NUMBERS</span>
+    <section class="trust-section reveal" style="background: #ffffff;">
+        <span class="section-label" style="color:var(--brand);">The Network in Numbers</span>
         <h2 style="margin-top:12px;">Built for Results.</h2>
         <div class="trust-grid">
             <div class="trust-stat">
@@ -272,11 +271,11 @@
     </section>
 
     <!-- PRICING -->
-    <section id="pricing" class="pricing-section reveal">
+    <section id="pricing" class="pricing-section reveal" style="background: var(--bg);">
         <div class="section-header">
-            <span style="color:var(--brand); letter-spacing: 5px; font-size: 0.6rem; font-weight: 900;">HOW IT WORKS</span>
+            <span class="section-label" style="color:var(--brand);">How It Works</span>
             <h2 style="margin-top: 12px;">You Set the Budget. Creators Decide.</h2>
-            <p style="opacity:0.4; font-size:0.9rem; margin-top:12px;">No fixed tiers. No retainers. No subscriptions. Post a brief with your budget and let vetted creators come to you.</p>
+            <p style="opacity:0.5; font-size:1rem; margin-top:12px;">No fixed tiers. No retainers. No subscriptions. Post a brief with your budget and let vetted creators come to you.</p>
         </div>
         <div class="pricing-grid">
 
@@ -343,9 +342,9 @@
     </section>
 
     <!-- FAQ -->
-    <section class="faq-section reveal">
+    <section class="faq-section reveal" style="background: #ffffff;">
         <div style="text-align:center; margin-bottom:48px;">
-            <span style="color:var(--brand); letter-spacing:5px; font-size:0.6rem; font-weight:900;">FAQ</span>
+            <span class="section-label" style="color:var(--brand);">FAQ</span>
             <h2 style="margin-top:12px;">Common Questions.</h2>
         </div>
         <details class="faq-item">

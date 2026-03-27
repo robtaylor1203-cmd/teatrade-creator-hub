@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>TeaTrade — Contract System Test</title>
-    <link rel="icon" type="image/jpeg" href="/creator-hub-logo.jpg">
+    <link rel="icon" type="image/png"  href="icons/favicon-nb.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -15,13 +15,13 @@
         .step { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 16px; }
         .step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
         .step-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,94,0,0.1); border: 1px solid rgba(255,94,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 900; color: var(--brand); flex-shrink: 0; }
-        .step-num.done { background: rgba(0,255,133,0.1); border-color: rgba(0,255,133,0.3); color: var(--accent); }
+        .step-num.done { background: rgba(26,115,232,0.1); border-color: rgba(26,115,232,0.3); color: var(--accent); }
         .step-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; }
         .step-desc { opacity: 0.4; font-size: 0.78rem; line-height: 1.6; margin-bottom: 16px; }
         .btn { padding: 12px 24px; border: none; border-radius: var(--radius-sm); font-size: 0.65rem; font-weight: 800; letter-spacing: 2px; cursor: pointer; text-transform: uppercase; }
         .btn-primary { background: var(--brand); color: #fff; }
         .btn-accent { background: var(--accent); color: #000; }
-        .btn-muted { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
+        .btn-muted { background: var(--panel); color: var(--text-dim); border: 1px solid var(--border); }
         .btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .log { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-top: 12px; font-family: 'Courier New', monospace; font-size: 0.72rem; line-height: 1.8; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
         .log .ok { color: var(--accent); }
@@ -36,9 +36,9 @@
         .auth-box input { width: 100%; padding: 14px; margin-bottom: 12px; }
         .status-bar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
         .status-pill { padding: 6px 14px; border-radius: 20px; font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; }
-        .pill-ok { background: rgba(0,255,133,0.1); color: var(--accent); border: 1px solid rgba(0,255,133,0.2); }
+        .pill-ok { background: rgba(26,115,232,0.1); color: var(--accent); border: 1px solid rgba(26,115,232,0.2); }
         .pill-wait { background: rgba(255,94,0,0.1); color: var(--brand); border: 1px solid rgba(255,94,0,0.2); }
-        .pill-off { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.06); }
+        .pill-off { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); opacity: 0.55; }
     </style>
 </head>
 <body>

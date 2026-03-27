@@ -16,16 +16,16 @@
     <meta property="og:site_name" content="TeaTrade Creator Hub">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/jpeg" href="/creator-hub-logo.jpg">
-    <link rel="apple-touch-icon" href="/creator-hub-logo.jpg">
+    <link rel="icon" type="image/png"  href="icons/favicon-nb.png">
+    <link rel="apple-touch-icon" href="icons/favicon-nb.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#080A09">
+    <meta name="theme-color" content="#f8f9fa">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TeaTrade">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=3">
     <style>
         /* Dashboard body: flex row for desktop sidebar + content */
@@ -36,7 +36,7 @@
             overflow: hidden;
             opacity: 0;
             transition: opacity 0.4s;
-            background: #080A09;
+            background: var(--bg);
         }
         body.auth-cleared { opacity: 1; }
 
@@ -64,7 +64,7 @@
                 margin: 0 !important;
                 padding: 72px 20px 96px !important;
                 overflow: visible !important;
-                background: #080A09 !important;
+                background: var(--bg) !important;
                 box-sizing: border-box !important;
             }
             .ambient-glow { display: none !important; }
@@ -91,17 +91,15 @@
                 right: 0 !important;
                 padding: 6px 0 !important;
                 justify-content: space-around !important;
-                background: #080A09 !important;
+                background: var(--bg) !important;
                 z-index: 9998 !important;
-                border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+                border-bottom: 1px solid var(--border) !important;
                 border-top: none !important;
             }
         }
     </style>
 </head>
 <body class="brand-page">
-
-    <div class="ambient-glow" style="top: -10%; left: 20%; background: radial-gradient(circle, rgba(255,94,0,0.03) 0%, transparent 70%);"></div>
 
     <!-- Mobile overlay for sidebar -->
     <div id="mobile-overlay" class="mobile-overlay" onclick="closeMobileDropdown()"></div>
@@ -682,7 +680,7 @@
             </div>
 
             <!-- Legal Consent -->
-            <div class="brief-form-group" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:20px;">
+            <div class="brief-form-group" style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:20px;">
                 <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:var(--brand); margin-bottom:12px; text-transform:uppercase;">Legal Agreement</div>
                 <div id="escrow-contract-preview" style="max-height:160px; overflow-y:auto; font-size:0.75rem; opacity:0.4; line-height:1.7; margin-bottom:16px; padding:12px; background:rgba(0,0,0,0.2); border-radius:8px;">
                     By proceeding, you agree to the TeaTrade Creator Content Agreement. Upon escrow lock, funds are held by TeaTrade and will only be released to the assigned creator upon your approval of submitted content, or automatically after the 24-hour review window. Disputes are mediated by the TeaTrade team. Platform fee (12%) is deducted at deposit. Full contract terms will be generated and sent to both parties upon creator assignment.
@@ -699,12 +697,12 @@
             </div><!-- END FORM COLUMN -->
 
             <!-- CAMPAIGN INSIGHT SIDEBAR -->
-            <div id="campaign-insight" style="position:sticky; top:0; background:rgba(255,255,255,0.02); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,94,0,0.1); border-radius:var(--radius-md); padding:24px; min-height:200px;">
+            <div id="campaign-insight" style="position:sticky; top:0; background:var(--bg); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,94,0,0.1); border-radius:var(--radius-md); padding:24px; min-height:200px;">
                 <div style="font-size:0.55rem; font-weight:800; letter-spacing:2.5px; color:var(--brand); text-transform:uppercase; margin-bottom:16px;">Campaign Insight</div>
 
                 <div style="margin-bottom:20px;">
                     <div style="font-size:0.6rem; opacity:0.35; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;">Matching Creators</div>
-                    <div id="insight-creators" style="font-size:1.8rem; font-weight:900; color:#fff; line-height:1;">--</div>
+                    <div id="insight-creators" style="font-size:1.8rem; font-weight:900; color:var(--text-main); line-height:1;">--</div>
                     <div style="font-size:0.68rem; opacity:0.3; margin-top:2px;">in our network</div>
                 </div>
 
@@ -720,9 +718,9 @@
                     <div style="font-size:0.68rem; opacity:0.3; margin-top:2px;">projected interactions</div>
                 </div>
 
-                <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:14px; margin-top:8px;">
+                <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:8px;">
                     <div style="font-size:0.6rem; opacity:0.35; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;">Match Strength</div>
-                    <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;">
+                    <div style="height:6px; background:var(--panel); border-radius:3px; overflow:hidden;">
                         <div id="insight-bar" style="height:100%; width:0%; background:linear-gradient(90deg, var(--brand), var(--accent)); border-radius:3px; transition:width 0.5s ease;"></div>
                     </div>
                     <div id="insight-bar-label" style="font-size:0.65rem; opacity:0.4; margin-top:6px; text-align:right;">Fill in more fields</div>
@@ -778,15 +776,15 @@
                     <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#fbbf24; margin-bottom:16px; text-transform:uppercase;">Submitted Content Preview</div>
                     <div class="brand-media-gallery" id="brand-gallery-brand-campaign-1" style="display:flex; gap:12px; overflow-x:auto; padding:4px 0 16px 0; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;">
                         <!-- Real uploads will load here; demo fallback below -->
-                        <div class="brand-media-card" style="flex:0 0 140px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
+                        <div class="brand-media-card" style="flex:0 0 140px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
                             <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">TikTok Reel 1</div>
                         </div>
-                        <div class="brand-media-card" style="flex:0 0 140px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
+                        <div class="brand-media-card" style="flex:0 0 140px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
                             <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">TikTok Reel 2</div>
                         </div>
-                        <div class="brand-media-card" style="flex:0 0 140px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
+                        <div class="brand-media-card" style="flex:0 0 140px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:32px 16px; text-align:center; cursor:pointer; scroll-snap-align:start;">
                             <svg viewBox="0 0 24 24" style="width:24px; height:24px; stroke:var(--brand); fill:none; stroke-width:1.5;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             <div style="font-size:0.7rem; opacity:0.4; margin-top:8px;">IG Story</div>
                         </div>
@@ -982,7 +980,7 @@
             <div class="modal-close" onclick="closeRejectModal()">×</div>
             <span style="color:#ff4444; letter-spacing:3px; font-size:0.65rem; font-weight:800;">CONTENT REJECTION</span>
             <h2 style="margin:10px 0 8px 0;">Flag for Policy Violation.</h2>
-            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:20px;">Rejection is only permitted for factual inaccuracies about your product or content that is offensive / obscene. Creative direction, editing style, and the creator's authentic voice are <strong style="color:#fff; opacity:1;">not valid grounds for rejection</strong>.</p>
+            <p style="opacity:0.35; font-size:0.82rem; margin-bottom:20px;">Rejection is only permitted for factual inaccuracies about your product or content that is offensive / obscene. Creative direction, editing style, and the creator's authentic voice are <strong style="color:var(--text-main);">not valid grounds for rejection</strong>.</p>
             <div style="background:rgba(255,68,68,0.04); border:1px solid rgba(255,68,68,0.12); border-radius:var(--radius-md); padding:20px; margin-bottom:20px;">
                 <div style="font-size:0.6rem; font-weight:800; letter-spacing:2px; color:#ff4444; margin-bottom:12px;">SELECT REASON (REQUIRED)</div>
                 <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; font-size:0.85rem; opacity:0.7; cursor:pointer;">
@@ -1042,9 +1040,9 @@
     <!-- Brand Media Lightbox -->
     <div id="brand-media-lightbox" class="modal-overlay" onclick="if(event.target===this)closeBrandLightbox()">
         <div style="position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; padding:24px;">
-            <button onclick="closeBrandLightbox()" style="position:absolute; top:20px; right:24px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:1.4rem; cursor:pointer; z-index:10; backdrop-filter:blur(8px);">&times;</button>
-            <button class="brand-lb-nav" onclick="event.stopPropagation(); brandLbNav(-1)" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8249;</button>
-            <button class="brand-lb-nav" onclick="event.stopPropagation(); brandLbNav(1)" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8250;</button>
+            <button onclick="closeBrandLightbox()" style="position:absolute; top:20px; right:24px; background:var(--panel); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:1.4rem; cursor:pointer; z-index:10; backdrop-filter:blur(8px);">&times;</button>
+            <button class="brand-lb-nav" onclick="event.stopPropagation(); brandLbNav(-1)" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); background:var(--panel); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8249;</button>
+            <button class="brand-lb-nav" onclick="event.stopPropagation(); brandLbNav(1)" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); background:var(--panel); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(8px);">&#8250;</button>
             <div id="brand-lb-viewer" style="display:flex; align-items:center; justify-content:center;"></div>
             <div style="margin-top:16px; text-align:center;">
                 <div id="brand-lb-filename" style="font-size:0.8rem; font-weight:700; opacity:0.7;"></div>
@@ -1075,7 +1073,7 @@
             const colors = { success: 'var(--accent)', info: '#60a5fa', warning: 'var(--brand)' };
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.style.cssText = 'display:flex; align-items:flex-start; gap:12px; background:rgba(17,20,18,0.95); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px 20px; min-width:300px; max-width:420px; backdrop-filter:blur(20px); animation:toastIn 0.3s ease;';
+            toast.style.cssText = 'display:flex; align-items:flex-start; gap:12px; background:rgba(17,20,18,0.95); border:1px solid var(--border); border-radius:12px; padding:16px 20px; min-width:300px; max-width:420px; backdrop-filter:blur(20px); animation:toastIn 0.3s ease;';
             toast.innerHTML = `
                 <div style="width:8px; height:8px; border-radius:50%; background:${colors[type] || colors.info}; margin-top:5px; flex-shrink:0;"></div>
                 <div style="flex:1;">
@@ -1106,8 +1104,8 @@
             // Loading state
             textarea.disabled = true;
             textarea.style.opacity = '0.4';
-            textarea.style.borderColor = 'rgba(0,255,133,0.3)';
-            textarea.style.boxShadow = '0 0 20px rgba(0,255,133,0.05)';
+            textarea.style.borderColor = 'rgba(26,115,232,0.3)';
+            textarea.style.boxShadow = '0 0 20px rgba(26,115,232,0.05)';
             btn.disabled = true;
             btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite;"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg> POLISHING...';
 
@@ -1602,7 +1600,7 @@
                         </div>
                         <div class="analytics-kpi">
                             <span class="analytics-kpi-label">Platforms</span>
-                            <span class="analytics-kpi-val" style="font-family:'Inter',sans-serif; font-size:0.75rem;">${r.platforms.join(', ')}</span>
+                            <span class="analytics-kpi-val" style="font-family:'Roboto',sans-serif; font-size:0.75rem;">${r.platforms.join(', ')}</span>
                         </div>
                     </div>
                 `;
@@ -1745,7 +1743,7 @@
                 const isVideo = u.file_type.startsWith('video/');
                 const card = document.createElement('div');
                 card.className = 'brand-media-card';
-                card.style.cssText = 'flex:0 0 160px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; overflow:hidden; cursor:pointer; scroll-snap-align:start; transition:all 0.3s;';
+                card.style.cssText = 'flex:0 0 160px; background:var(--bg); border:1px solid var(--border); border-radius:12px; overflow:hidden; cursor:pointer; scroll-snap-align:start; transition:all 0.3s;';
                 card.innerHTML = `
                     <div style="width:100%;height:110px;position:relative;overflow:hidden;background:rgba(0,0,0,0.3);">
                         ${isVideo
@@ -2185,7 +2183,7 @@
                         }
                     }
 
-                    const nichesTags = (c.niches || []).slice(0, 3).map(n => `<span style="font-size:0.6rem; opacity:0.4; border:1px solid rgba(255,255,255,0.08); padding:2px 8px; border-radius:20px;">${n}</span>`).join(' ');
+                    const nichesTags = (c.niches || []).slice(0, 3).map(n => `<span style="font-size:0.6rem; opacity:0.4; border:1px solid var(--border); padding:2px 8px; border-radius:20px;">${n}</span>`).join(' ');
                     
                     const card = document.createElement('div');
                     card.className = 'talent-card';
@@ -2291,14 +2289,14 @@
         const _authTimer = setTimeout(() => {
             if (!document.body.classList.contains('auth-cleared')) {
                 document.body.classList.add('auth-cleared');
-                document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Playfair Display,serif;margin-bottom:16px;">Connection Lost.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to reach the server. Please check your connection and try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
+                document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Roboto,serif;margin-bottom:16px;">Connection Lost.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to reach the server. Please check your connection and try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
             }
         }, 6000);
 
         initDashboard().catch(() => {
             clearTimeout(_authTimer);
             document.body.classList.add('auth-cleared');
-            document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Playfair Display,serif;margin-bottom:16px;">Something went wrong.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to load your dashboard. Please try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
+            document.querySelector('.main-content').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;"><h2 style="font-family:Roboto,serif;margin-bottom:16px;">Something went wrong.</h2><p style="opacity:0.4;margin-bottom:24px;">Unable to load your dashboard. Please try again.</p><button class="btn-pill" onclick="location.reload()">RETRY</button></div>';
         });
     </script>
 

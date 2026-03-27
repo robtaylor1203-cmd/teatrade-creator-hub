@@ -27,10 +27,10 @@
     <meta name="twitter:image" content="https://creator.teatrade.co.uk/social-sharing.jpg">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/jpeg" href="/creator-hub-logo.jpg">
-    <link rel="apple-touch-icon" href="/creator-hub-logo.jpg">
+    <link rel="icon" type="image/png" href="icons/favicon-nb.png">
+    <link rel="apple-touch-icon" href="icons/favicon-nb.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#080A09">
+    <meta name="theme-color" content="#f8f9fa">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TeaTrade">
@@ -59,12 +59,10 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
-
-    <div class="ambient-glow" style="top: 5%; left: 5%;"></div>
 
     <nav>
         <div style="flex: 1;"><a href="#" class="logo">TeaTrade<span style="color:var(--accent)">.</span></a></div>
@@ -88,6 +86,7 @@
             <span id="founding-counter">Founding 100 Initiative: —/100 Claimed</span>
         </div>
         <h1>TeaTrade<br><span style="color:var(--accent)">Creator Hub.</span></h1>
+        <div style="width: 64px; height: 3px; background: var(--accent); border-radius: 999px; margin: 28px auto 0; opacity: 0.7;"></div>
         <p class="hero-p">A precision market network linking expert influencers with prestige brands. Verify your technical mastery and unlock the automated escrow network.</p>
         <button class="btn-pill" onclick="openTerminal()">Create Account / Apply</button>
     </header>
@@ -99,11 +98,11 @@
         </div>
     </div>
 
-    <section id="badges" class="badges-section reveal">
+    <section id="badges" class="badges-section reveal" style="background: var(--bg);">
         <div style="max-width: 640px; padding-right: 40px;">
-            <span style="color:var(--accent); letter-spacing: 5px; font-size: 0.65rem; font-weight: 900;">THE TAXONOMY OF MASTERY</span>
+            <span class="section-label">The Taxonomy of Mastery</span>
             <h2 style="margin: 10px 0;">Pro Badges.</h2>
-            <p style="opacity: 0.45; font-size: 0.95rem;">Verify your knowledge to unlock high-tier brand pairings.</p>
+            <p style="opacity: 0.55; font-size: 1rem;">Verify your knowledge to unlock high-tier brand pairings.</p>
         </div>
         <div class="badge-carousel">
             <div class="badge-card">
@@ -144,60 +143,66 @@
         </div>
     </section>
 
-    <section id="protocol" class="reveal" style="padding: 100px 48px; border-top: 1px solid var(--border); background: #000;">
-        <div style="text-align: center; max-width: 600px; margin: 0 auto;">
-            <span style="color:var(--accent); letter-spacing: 5px; font-size: 0.6rem; font-weight: 900;">END-TO-END PROTOCOL</span>
-            <h2 style="margin-top: 12px;">How It Works.</h2>
-            <p style="opacity:0.4; font-size:0.9rem; margin-top:12px;">From vetting to payout — every step is tracked, protected, and transparent. Here's exactly what happens when a brand hires you.</p>
+        <section id="protocol" class="reveal" style="padding: 80px 48px; border-top: 1px solid var(--border); background: #ffffff;">
+        <div style="text-align: center; max-width: 900px; margin: 0 auto 48px;">
+            <span class="section-label">End-to-End Protocol</span>
+            <h2>How It Works.</h2>
+            <p style="color: var(--text-dim); margin-top: 16px; font-size: 1.1rem;">From vetting to payout — every step is tracked, protected, and transparent.</p>
         </div>
         <div class="protocol-timeline">
-            <div class="pt-step">
-                <div class="pt-dot">1</div>
-                <span class="pt-who creator">Creator</span>
-                <h4>Pass the Entry Exam</h4>
-                <p>Complete a short foundational quiz covering tea chemistry, terroir, and botanical knowledge. Score 70%+ to enter the network. Your score becomes your Match Rating visible to brands.</p>
+            <!-- Tab row -->
+            <div class="pt-tabs" role="tablist">
+                <button class="pt-tab active" role="tab" aria-selected="true"  aria-controls="pt-panel-1" onclick="ptActivate(1)"><span class="pt-tab-num">1</span><span class="pt-tab-title">Exam</span></button>
+                <button class="pt-tab"        role="tab" aria-selected="false" aria-controls="pt-panel-2" onclick="ptActivate(2)"><span class="pt-tab-num">2</span><span class="pt-tab-title">Profile</span></button>
+                <button class="pt-tab"        role="tab" aria-selected="false" aria-controls="pt-panel-3" onclick="ptActivate(3)"><span class="pt-tab-num">3</span><span class="pt-tab-title">Brief</span></button>
+                <button class="pt-tab"        role="tab" aria-selected="false" aria-controls="pt-panel-4" onclick="ptActivate(4)"><span class="pt-tab-num">4</span><span class="pt-tab-title">Match</span></button>
+                <button class="pt-tab"        role="tab" aria-selected="false" aria-controls="pt-panel-5" onclick="ptActivate(5)"><span class="pt-tab-num">5</span><span class="pt-tab-title">Ship</span></button>
+                <button class="pt-tab"        role="tab" aria-selected="false" aria-controls="pt-panel-6" onclick="ptActivate(6)"><span class="pt-tab-num">6</span><span class="pt-tab-title">Create</span></button>
+                <button class="pt-tab"        role="tab" aria-selected="false" aria-controls="pt-panel-7" onclick="ptActivate(7)"><span class="pt-tab-num">7</span><span class="pt-tab-title">Review</span></button>
+                <button class="pt-tab"        role="tab" aria-selected="false" aria-controls="pt-panel-8" onclick="ptActivate(8)"><span class="pt-tab-num">8</span><span class="pt-tab-title">Payout</span></button>
             </div>
-            <div class="pt-step">
-                <div class="pt-dot">2</div>
-                <span class="pt-who creator">Creator</span>
-                <h4>Build Your Profile</h4>
-                <p>Link your Instagram and TikTok via API for verified audience metrics. Complete Pro Academy modules to earn specialist badges (Chemistry, Terroir, Botanical, Gongfu, Sourcing). Upload up to 5 showcase reels. Your identity stays anonymized — brands see badges, metrics, and content quality, never your name.</p>
-            </div>
-            <div class="pt-step">
-                <div class="pt-dot">3</div>
-                <span class="pt-who brand">Brand</span>
-                <h4>Post a Campaign Brief</h4>
-                <p>Define deliverables, select required badges, set content format (Reels, TikTok, YouTube, photography), and lock your budget into escrow. Funds are held by the platform — not the creator — until you approve final content.</p>
-            </div>
-            <div class="pt-step">
-                <div class="pt-dot">4</div>
-                <span class="pt-who platform">Platform</span>
-                <h4>Algorithmic Matching</h4>
-                <p>TeaTrade's matching engine scores creators against your brief requirements — badge overlap, audience demographics, engagement rate trajectory, and content style. You see a ranked shortlist with full KPI dashboards and video previews.</p>
-            </div>
-            <div class="pt-step">
-                <div class="pt-dot">5</div>
-                <span class="pt-who brand">Brand</span>
-                <h4>Invite &amp; Ship Product</h4>
-                <p>Select your preferred creators and send invites. Once accepted, the creator shares a secure delivery address (visible only for this campaign). Ship your product with a tracking number. The creator confirms receipt — the 7-day content creation clock starts automatically.</p>
-            </div>
-            <div class="pt-step">
-                <div class="pt-dot">6</div>
-                <span class="pt-who creator">Creator</span>
-                <h4>7-Day Content Window</h4>
-                <p>A live countdown begins from the moment product is confirmed received. The creator produces content according to the brief specs. They upload final assets directly through the platform before the deadline. Late submissions trigger an automatic protocol review.</p>
-            </div>
-            <div class="pt-step">
-                <div class="pt-dot">7</div>
-                <span class="pt-who brand">Brand</span>
-                <h4>24-Hour Review Window</h4>
-                <p>Once content is submitted, the brand has exactly 24 hours to review. Accept to release payment instantly. Reject only if the content contains factual inaccuracies or offensive material — creative direction and the creator's authentic voice are never grounds for rejection. If 24 hours pass with no action, payment auto-releases to protect the creator. No revision loops. No endless edits.</p>
-            </div>
-            <div class="pt-step">
-                <div class="pt-dot">8</div>
-                <span class="pt-who platform">Platform</span>
-                <h4>Escrow Release &amp; Payout</h4>
-                <p>On approval, funds release immediately from escrow to the creator. A 12% platform fee is deducted transparently. If rejected, the TeaTrade dispute protocol activates — an independent review of brief compliance with resolution within 48 hours. No one loses money unfairly.</p>
+            <!-- Content panels -->
+            <div class="pt-panels">
+                <div id="pt-panel-1" class="pt-panel active" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">1</div><h4>Pass the Entry Exam</h4></div>
+                    <span class="pt-who creator">Creator</span>
+                    <p>Complete a short foundational quiz covering tea chemistry, terroir, and botanical knowledge. Score 70%+ to enter the network. Your score becomes your Match Rating visible to brands.</p>
+                </div>
+                <div id="pt-panel-2" class="pt-panel" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">2</div><h4>Build Your Profile</h4></div>
+                    <span class="pt-who creator">Creator</span>
+                    <p>Link your Instagram and TikTok via API for verified audience metrics. Complete Pro Academy modules to earn specialist badges (Chemistry, Terroir, Botanical, Gongfu, Sourcing). Upload up to 5 showcase reels. Your identity stays anonymized — brands see badges, metrics, and content quality, never your name.</p>
+                </div>
+                <div id="pt-panel-3" class="pt-panel" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">3</div><h4>Post a Campaign Brief</h4></div>
+                    <span class="pt-who brand">Brand</span>
+                    <p>Define deliverables, select required badges, set content format (Reels, TikTok, YouTube, photography), and lock your budget into escrow. Funds are held by the platform — not the creator — until you approve final content.</p>
+                </div>
+                <div id="pt-panel-4" class="pt-panel" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">4</div><h4>Algorithmic Matching</h4></div>
+                    <span class="pt-who platform">Platform</span>
+                    <p>TeaTrade's matching engine scores creators against your brief requirements — badge overlap, audience demographics, engagement rate trajectory, and content style. You see a ranked shortlist with full KPI dashboards and video previews.</p>
+                </div>
+                <div id="pt-panel-5" class="pt-panel" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">5</div><h4>Invite &amp; Ship Product</h4></div>
+                    <span class="pt-who brand">Brand</span>
+                    <p>Select your preferred creators and send invites. Once accepted, the creator shares a secure delivery address (visible only for this campaign). Ship your product with a tracking number. The creator confirms receipt — the 7-day content creation clock starts automatically.</p>
+                </div>
+                <div id="pt-panel-6" class="pt-panel" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">6</div><h4>7-Day Content Window</h4></div>
+                    <span class="pt-who creator">Creator</span>
+                    <p>A live countdown begins from the moment product is confirmed received. The creator produces content according to the brief specs. They upload final assets directly through the platform before the deadline. Late submissions trigger an automatic protocol review.</p>
+                </div>
+                <div id="pt-panel-7" class="pt-panel" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">7</div><h4>24-Hour Review Window</h4></div>
+                    <span class="pt-who brand">Brand</span>
+                    <p>Once content is submitted, the brand has exactly 24 hours to review. Accept to release payment instantly. Reject only if content contains factual inaccuracies or offensive material. If 24 hours pass with no action, payment auto-releases to protect the creator.</p>
+                </div>
+                <div id="pt-panel-8" class="pt-panel" role="tabpanel">
+                    <div class="pt-panel-header"><div class="pt-panel-num">8</div><h4>Escrow Release &amp; Payout</h4></div>
+                    <span class="pt-who platform">Platform</span>
+                    <p>On approval, funds release immediately from escrow to the creator. A 12% platform fee is deducted transparently. If rejected, the TeaTrade dispute protocol activates — an independent review within 48 hours. No one loses money unfairly.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -276,6 +281,18 @@
         const SUPABASE_URL = 'https://hfdjdiduacehchuwvajr.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmZGpkaWR1YWNlaGNodXd2YWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODUwNzQsImV4cCI6MjA4OTI2MTA3NH0.QKR3LFEw2rbPSFEiOMu5_0nFeEr5o5jdzensIux0uUI';                
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ── Protocol Timeline Stepper ──
+        function ptActivate(n) {
+            document.querySelectorAll('.pt-tab').forEach(function(t, i) {
+                var active = (i + 1 === n);
+                t.classList.toggle('active', active);
+                t.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+            document.querySelectorAll('.pt-panel').forEach(function(p, i) {
+                p.classList.toggle('active', i + 1 === n);
+            });
+        }
 
         // ── Persistent auth: auto-redirect if already logged in ──
         (async function checkExistingSession() {
