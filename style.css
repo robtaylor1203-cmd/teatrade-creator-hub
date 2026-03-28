@@ -1232,8 +1232,8 @@ header {
 .section-label {
     display: block;
     color: var(--accent);
-    letter-spacing: 5px;
-    font-size: 0.8rem;
+    letter-spacing: 3px;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 16px;
@@ -1649,7 +1649,7 @@ header {
 
 /* ── SECTION LABEL ── */
 .section-label {
-    font-size: 0.65rem;
+    font-size: 1rem;
     color: var(--accent);
     letter-spacing: 3px;
     text-transform: uppercase;
